@@ -2,12 +2,26 @@
 
 A simple and lightweight PDF viewer for React apps. Built using [`react-pdf`](https://github.com/wojtekmaj/react-pdf), it provides an easy way to display PDFs with minimal setup.
 
+<img alt="Adex React PDF Viewer" width="100%" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiBLIpbk4gScb_eIyaMDWdXnOUX_ofix9a8zssvT103n-yjiwXl2pn3641lEy661cACqsW-B4krIA2siMDlnRjPBYzWojHQUAX16g5V5nGYygxYHupyDrvq2N0l7VbrBDiw5wszOcMq77L7kg6jWATIDPFMYbZJaISVDPT0Ksc5j-j_qaASjeY6Oh4y3jDn/s1600/screenshot.jpg"/>
+
 ## ✨ Features
 
 ✅ Easy to use with minimal setup  
 ✅ Supports remote PDF URLs  
 ✅ No extra dependencies required  
 ✅ Lightweight and fast
+
+---
+
+## 🌐 Live Demo
+
+🔗 **[View Demo Here](https://abhibagul.github.io/Adex-React-PDF-Viewer/)**
+
+---
+
+## 🖼️ Screenshot
+
+![PDF Viewer Screenshot](./screenshot.png)
 
 ---
 

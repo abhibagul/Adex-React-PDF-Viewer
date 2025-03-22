@@ -1,7 +1,7 @@
 {
   "name": "adex-react-pdf-viewer",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.2",
+  "description": "A simple React PDF viewer component using react-pdf.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -50,5 +50,6 @@
   "bugs": {
     "url": "https://github.com/abhibagul/Adex-React-PDF-Viewer/issues"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "homepage": "https://abhibagul.github.io/Adex-React-PDF-Viewer/"
 }
