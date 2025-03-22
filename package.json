@@ -38,5 +38,17 @@
     "esbuild-sass-plugin": "^3.3.1",
     "tsup": "^8.4.0",
     "typescript": "^5.8.2"
-  }
+  },
+  "author": {
+    "name": "Abhishek B",
+    "url": "https://github.com/abhibagul"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/abhibagul/Adex-React-PDF-Viewer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/abhibagul/Adex-React-PDF-Viewer/issues"
+  },
+  "license": "MIT"
 }
