@@ -1,0 +1,421 @@
+/* src/PDFViewer.module.scss */
+
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;1,400&display=swap');
+
+.adex-viewer {
+    flex-direction: column;
+    border-radius: 5px;
+    position: relative;
+    box-sizing: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    /* box-shadow: 2px 2px 5px rgba(0, 0, 0, .1), -2px -2px 5px rgba(0, 0, 0, .1); */
+    background-color: #fff;
+    font-family: "Open Sans", sans-serif;
+}
+
+.adex-viewer * {
+    box-sizing: border-box;
+    font-family: "Open Sans", sans-serif;
+}
+
+.adex-page>div>div,
+.adex-page-thumb>div>div {
+    display: none;
+}
+
+.adex-viewer .adex-topbar {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    padding: 5px 10px;
+    align-items: center;
+    justify-content: space-between;
+    /* padding-top: 37px; */
+}
+
+.adex-viewer .adex-topbar .adex-control-page {
+    display: grid;
+    grid-template-columns: 30px 30px auto 30px;
+    gap: 5px;
+    align-items: center;
+}
+
+.adex-viewer .adex-topbar .adex-control-page p {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.adex-viewer .adex-topbar .adex-control-page input {
+    width: 100%;
+    max-width: 70px;
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    outline: 0px !important;
+}
+
+.adex-viewer .adex-topbar .adex-control-page p {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.adex-viewer .adex-topbar .adex-control-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 30px);
+    gap: 5px;
+    width: 65px;
+}
+
+.adex-viewer .adex-topbar .adex-control-zoom select {
+    background: transparent;
+    border: none;
+    border-radius: 5px;
+    padding: 3px 10px;
+    cursor: pointer;
+}
+
+.adex-viewer .adex-topbar .adex-control-zoom select:focus,
+.adex-viewer .adex-topbar .adex-control-zoom select:hover,
+.adex-viewer .adex-topbar .adex-control-zoom select:active {
+    outline: none;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.adex-viewer .adex-topbar button,
+.adex-viewer .adex-topbar .open-link-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.2s all ease-in-out;
+    border-radius: 5px;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #4e4e4e;
+}
+
+.adex-viewer .adex-topbar button:hover,
+.adex-viewer .adex-topbar .open-link-btn:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #000;
+}
+
+.adex-viewer .adex-preview-panel {
+    display: grid;
+    grid-template-columns: 180px auto;
+}
+
+.adex-viewer .adex-preview-panel :global(.textLayer),
+.adex-viewer .adex-preview-panel :global(.annotationLayer) {
+    display: none !important;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-thumbs {
+    max-height: 400px;
+    min-height: 400px;
+    overflow: auto;
+    background-color: #f7f7f7;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    scroll-behavior: smooth;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-thumbs>div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    scroll-behavior: smooth;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-thumbs .adex-page-thumb {
+    margin: 5px auto;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.05), -5px -5px 10px rgba(0, 0, 0, 0.05);
+    border-radius: 5px;
+    /* overflow: hidden; */
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    padding: 0px;
+    position: relative;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-thumbs .adex-page-thumb.active:before {
+    content: "";
+    width: 100%;
+    height: 100%;
+    background-color: rgba(20, 127, 212, 0.1254901961);
+    border: 2px solid #147fd4;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    z-index: 99;
+    border-radius: 5px;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview {
+    max-height: 400px;
+    min-height: 400px;
+    overflow: auto;
+    scroll-behavior: smooth;
+    padding-top: 10px;
+    position: relative;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview>div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    scroll-behavior: smooth;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview .adex-page {
+    margin: 10px auto;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.05), -5px -5px 10px rgba(0, 0, 0, 0.05);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.adex-viewer .adex-power-row {
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: end;
+    padding: 7px 15px;
+}
+
+.adex-viewer .adex-powered {
+    max-width: 70px;
+}
+
+.adex-viewer.fullScreenView {
+    background-color: #fff;
+}
+
+.adex-viewer.fullScreenView .adex-topbar {
+    padding-top: 5px;
+}
+
+.adex-viewer.fullScreenView .adex-preview-panel .adex-preview-thumbs,
+.adex-viewer.fullScreenView .adex-preview-panel .adex-preview {
+    max-height: calc(100vh - 81px);
+    min-height: calc(100vh - 81px);
+}
+
+.adex-viewer.fullScreenView .adex-control-options {
+    width: 30px !important;
+}
+
+.adex-viewer.fullScreenView .open-link-btn {
+    display: none !important;
+}
+
+.dev-ab {
+    display: flex;
+}
+
+.thumbs-slide-in .adex-preview-panel {
+    overflow: hidden;
+    grid-template-columns: 180px auto;
+    transition: 0.2s all ease;
+}
+
+.thumbs-slide-in .adex-preview-panel .adex-preview-thumbs {
+    transform: translateX(0px);
+    transition: 0.2s all ease;
+}
+
+.thumbs-slide-out .adex-preview-panel {
+    overflow: hidden;
+    grid-template-columns: 0px auto;
+    transition: 0.2s all ease;
+}
+
+.thumbs-slide-out .adex-preview-panel .adex-preview-thumbs {
+    transform: translateX(-180px);
+    transition: 0.2s all ease;
+}
+
+@keyframes placeHolderShimmer {
+    0% {
+        background-position: -468px 0;
+    }
+
+    100% {
+        background-position: 468px 0;
+    }
+}
+
+.adex-thumb-loader span {
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-name: placeHolderShimmer;
+    animation-timing-function: linear;
+    display: block;
+    height: 170px;
+    width: 120px;
+    background: #f6f7f8;
+    background:
+        linear-gradient(to right,
+            #eeeeee 8%,
+            #dddddd 18%,
+            #eeeeee 33%);
+    background-size: 1000px 170px;
+    margin: 10px auto;
+    border-radius: 5px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.adex-preview-loader span {
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-name: placeHolderShimmer;
+    animation-timing-function: linear;
+    display: block;
+    height: 800px;
+    width: 80%;
+    background: #f6f7f8;
+    background:
+        linear-gradient(to right,
+            #eeeeee 8%,
+            #dddddd 18%,
+            #eeeeee 33%);
+    background-size: 1000px 170px;
+    margin: 10px auto;
+    border-radius: 5px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.adex-pdf-meta-info {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, .2);
+    backdrop-filter: blur(2px);
+}
+
+.adex-preview-panel {
+    position: relative;
+}
+
+.adex-pdf-meta-info {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, .2);
+    backdrop-filter: blur(2px);
+}
+
+.adex-preview-panel {
+    position: relative;
+}
+
+.adex-meta-panel {
+    background: #fff;
+    max-width: 300px;
+    max-height: 300px;
+    overflow: auto;
+    border-radius: 5px;
+}
+
+.adex-pdf-meta-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.adex-pdf-meta-info-content {
+    background: #f7f7f7;
+}
+
+ul.adex-pdf-meta-info-list {
+    list-style-type: none;
+    padding: 15px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 12px;
+    margin: 0px;
+}
+
+.adex-pdf-meta-info-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 2;
+    align-items: center;
+    padding-right: 0;
+}
+
+.adex-pdf-meta-info-header strong {
+    max-width: 200px;
+    height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+}
+
+.adex-pdf-meta-info-header strong svg {
+    margin-top: 1px;
+    float: left;
+    margin-right: 10px;
+}
+
+.adex-pdf-meta-info-header button,
+.adex-power-row button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.2s all ease-in-out;
+    border-radius: 5px;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.adex-pdf-meta-info-header button:hover,
+.adex-power-row button:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #000;
+}
+
+.adex-viewer .adex-power-row {
+    justify-content: space-between;
+    align-items: center;
+}
+
+.adex-power-row p {
+    margin: 0px;
+    font-size: 12px;
+}
+
+.adex-power-row span {
+    color: red;
+}
+
+/*# sourceMappingURL=index.css.map */
