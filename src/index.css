@@ -109,9 +109,10 @@
     color: #000;
 }
 
+/* Update the adex-preview-panel styles to support flex layout */
 .adex-viewer .adex-preview-panel {
-    display: grid;
-    grid-template-columns: 44px 220px auto;
+    display: flex;
+    position: relative;
 }
 
 .adex-left-col {
@@ -119,7 +120,7 @@
     flex-direction: column;
     gap: 10px;
     padding: 6px;
-    border-right: 1px solid rgba(0, 0, 0, .1)
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .adex-left-col button {
@@ -434,7 +435,6 @@
 .thumbs-slide-out .adex-left-col {
     border-right: unset !important;
 }
-
 
 .thumbs-slide-out .adex-preview-panel .adex-preview-thumbs {
     /* transform: translateX(-180px); */
@@ -906,7 +906,8 @@ ul.adex-pdf-meta-info-list {
 .adex-search-input-container {
     display: flex;
     flex: 1;
-    max-width: 400px;
+    width: 100%;
+    /* max-width: 400px; */
     position: relative;
 }
 
@@ -1419,6 +1420,33 @@ ul.adex-pdf-meta-info-list {
     display: grid;
     grid-template-columns: 30px auto 30px;
     gap: 10px;
+}
+
+/* Update the adex-left-panel styles */
+.adex-left-panel {
+    width: 220px;
+    flex-shrink: 0;
+    position: relative;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: width 0.1s ease;
+}
+
+/* Add styles for the resizer */
+.adex-resizer {
+    width: 8px;
+    height: 100%;
+    position: absolute;
+    right: -4px;
+    top: 0;
+    cursor: col-resize;
+    z-index: 10;
+    background-color: transparent;
+}
+
+.adex-resizer:hover,
+.adex-resizer.resizing {
+    background-color: rgba(0, 0, 0, 0.1);
 }
 
 /*some more mess now*/

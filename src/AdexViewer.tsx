@@ -169,6 +169,13 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
   const bookmarksRef = useRef<HTMLDivElement>(null)
   const [leftPanel, setLeftPanel] = useState<number>(0)
 
+  // Add these state variables after the bookmarksRef declaration
+  const [leftPanelWidth, setLeftPanelWidth] = useState<number>(220)
+  const [isDragging, setIsDragging] = useState<boolean>(false)
+  const resizeDividerRef = useRef<HTMLDivElement>(null)
+  const startXRef = useRef<number>(0)
+  const startWidthRef = useRef<number>(0)
+
   // Check if we're on mobile based on the responsive settings
   useEffect(() => {
     const checkMobile = () => {
@@ -192,7 +199,46 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
     } else {
       setSidebar(showSidebar || false)
     }
-  }, [isMobile, responsive?.hideSidebarOnMobile, showSidebar])
+
+    // Add event listeners for resize functionality
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return
+
+      const deltaX = e.clientX - startXRef.current
+      let newWidth = startWidthRef.current + deltaX
+
+      // Enforce min and max width constraints
+      newWidth = Math.max(180, Math.min(450, newWidth))
+
+      setLeftPanelWidth(newWidth)
+    }
+
+    const handleMouseUp = () => {
+      setIsDragging(false)
+      document.body.style.cursor = "default"
+      document.body.style.userSelect = "auto"
+    }
+
+    if (isDragging) {
+      document.addEventListener("mousemove", handleMouseMove)
+      document.addEventListener("mouseup", handleMouseUp)
+    }
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove)
+      document.removeEventListener("mouseup", handleMouseUp)
+    }
+  }, [isMobile, responsive?.hideSidebarOnMobile, showSidebar, isDragging])
+
+  // Function to start resizing
+  const startResize = (e: React.MouseEvent) => {
+    e.preventDefault()
+    setIsDragging(true)
+    startXRef.current = e.clientX
+    startWidthRef.current = leftPanelWidth
+    document.body.style.cursor = "col-resize"
+    document.body.style.userSelect = "none"
+  }
 
   // Apply fullscreen if set in defaultValues
   useEffect(() => {
@@ -446,8 +492,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
 
   // Add this function to toggle the bookmarks sidebar
   const toggleBookmarksSidebar = useCallback(() => {
-    setLeftPanel(2);
-    setSidebar(true);
+    setLeftPanel(2)
+    setSidebar(true)
     setShowBookmarksSidebar((prev) => !prev)
     if (!showBookmarksSidebar) {
       setActiveTab("outline")
@@ -679,8 +725,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
 
   // Toggle search bar visibility
   const toggleSearch = useCallback(() => {
-    setLeftPanel(1);
-    setSidebar(true);
+    setLeftPanel(1)
+    setSidebar(true)
     setShowSearch((prev) => {
       const newState = !prev
       if (newState && searchInputRef.current) {
@@ -1190,24 +1236,24 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
 
           {showControls?.zoom && (
             <div className="adex-control-zoom">
-              {
-                showControls?.rotation &&  <button
-                onClick={() => rotatePage(pageNumber, false)}
-                aria-label="Rotate counterclockwise"
-                title="Rotate counterclockwise"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
+              {showControls?.rotation && (
+                <button
+                  onClick={() => rotatePage(pageNumber, false)}
+                  aria-label="Rotate counterclockwise"
+                  title="Rotate counterclockwise"
                 >
-                  <path fillRule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z" />
-                  <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z" />
-                </svg>
-              </button>
-              }
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                  >
+                    <path fillRule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z" />
+                    <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z" />
+                  </svg>
+                </button>
+              )}
               <select onChange={(e) => setScale(+e.target.value)} value={scale} aria-label="Zoom level">
                 {scaleSets.map((scaleLevel) => (
                   <option key={scaleLevel} value={scaleLevel}>
@@ -1215,30 +1261,28 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                   </option>
                 ))}
               </select>
-              {
-                showControls?.rotation &&     <button
-                onClick={() => rotatePage(pageNumber, true)}
-                aria-label="Rotate clockwise"
-                title="Rotate clockwise"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
+              {showControls?.rotation && (
+                <button
+                  onClick={() => rotatePage(pageNumber, true)}
+                  aria-label="Rotate clockwise"
+                  title="Rotate clockwise"
                 >
-                  <path fillRule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z" />
-                  <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z" />
-                </svg>
-              </button>
-              }
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                  >
+                    <path fillRule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z" />
+                    <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z" />
+                  </svg>
+                </button>
+              )}
             </div>
           )}
 
           <div className="adex-control-options">
-       
-  
             {showControls?.print && (
               <button onClick={handlePrint} aria-label="Print document" title="Print document">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -1306,134 +1350,150 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                 </svg>
               </a>
             )}
-       
           </div>
         </div>
       )}
 
+      <div className="adex-preview-panel" style={{ display: "flex" }}>
+        <div className="adex-left-col" style={{ flexShrink: 0 }}>
+          <button
+            onClick={() => {
+              setLeftPanel(0), setSidebar(true)
+            }}
+            aria-label="Pages Previews"
+            title="Pages Previews"
+            className={showBookmarksSidebar ? "active" : ""}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z" />
+              <path d="M4.5 12.5A.5.5 0 0 1 5 12h3a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5m0-2A.5.5 0 0 1 5 10h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5m1.639-3.708 1.33.886 1.854-1.855a.25.25 0 0 1 .289-.047l1.888.974V8.5a.5.5 0 0 1-.5.5H5a.5.5 0 0 1-.5-.5V8s1.54-1.274 1.639-1.208M6.25 6a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5" />
+            </svg>
+          </button>
 
+          {showControls?.search && (
+            <button
+              onClick={toggleSearch}
+              aria-label="Search document"
+              title="Search document"
+              className={showSearch ? "active" : ""}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+              </svg>
+            </button>
+          )}
 
-      <div className="adex-preview-panel">
-        <div className="adex-left-col">
-
-              <button
-                onClick={()=> {setLeftPanel(0),setSidebar(true)} }
-                aria-label="Pages Previews"
-                title="Pages Previews"
-                className={showBookmarksSidebar ? "active" : ""}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z"/>
-                    <path d="M4.5 12.5A.5.5 0 0 1 5 12h3a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5m0-2A.5.5 0 0 1 5 10h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5m1.639-3.708 1.33.886 1.854-1.855a.25.25 0 0 1 .289-.047l1.888.974V8.5a.5.5 0 0 1-.5.5H5a.5.5 0 0 1-.5-.5V8s1.54-1.274 1.639-1.208M6.25 6a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5"/>
-                  </svg>
-              </button>
-
-              {showControls?.search && (
-              <button
-                onClick={toggleSearch}
-                aria-label="Search document"
-                title="Search document"
-                className={showSearch ? "active" : ""}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-                </svg>
-              </button>
-            )}
-
-            {showControls?.bookmarks && (
-              <button
-                onClick={toggleBookmarksSidebar}
-                aria-label="Bookmarks and outline"
-                title="Bookmarks and outline"
-                className={showBookmarksSidebar ? "active" : ""}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M2 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v11.5a.5.5 0 0 1-.777.416L7 13.101l-4.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v10.566l3.723-2.482a.5.5 0 0 1 .554 0L11 14.566V4a1 1 0 0 0-1-1z"/>
-                  <path d="M4.268 1H12a1 1 0 0 1 1 1v11.768l.223.148A.5.5 0 0 0 14 13.5V2a2 2 0 0 0-2-2H6a2 2 0 0 0-1.732 1"/>
-                </svg>
-              </button>
-            )}
+          {showControls?.bookmarks && (
+            <button
+              onClick={toggleBookmarksSidebar}
+              aria-label="Bookmarks and outline"
+              title="Bookmarks and outline"
+              className={showBookmarksSidebar ? "active" : ""}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M2 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v11.5a.5.5 0 0 1-.777.416L7 13.101l-4.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v10.566l3.723-2.482a.5.5 0 0 1 .554 0L11 14.566V4a1 1 0 0 0-1-1z" />
+                <path d="M4.268 1H12a1 1 0 0 1 1 1v11.768l.223.148A.5.5 0 0 0 14 13.5V2a2 2 0 0 0-2-2H6a2 2 0 0 0-1.732 1" />
+              </svg>
+            </button>
+          )}
         </div>
-        <div className="adex-left-panel">
+        <div
+          className="adex-left-panel"
+          style={{
+            width: sidebar ? `${leftPanelWidth}px` : "0px",
+            flexShrink: 0,
+            transition: isDragging ? "none" : "0.2s width ease",
+            overflow: "hidden",
+            position: "relative",
+          }}
+        >
           {/* Thumbnail Sidebar */}
-          {(leftPanel == 0) && <div className="adex-preview-thumbs">
-            {pdfBlobUrl && (
-              <Document
-                file={pdfBlobUrl}
-                loading={
-                  <div className="adex-thumb-loader">
-                    <span className="thumb-loader"></span>
-                    <span className="thumb-loader"></span>
-                    <span className="thumb-loader"></span>
-                  </div>
-                }
-                onLoadSuccess={onDocumentLoadSuccess}
-                onLoadError={onDocumentLoadError}
-              >
-                {!pdfBlobUrl && (
-                  <div className="adex-thumb-loader">
-                    <span className="thumb-loader"></span>
-                    <span className="thumb-loader"></span>
-                    <span className="thumb-loader"></span>
-                  </div>
-                )}
-                {numPages &&
-                  Array.from({ length: numPages }, (_, index) => (
-                    <button
-                      key={`thumb-${index}`}
-                      className={`adex-page-thumb ${pageNumber === index + 1 ? "active" : ""}`}
-                      onClick={() => goToPage(index + 1)}
-                      aria-label={`Page ${index + 1}`}
-                      aria-current={pageNumber === index + 1 ? "page" : undefined}
-                    >
-                      <Page
-                        scale={0.2}
-                        loading={
-                          <div className="adex-thumb-loader">
-                            <span className="thumb-loader"></span>
-                          </div>
-                        }
-                        pageNumber={index + 1}
-                        width={600}
-                        rotate={pageRotations[index + 1] || 0} // Apply rotation to thumbnails
-                      />
-                    </button>
-                  ))}
-              </Document>
-            )}
-          </div>}
+          {leftPanel == 0 && (
+            <div className="adex-preview-thumbs">
+              {pdfBlobUrl && (
+                <Document
+                  file={pdfBlobUrl}
+                  loading={
+                    <div className="adex-thumb-loader">
+                      <span className="thumb-loader"></span>
+                      <span className="thumb-loader"></span>
+                      <span className="thumb-loader"></span>
+                    </div>
+                  }
+                  onLoadSuccess={onDocumentLoadSuccess}
+                  onLoadError={onDocumentLoadError}
+                >
+                  {!pdfBlobUrl && (
+                    <div className="adex-thumb-loader">
+                      <span className="thumb-loader"></span>
+                      <span className="thumb-loader"></span>
+                      <span className="thumb-loader"></span>
+                    </div>
+                  )}
+                  {numPages &&
+                    Array.from({ length: numPages }, (_, index) => (
+                      <button
+                        key={`thumb-${index}`}
+                        className={`adex-page-thumb ${pageNumber === index + 1 ? "active" : ""}`}
+                        onClick={() => goToPage(index + 1)}
+                        aria-label={`Page ${index + 1}`}
+                        aria-current={pageNumber === index + 1 ? "page" : undefined}
+                      >
+                        <Page
+                          scale={0.2}
+                          loading={
+                            <div className="adex-thumb-loader">
+                              <span className="thumb-loader"></span>
+                            </div>
+                          }
+                          pageNumber={index + 1}
+                          width={600}
+                          rotate={pageRotations[index + 1] || 0} // Apply rotation to thumbnails
+                        />
+                      </button>
+                    ))}
+                </Document>
+              )}
+            </div>
+          )}
 
           {/* Search Results Sidebar */}
-          {(leftPanel == 1) && <div className="adex-preview-search" ref={searchResultsRef}>
-          <div className="adex-search-bar">
-          <div className="adex-search-input-container">
-            <input
-              ref={searchInputRef}
-              type="text"
-              className="adex-search-input"
-              placeholder="Search in document..."
-              value={searchQuery}
-              onChange={handleSearchChange}
-              onKeyDown={handleSearchKeyDown}
-              aria-label="Search in document"
-            />
-            <button
-              className="adex-search-button"
-              onClick={performSearch}
-              disabled={isSearching || !searchQuery.trim()}
-              aria-label="Search"
-            >
-              {isSearching ? (
-                <span className="adex-search-loading"></span>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-                </svg>
-              )}
-            </button>
-          </div>
-          {/* {searchResults.length > 0 && (
+          {leftPanel == 1 && (
+            <div className="adex-preview-search" ref={searchResultsRef}>
+              <div className="adex-search-bar">
+                <div className="adex-search-input-container">
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    className="adex-search-input"
+                    placeholder="Search in document..."
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    onKeyDown={handleSearchKeyDown}
+                    aria-label="Search in document"
+                  />
+                  <button
+                    className="adex-search-button"
+                    onClick={performSearch}
+                    disabled={isSearching || !searchQuery.trim()}
+                    aria-label="Search"
+                  >
+                    {isSearching ? (
+                      <span className="adex-search-loading"></span>
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+                {/* {searchResults.length > 0 && (
             <div className="adex-search-results">
               
                   <div className="adex-search-navigation">
@@ -1478,168 +1538,197 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                   </div>
                 </div>
               )} */}
+              </div>
+              <div className="adex-search-results-header">
+                <h3>Search Results</h3>
+                <span className="adex-search-results-count">{searchResults.length} matches</span>
+              </div>
+              <div className="adex-search-results-list">
+                {searchResults.length > 0 ? (
+                  searchResults.map((result, index) => (
+                    <div
+                      key={`search-result-${index}`}
+                      id={`search-result-${result.matchIndex}`}
+                      className={`adex-search-result-item ${currentSearchResult === result.matchIndex ? "active" : ""}`}
+                      onClick={() => {
+                        setCurrentSearchResult(result.matchIndex)
+                        navigateToSearchResult(result)
+                      }}
+                    >
+                      <div className="adex-search-result-page">Page {result.pageIndex + 1}</div>
+                      <div className="adex-search-result-context">
+                        {result.context.split(new RegExp(`(${searchQuery})`, "i")).map((part, i) =>
+                          part.toLowerCase() === searchQuery.toLowerCase() ? (
+                            <span key={i} className="adex-search-result-highlight">
+                              {part}
+                            </span>
+                          ) : (
+                            <span key={i}>{part}</span>
+                          ),
+                        )}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="adex-search-no-results">{isSearching ? "Searching..." : "No results found"}</div>
+                )}
+              </div>
             </div>
-            <div className="adex-search-results-header">
-              <h3>Search Results</h3>
-              <span className="adex-search-results-count">{searchResults.length} matches</span>
-            </div>
-            <div className="adex-search-results-list">
-              {searchResults.length > 0 ? (
-                searchResults.map((result, index) => (
-                  <div
-                    key={`search-result-${index}`}
-                    id={`search-result-${result.matchIndex}`}
-                    className={`adex-search-result-item ${currentSearchResult === result.matchIndex ? "active" : ""}`}
-                    onClick={() => {
-                      setCurrentSearchResult(result.matchIndex)
-                      navigateToSearchResult(result)
-                    }}
+          )}
+
+          {/* Bookmarks and Outline Sidebar */}
+          {leftPanel == 2 && (
+            <div className="adex-preview-bookmarks" ref={bookmarksRef}>
+              <div className="adex-bookmarks-header">
+                <div className="adex-bookmarks-tabs">
+                  <button
+                    className={`adex-bookmarks-tab ${activeTab === "outline" ? "active" : ""}`}
+                    onClick={() => setActiveTab("outline")}
                   >
-                    <div className="adex-search-result-page">Page {result.pageIndex + 1}</div>
-                    <div className="adex-search-result-context">
-                      {result.context.split(new RegExp(`(${searchQuery})`, "i")).map((part, i) =>
-                        part.toLowerCase() === searchQuery.toLowerCase() ? (
-                          <span key={i} className="adex-search-result-highlight">
-                            {part}
-                          </span>
-                        ) : (
-                          <span key={i}>{part}</span>
-                        ),
+                    Outline
+                  </button>
+                  <button
+                    className={`adex-bookmarks-tab ${activeTab === "bookmarks" ? "active" : ""}`}
+                    onClick={() => setActiveTab("bookmarks")}
+                  >
+                    Bookmarks
+                  </button>
+                </div>
+              </div>
+
+              <div className="adex-bookmarks-content">
+                {activeTab === "outline" ? (
+                  <div className="adex-outline-container">
+                    {documentOutline.length > 0 ? (
+                      <div className="adex-outline-list">{renderOutlineItems(documentOutline)}</div>
+                    ) : (
+                      <div className="adex-no-outline">No outline available in this document</div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="adex-bookmarks-container">
+                    <div className="adex-bookmarks-actions">
+                      {isAddingBookmark ? (
+                        <div className="adex-add-bookmark-form">
+                          <input
+                            type="text"
+                            className="adex-bookmark-title-input"
+                            placeholder="Bookmark title"
+                            value={newBookmarkTitle}
+                            onChange={(e) => setNewBookmarkTitle(e.target.value)}
+                            autoFocus
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") addBookmark()
+                              if (e.key === "Escape") setIsAddingBookmark(false)
+                            }}
+                          />
+                          <div className="adex-bookmark-form-actions">
+                            <button
+                              className="adex-bookmark-save"
+                              onClick={addBookmark}
+                              disabled={!newBookmarkTitle.trim()}
+                            >
+                              Save
+                            </button>
+                            <button className="adex-bookmark-cancel" onClick={() => setIsAddingBookmark(false)}>
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button className="adex-add-bookmark-btn" onClick={() => setIsAddingBookmark(true)}>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="14"
+                            height="14"
+                            fill="currentColor"
+                            viewBox="0 0 16 16"
+                          >
+                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                          </svg>
+                          Add Bookmark
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="adex-bookmarks-list">
+                      {bookmarks.length > 0 ? (
+                        bookmarks
+                          .sort((a, b) => a.pageNumber - b.pageNumber)
+                          .map((bookmark) => (
+                            <div key={bookmark.id} className="adex-bookmark-item">
+                              <button className="adex-bookmark-link" onClick={() => navigateToBookmark(bookmark)}>
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="currentColor"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 2 0 0 0-2 2z" />
+                                </svg>
+                                <span className="adex-bookmark-title">{bookmark.title}</span>
+                                <span className="adex-bookmark-page">p. {bookmark.pageNumber}</span>
+                              </button>
+                              <button
+                                className="adex-bookmark-delete"
+                                onClick={() => deleteBookmark(bookmark.id)}
+                                aria-label={`Delete bookmark: ${bookmark.title}`}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="12"
+                                  height="12"
+                                  fill="currentColor"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
+                                  />
+                                </svg>
+                              </button>
+                            </div>
+                          ))
+                      ) : (
+                        <div className="adex-no-bookmarks">No bookmarks added yet</div>
                       )}
                     </div>
                   </div>
-                ))
-              ) : (
-                <div className="adex-search-no-results">{isSearching ? "Searching..." : "No results found"}</div>
-              )}
-            </div>
-          </div>}
-
-          {/* Bookmarks and Outline Sidebar */}
-          {(leftPanel == 2) && <div className="adex-preview-bookmarks" ref={bookmarksRef}>
-            <div className="adex-bookmarks-header">
-              <div className="adex-bookmarks-tabs">
-                <button
-                  className={`adex-bookmarks-tab ${activeTab === "outline" ? "active" : ""}`}
-                  onClick={() => setActiveTab("outline")}
-                >
-                  Outline
-                </button>
-                <button
-                  className={`adex-bookmarks-tab ${activeTab === "bookmarks" ? "active" : ""}`}
-                  onClick={() => setActiveTab("bookmarks")}
-                >
-                  Bookmarks
-                </button>
+                )}
               </div>
             </div>
-
-            <div className="adex-bookmarks-content">
-              {activeTab === "outline" ? (
-                <div className="adex-outline-container">
-                  {documentOutline.length > 0 ? (
-                    <div className="adex-outline-list">{renderOutlineItems(documentOutline)}</div>
-                  ) : (
-                    <div className="adex-no-outline">No outline available in this document</div>
-                  )}
-                </div>
-              ) : (
-                <div className="adex-bookmarks-container">
-                  <div className="adex-bookmarks-actions">
-                    {isAddingBookmark ? (
-                      <div className="adex-add-bookmark-form">
-                        <input
-                          type="text"
-                          className="adex-bookmark-title-input"
-                          placeholder="Bookmark title"
-                          value={newBookmarkTitle}
-                          onChange={(e) => setNewBookmarkTitle(e.target.value)}
-                          autoFocus
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") addBookmark()
-                            if (e.key === "Escape") setIsAddingBookmark(false)
-                          }}
-                        />
-                        <div className="adex-bookmark-form-actions">
-                          <button
-                            className="adex-bookmark-save"
-                            onClick={addBookmark}
-                            disabled={!newBookmarkTitle.trim()}
-                          >
-                            Save
-                          </button>
-                          <button className="adex-bookmark-cancel" onClick={() => setIsAddingBookmark(false)}>
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <button className="adex-add-bookmark-btn" onClick={() => setIsAddingBookmark(true)}>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="14"
-                          height="14"
-                          fill="currentColor"
-                          viewBox="0 0 16 16"
-                        >
-                          <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
-                        </svg>
-                        Add Bookmark
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="adex-bookmarks-list">
-                    {bookmarks.length > 0 ? (
-                      bookmarks
-                        .sort((a, b) => a.pageNumber - b.pageNumber)
-                        .map((bookmark) => (
-                          <div key={bookmark.id} className="adex-bookmark-item">
-                            <button className="adex-bookmark-link" onClick={() => navigateToBookmark(bookmark)}>
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 2 0 0 0-2 2z" />
-                              </svg>
-                              <span className="adex-bookmark-title">{bookmark.title}</span>
-                              <span className="adex-bookmark-page">p. {bookmark.pageNumber}</span>
-                            </button>
-                            <button
-                              className="adex-bookmark-delete"
-                              onClick={() => deleteBookmark(bookmark.id)}
-                              aria-label={`Delete bookmark: ${bookmark.title}`}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="12"
-                                height="12"
-                                fill="currentColor"
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
-                                <path
-                                  fillRule="evenodd"
-                                  d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
-                                />
-                              </svg>
-                            </button>
-                          </div>
-                        ))
-                    ) : (
-                      <div className="adex-no-bookmarks">No bookmarks added yet</div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>}
+          )}
         </div>
-        {/* PDF Pages */}
-        <div ref={previewRef} className="adex-preview">
+        {sidebar && (
+          <div
+            ref={resizeDividerRef}
+            style={{
+              width: "8px",
+              cursor: "col-resize",
+              background: "rgba(0, 0, 0, 0.05)",
+              flexShrink: 0,
+              zIndex: 10,
+              position: "relative",
+            }}
+            onMouseDown={startResize}
+          >
+            <div
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: "4px",
+                height: "30px",
+                borderRadius: "2px",
+                background: "rgba(0, 0, 0, 0.2)",
+              }}
+            />
+          </div>
+        )}
+        <div ref={previewRef} className="adex-preview" style={{ flex: 1, overflow: "auto" }}>
           {pdfBlobUrl && (
             <Document
               file={pdfBlobUrl}

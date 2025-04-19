@@ -93,15 +93,15 @@
   color: #000;
 }
 .adex-viewer .adex-preview-panel {
-  display: grid;
-  grid-template-columns: 44px 220px auto;
+  display: flex;
+  position: relative;
 }
 .adex-left-col {
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding: 6px;
-  border-right: 1px solid rgba(0, 0, 0, .1);
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
 }
 .adex-left-col button {
   background: transparent;
@@ -757,7 +757,7 @@ ul.adex-pdf-meta-info-list {
 .adex-search-input-container {
   display: flex;
   flex: 1;
-  max-width: 400px;
+  width: 100%;
   position: relative;
 }
 .adex-search-input {
@@ -1174,6 +1174,28 @@ ul.adex-pdf-meta-info-list {
   display: grid;
   grid-template-columns: 30px auto 30px;
   gap: 10px;
+}
+.adex-left-panel {
+  width: 220px;
+  flex-shrink: 0;
+  position: relative;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: width 0.1s ease;
+}
+.adex-resizer {
+  width: 8px;
+  height: 100%;
+  position: absolute;
+  right: -4px;
+  top: 0;
+  cursor: col-resize;
+  z-index: 10;
+  background-color: transparent;
+}
+.adex-resizer:hover,
+.adex-resizer.resizing {
+  background-color: rgba(0, 0, 0, 0.1);
 }
 .adex-search-bar {
   padding: 7px;
