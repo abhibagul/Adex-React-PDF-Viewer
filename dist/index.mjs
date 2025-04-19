@@ -1,3 +1,22 @@
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -23,7 +42,7 @@ var __async = (__this, __arguments, generator) => {
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Document, Page } from "react-pdf";
 import { pdfjs } from "react-pdf";
-import { jsx, jsxs } from "react/jsx-runtime";
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 var AdexViewer = ({
   data,
@@ -35,7 +54,15 @@ var AdexViewer = ({
     zoom: true,
     fullscreen: true,
     download: true,
-    info: true
+    info: true,
+    sidebarButton: true,
+    rotation: true
+    // Default to showing rotation controls
+  },
+  defaultValues = {
+    zoom: 1.25,
+    page: 1,
+    fullscreen: false
   },
   responsive = {
     mobileBreakpoint: 768,
@@ -46,12 +73,12 @@ var AdexViewer = ({
   var _a;
   const scaleSets = [0.5, 0.75, 1, 1.25, 1.5, 2, 3];
   const [numPages, setNumPages] = useState(null);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [scale, setScale] = useState(1.25);
+  const [pageNumber, setPageNumber] = useState(defaultValues.page || 1);
+  const [scale, setScale] = useState(defaultValues.zoom || 1.25);
   const [pdfBlobUrl, setPdfBlobUrl] = useState(null);
-  const [fullScreenView, setFullScreenView] = useState(false);
+  const [fullScreenView, setFullScreenView] = useState(defaultValues.fullscreen || false);
   const [sidebar, setSidebar] = useState(showSidebar || false);
-  const [previewNumber, setPreviewNumber] = useState(pageNumber);
+  const [previewNumber, setPreviewNumber] = useState(defaultValues.page || 1);
   const [retryCount, setRetryCount] = useState(0);
   const [retryTimeoutDelay, setRetryTimeoutDelay] = useState(5);
   const viewerRef = useRef(null);
@@ -62,6 +89,7 @@ var AdexViewer = ({
   const [showInfo, setShowInfo] = useState(false);
   const maxRetries = 5;
   const [isMobile, setIsMobile] = useState(false);
+  const [pageRotations, setPageRotations] = useState({});
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < ((responsive == null ? void 0 : responsive.mobileBreakpoint) || 768));
@@ -79,6 +107,18 @@ var AdexViewer = ({
       setSidebar(showSidebar || false);
     }
   }, [isMobile, responsive == null ? void 0 : responsive.hideSidebarOnMobile, showSidebar]);
+  useEffect(() => {
+    if (defaultValues.fullscreen && viewerRef.current && document.fullscreenElement === null) {
+      const timer = setTimeout(() => {
+        var _a2;
+        (_a2 = viewerRef.current) == null ? void 0 : _a2.requestFullscreen().catch((err) => {
+          console.warn("Couldn't enter fullscreen mode:", err);
+        });
+        setFullScreenView(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [defaultValues.fullscreen]);
   useEffect(() => {
     let retryTimer = null;
     const fetchPdfBlob = () => __async(void 0, null, function* () {
@@ -114,6 +154,9 @@ var AdexViewer = ({
       setNumPages(pdf.numPages);
       const meta = yield pdf.getMetadata();
       setMetadata(meta.info);
+      if (defaultValues.page && defaultValues.page > 1 && defaultValues.page <= pdf.numPages) {
+        goToPage(defaultValues.page);
+      }
     });
   }
   const goToPage = useCallback(
@@ -129,7 +172,7 @@ var AdexViewer = ({
   );
   function updatePage(__page) {
     if (__page > 0 && numPages !== null && __page <= numPages) {
-      goToPage(__page), 500;
+      goToPage(__page);
     } else {
       setPreviewNumber(pageNumber);
     }
@@ -137,16 +180,20 @@ var AdexViewer = ({
   function updatePDFPage(e) {
     const __page = Number(e.target.value);
     setPreviewNumber(__page);
-    debounce(updatePage(__page), 500);
+    debounce(() => updatePage(__page), 500);
   }
   const toggleFullscreen = () => {
     var _a2;
     if (!document.fullscreenElement) {
       setFullScreenView(true);
-      (_a2 = viewerRef.current) == null ? void 0 : _a2.requestFullscreen();
+      (_a2 = viewerRef.current) == null ? void 0 : _a2.requestFullscreen().catch((err) => {
+        console.warn("Couldn't enter fullscreen mode:", err);
+      });
     } else {
       setFullScreenView(false);
-      document.exitFullscreen();
+      document.exitFullscreen().catch((err) => {
+        console.warn("Couldn't exit fullscreen mode:", err);
+      });
     }
   };
   const debounce = (func, delay) => {
@@ -184,6 +231,24 @@ var AdexViewer = ({
       }
     };
   }, [pageNumber, numPages]);
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement && fullScreenView) {
+        setFullScreenView(false);
+      }
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, [fullScreenView]);
+  const rotatePage = (pageNum, clockwise = true) => {
+    setPageRotations((prev) => {
+      const currentRotation = prev[pageNum] || 0;
+      const newRotation = (currentRotation + (clockwise ? 90 : -90)) % 360;
+      return __spreadProps(__spreadValues({}, prev), { [pageNum]: newRotation < 0 ? newRotation + 360 : newRotation });
+    });
+  };
   return /* @__PURE__ */ jsxs(
     "div",
     {
@@ -192,7 +257,7 @@ var AdexViewer = ({
       children: [
         showToolbar && /* @__PURE__ */ jsxs("div", { className: "adex-topbar", children: [
           (showControls == null ? void 0 : showControls.navigation) && /* @__PURE__ */ jsxs("div", { className: "adex-control-page", children: [
-            /* @__PURE__ */ jsx("button", { onClick: () => setSidebar(!sidebar), children: /* @__PURE__ */ jsxs(
+            (showControls == null ? void 0 : showControls.sidebarButton) ? /* @__PURE__ */ jsx("button", { onClick: () => setSidebar(!sidebar), "aria-label": "Toggle sidebar", children: /* @__PURE__ */ jsxs(
               "svg",
               {
                 xmlns: "http://www.w3.org/2000/svg",
@@ -206,8 +271,8 @@ var AdexViewer = ({
                   /* @__PURE__ */ jsx("path", { d: "M16 2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2zM4 1v14H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zm1 0h9a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5z" })
                 ]
               }
-            ) }),
-            /* @__PURE__ */ jsx("button", { disabled: pageNumber <= 1, onClick: () => goToPage(pageNumber - 1), children: /* @__PURE__ */ jsx(
+            ) }) : /* @__PURE__ */ jsx("div", {}),
+            /* @__PURE__ */ jsx("button", { disabled: pageNumber <= 1, onClick: () => goToPage(pageNumber - 1), "aria-label": "Previous page", children: /* @__PURE__ */ jsx(
               "svg",
               {
                 xmlns: "http://www.w3.org/2000/svg",
@@ -226,36 +291,99 @@ var AdexViewer = ({
               }
             ) }),
             /* @__PURE__ */ jsxs("p", { children: [
-              /* @__PURE__ */ jsx("input", { className: "page-number", type: "number", onChange: updatePDFPage, value: previewNumber }),
-              " /",
+              /* @__PURE__ */ jsx(
+                "input",
+                {
+                  className: "page-number",
+                  type: "number",
+                  onChange: updatePDFPage,
+                  value: previewNumber,
+                  "aria-label": "Page number"
+                }
+              ),
               " ",
+              "/ ",
               numPages || "?"
             ] }),
-            /* @__PURE__ */ jsx("button", { disabled: numPages === null || pageNumber >= numPages, onClick: () => goToPage(pageNumber + 1), children: /* @__PURE__ */ jsx(
-              "svg",
+            /* @__PURE__ */ jsx(
+              "button",
               {
-                xmlns: "http://www.w3.org/2000/svg",
-                width: "16",
-                height: "16",
-                fill: "currentColor",
-                className: "bi bi-chevron-down",
-                viewBox: "0 0 16 16",
+                disabled: numPages === null || pageNumber >= numPages,
+                onClick: () => goToPage(pageNumber + 1),
+                "aria-label": "Next page",
                 children: /* @__PURE__ */ jsx(
-                  "path",
+                  "svg",
                   {
-                    fillRule: "evenodd",
-                    d: "M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"
+                    xmlns: "http://www.w3.org/2000/svg",
+                    width: "16",
+                    height: "16",
+                    fill: "currentColor",
+                    className: "bi bi-chevron-down",
+                    viewBox: "0 0 16 16",
+                    children: /* @__PURE__ */ jsx(
+                      "path",
+                      {
+                        fillRule: "evenodd",
+                        d: "M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"
+                      }
+                    )
                   }
                 )
               }
-            ) })
+            )
           ] }),
-          (showControls == null ? void 0 : showControls.zoom) && /* @__PURE__ */ jsx("div", { className: "adex-control-zoom", children: /* @__PURE__ */ jsx("select", { onChange: (e) => setScale(+e.target.value), value: scale, children: scaleSets.map((scaleLevel) => /* @__PURE__ */ jsxs("option", { value: scaleLevel, children: [
+          (showControls == null ? void 0 : showControls.zoom) && /* @__PURE__ */ jsx("div", { className: "adex-control-zoom", children: /* @__PURE__ */ jsx("select", { onChange: (e) => setScale(+e.target.value), value: scale, "aria-label": "Zoom level", children: scaleSets.map((scaleLevel) => /* @__PURE__ */ jsxs("option", { value: scaleLevel, children: [
             (scaleLevel * 100).toFixed(0),
             "%"
           ] }, scaleLevel)) }) }),
           /* @__PURE__ */ jsxs("div", { className: "adex-control-options", children: [
-            (showControls == null ? void 0 : showControls.fullscreen) && /* @__PURE__ */ jsx("button", { onClick: toggleFullscreen, children: !fullScreenView ? /* @__PURE__ */ jsx(
+            (showControls == null ? void 0 : showControls.rotation) && /* @__PURE__ */ jsxs(Fragment, { children: [
+              /* @__PURE__ */ jsx(
+                "button",
+                {
+                  onClick: () => rotatePage(pageNumber, false),
+                  "aria-label": "Rotate counterclockwise",
+                  title: "Rotate counterclockwise",
+                  children: /* @__PURE__ */ jsxs(
+                    "svg",
+                    {
+                      xmlns: "http://www.w3.org/2000/svg",
+                      width: "16",
+                      height: "16",
+                      fill: "currentColor",
+                      viewBox: "0 0 16 16",
+                      children: [
+                        /* @__PURE__ */ jsx("path", { fillRule: "evenodd", d: "M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z" }),
+                        /* @__PURE__ */ jsx("path", { d: "M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z" })
+                      ]
+                    }
+                  )
+                }
+              ),
+              /* @__PURE__ */ jsx(
+                "button",
+                {
+                  onClick: () => rotatePage(pageNumber, true),
+                  "aria-label": "Rotate clockwise",
+                  title: "Rotate clockwise",
+                  children: /* @__PURE__ */ jsxs(
+                    "svg",
+                    {
+                      xmlns: "http://www.w3.org/2000/svg",
+                      width: "16",
+                      height: "16",
+                      fill: "currentColor",
+                      viewBox: "0 0 16 16",
+                      children: [
+                        /* @__PURE__ */ jsx("path", { fillRule: "evenodd", d: "M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z" }),
+                        /* @__PURE__ */ jsx("path", { d: "M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z" })
+                      ]
+                    }
+                  )
+                }
+              )
+            ] }),
+            (showControls == null ? void 0 : showControls.fullscreen) && /* @__PURE__ */ jsx("button", { onClick: toggleFullscreen, "aria-label": fullScreenView ? "Exit fullscreen" : "Enter fullscreen", children: !fullScreenView ? /* @__PURE__ */ jsx(
               "svg",
               {
                 xmlns: "http://www.w3.org/2000/svg",
@@ -281,36 +409,47 @@ var AdexViewer = ({
                 fill: "currentColor",
                 className: "bi bi-fullscreen-exit",
                 viewBox: "0 0 16 16",
-                children: /* @__PURE__ */ jsx("path", { d: "M5.5 0a.5.5 0 0 1 .5.5v4A1.5 1.5 0 0 1 4.5 6h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5m5 0a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 10 4.5v-4a.5.5 0 0 1 .5-.5M0 10.5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 6 11.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5m10 1a1.5 1.5 0 0 1 1.5-1.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0z" })
+                children: /* @__PURE__ */ jsx("path", { d: "M5.5 0a.5.5 0 0 1 .5.5v4A1.5 1.5 0 0 1 4.5 6h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5m5 0a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 10 4.5v-4a.5.5 0 0 1 .5-.5M0 10.5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 6 11.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5m10 1a1.5 1.5 0 0 1 1.5-1.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 0-.5.5v4a.5.5.5 0 0 1-1 0z" })
               }
             ) }),
-            (showControls == null ? void 0 : showControls.download) && /* @__PURE__ */ jsx("a", { href: data == null ? void 0 : data.url, download: "sample.pdf", className: "open-link-btn", target: "_blank", rel: "noreferrer", children: /* @__PURE__ */ jsxs(
-              "svg",
+            (showControls == null ? void 0 : showControls.download) && /* @__PURE__ */ jsx(
+              "a",
               {
-                xmlns: "http://www.w3.org/2000/svg",
-                width: "16",
-                height: "16",
-                fill: "currentColor",
-                className: "bi bi-box-arrow-down",
-                viewBox: "0 0 16 16",
-                children: [
-                  /* @__PURE__ */ jsx(
-                    "path",
-                    {
-                      fillRule: "evenodd",
-                      d: "M3.5 10a.5.5 0 0 1-.5-.5v-8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 0 0 1h2A1.5 1.5 0 0 0 14 9.5v-8A1.5 1.5 0 0 0 12.5 0h-9A1.5 1.5 0 0 0 2 1.5v8A1.5 1.5 0 0 0 3.5 11h2a.5.5 0 0 0 0-1z"
-                    }
-                  ),
-                  /* @__PURE__ */ jsx(
-                    "path",
-                    {
-                      fillRule: "evenodd",
-                      d: "M7.646 15.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 14.293V5.5a.5.5 0 0 0-1 0v8.793l-2.146-2.147a.5.5 0 0 0-.708.708z"
-                    }
-                  )
-                ]
+                href: data == null ? void 0 : data.url,
+                download: "document.pdf",
+                className: "open-link-btn",
+                target: "_blank",
+                rel: "noreferrer",
+                "aria-label": "Download PDF",
+                children: /* @__PURE__ */ jsxs(
+                  "svg",
+                  {
+                    xmlns: "http://www.w3.org/2000/svg",
+                    width: "16",
+                    height: "16",
+                    fill: "currentColor",
+                    className: "bi bi-box-arrow-down",
+                    viewBox: "0 0 16 16",
+                    children: [
+                      /* @__PURE__ */ jsx(
+                        "path",
+                        {
+                          fillRule: "evenodd",
+                          d: "M3.5 10a.5.5 0 0 1-.5-.5v-8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 0 0 1h2A1.5 1.5 0 0 0 14 9.5v-8A1.5 1.5 0 0 0 12.5 0h-9A1.5 1.5 0 0 0 2 1.5v8A1.5 1.5 0 0 0 3.5 11h2a.5.5 0 0 0 0-1z"
+                        }
+                      ),
+                      /* @__PURE__ */ jsx(
+                        "path",
+                        {
+                          fillRule: "evenodd",
+                          d: "M7.646 15.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 14.293V5.5a.5.5 0 0 0-1 0v8.793l-2.146-2.147a.5.5 0 0 0-.708.708z"
+                        }
+                      )
+                    ]
+                  }
+                )
               }
-            ) })
+            )
           ] })
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "adex-preview-panel", children: [
@@ -346,13 +485,16 @@ var AdexViewer = ({
                   {
                     className: `${"adex-page-thumb"} ${pageNumber === index + 1 ? "active" : ""}`,
                     onClick: () => goToPage(index + 1),
+                    "aria-label": `Page ${index + 1}`,
+                    "aria-current": pageNumber === index + 1 ? "page" : void 0,
                     children: /* @__PURE__ */ jsx(
                       Page,
                       {
                         scale: 0.2,
                         loading: /* @__PURE__ */ jsx("div", { className: "adex-thumb-loader", children: /* @__PURE__ */ jsx("span", { className: "thumb-loader" }) }),
                         pageNumber: index + 1,
-                        width: 600
+                        width: 600,
+                        rotate: pageRotations[index + 1] || 0
                       }
                     )
                   },
@@ -386,15 +528,25 @@ var AdexViewer = ({
                   /* @__PURE__ */ jsx("span", { className: "page-loader" }),
                   /* @__PURE__ */ jsx("span", { className: "page-loader" })
                 ] }),
-                numPages && Array.from({ length: numPages }, (_, index) => /* @__PURE__ */ jsx("div", { ref: (el) => pageRefs.current[index + 1] = el, className: "adex-page", children: /* @__PURE__ */ jsx(
-                  Page,
+                numPages && Array.from({ length: numPages }, (_, index) => /* @__PURE__ */ jsx(
+                  "div",
                   {
-                    loading: /* @__PURE__ */ jsx("div", { className: "adex-preview-loader", children: /* @__PURE__ */ jsx("span", { className: "page-loader" }) }),
-                    scale,
-                    pageNumber: index + 1,
-                    width: 600
-                  }
-                ) }, `page-${index}`))
+                    ref: (el) => pageRefs.current[index + 1] = el,
+                    className: "adex-page",
+                    "aria-label": `Page ${index + 1} content`,
+                    children: /* @__PURE__ */ jsx(
+                      Page,
+                      {
+                        loading: /* @__PURE__ */ jsx("div", { className: "adex-preview-loader", children: /* @__PURE__ */ jsx("span", { className: "page-loader" }) }),
+                        scale,
+                        pageNumber: index + 1,
+                        width: 600,
+                        rotate: pageRotations[index + 1] || 0
+                      }
+                    )
+                  },
+                  `page-${index}`
+                ))
               ]
             }
           ) }),
@@ -427,6 +579,7 @@ var AdexViewer = ({
                   onClick: () => {
                     setShowInfo(false);
                   },
+                  "aria-label": "Close info panel",
                   children: /* @__PURE__ */ jsxs(
                     "svg",
                     {
@@ -462,6 +615,7 @@ var AdexViewer = ({
               onClick: () => {
                 setShowInfo(true);
               },
+              "aria-label": "Show document information",
               children: /* @__PURE__ */ jsxs(
                 "svg",
                 {

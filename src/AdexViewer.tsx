@@ -9,6 +9,7 @@ import "./index.css"
 // Set worker source for pdf.js
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`
 
+// Update the showControls interface to include rotation
 interface PDFViewerProps {
   data: { url: string }
   credits?: boolean | null
@@ -20,6 +21,13 @@ interface PDFViewerProps {
     fullscreen?: boolean
     download?: boolean
     info?: boolean
+    sidebarButton?: boolean
+    rotation?: boolean // New option for page rotation
+  }
+  defaultValues?: {
+    zoom?: number
+    page?: number
+    fullscreen?: boolean
   }
   responsive?: {
     mobileBreakpoint?: number
@@ -28,6 +36,7 @@ interface PDFViewerProps {
   }
 }
 
+// Update the default showControls to include rotation
 const AdexViewer: React.FC<PDFViewerProps> = ({
   data,
   credits,
@@ -39,6 +48,13 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
     fullscreen: true,
     download: true,
     info: true,
+    sidebarButton: true,
+    rotation: true, // Default to showing rotation controls
+  },
+  defaultValues = {
+    zoom: 1.25,
+    page: 1,
+    fullscreen: false,
   },
   responsive = {
     mobileBreakpoint: 768,
@@ -48,12 +64,12 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
 }) => {
   const scaleSets = [0.5, 0.75, 1, 1.25, 1.5, 2, 3]
   const [numPages, setNumPages] = useState<number | null>(null)
-  const [pageNumber, setPageNumber] = useState<number>(1)
-  const [scale, setScale] = useState<number>(1.25)
+  const [pageNumber, setPageNumber] = useState<number>(defaultValues.page || 1)
+  const [scale, setScale] = useState<number>(defaultValues.zoom || 1.25)
   const [pdfBlobUrl, setPdfBlobUrl] = useState<string | null>(null)
-  const [fullScreenView, setFullScreenView] = useState<boolean>(false)
+  const [fullScreenView, setFullScreenView] = useState<boolean>(defaultValues.fullscreen || false)
   const [sidebar, setSidebar] = useState<boolean>(showSidebar || false)
-  const [previewNumber, setPreviewNumber] = useState<number>(pageNumber)
+  const [previewNumber, setPreviewNumber] = useState<number>(defaultValues.page || 1)
   const [retryCount, setRetryCount] = useState<number>(0)
   const [retryTimeoutDelay, setRetryTimeoutDelay] = useState<number>(5)
   const viewerRef = useRef<HTMLDivElement>(null)
@@ -64,6 +80,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
   const [showInfo, setShowInfo] = useState<boolean>(false)
   const maxRetries = 5
   const [isMobile, setIsMobile] = useState<boolean>(false)
+  // Add a pageRotations state to track rotation for each page
+  const [pageRotations, setPageRotations] = useState<{ [key: number]: number }>({})
 
   // Check if we're on mobile based on the responsive settings
   useEffect(() => {
@@ -87,6 +105,21 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
       setSidebar(showSidebar || false)
     }
   }, [isMobile, responsive?.hideSidebarOnMobile, showSidebar])
+
+  // Apply fullscreen if set in defaultValues
+  useEffect(() => {
+    if (defaultValues.fullscreen && viewerRef.current && document.fullscreenElement === null) {
+      // Use a small delay to ensure the component is fully mounted
+      const timer = setTimeout(() => {
+        viewerRef.current?.requestFullscreen().catch((err) => {
+          console.warn("Couldn't enter fullscreen mode:", err)
+        })
+        setFullScreenView(true)
+      }, 500)
+
+      return () => clearTimeout(timer)
+    }
+  }, [defaultValues.fullscreen])
 
   useEffect(() => {
     let retryTimer: ReturnType<typeof setTimeout> | null = null
@@ -129,6 +162,11 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
     setNumPages(pdf.numPages)
     const meta = await pdf.getMetadata()
     setMetadata(meta.info)
+
+    // If default page is set and it's valid, navigate to it
+    if (defaultValues.page && defaultValues.page > 1 && defaultValues.page <= pdf.numPages) {
+      goToPage(defaultValues.page)
+    }
   }
 
   const goToPage = useCallback(
@@ -144,9 +182,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
   )
 
   function updatePage(__page: number) {
-    //@ts-ignore
     if (__page > 0 && numPages !== null && __page <= numPages) {
-      goToPage(__page), 500
+      goToPage(__page)
     } else {
       setPreviewNumber(pageNumber)
     }
@@ -155,16 +192,20 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
   function updatePDFPage(e: any) {
     const __page = Number(e.target.value)
     setPreviewNumber(__page)
-    debounce(updatePage(__page), 500)
+    debounce(() => updatePage(__page), 500)
   }
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
       setFullScreenView(true)
-      viewerRef.current?.requestFullscreen()
+      viewerRef.current?.requestFullscreen().catch((err) => {
+        console.warn("Couldn't enter fullscreen mode:", err)
+      })
     } else {
       setFullScreenView(false)
-      document.exitFullscreen()
+      document.exitFullscreen().catch((err) => {
+        console.warn("Couldn't exit fullscreen mode:", err)
+      })
     }
   }
 
@@ -212,6 +253,29 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
     }
   }, [pageNumber, numPages])
 
+  // Handle fullscreen change events from browser
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement && fullScreenView) {
+        setFullScreenView(false)
+      }
+    }
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange)
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange)
+    }
+  }, [fullScreenView])
+
+  // Add a function to rotate a specific page
+  const rotatePage = (pageNum: number, clockwise = true) => {
+    setPageRotations((prev) => {
+      const currentRotation = prev[pageNum] || 0
+      const newRotation = (currentRotation + (clockwise ? 90 : -90)) % 360
+      return { ...prev, [pageNum]: newRotation < 0 ? newRotation + 360 : newRotation }
+    })
+  }
+
   return (
     <div
       ref={viewerRef}
@@ -223,20 +287,24 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
         <div className={"adex-topbar"}>
           {showControls?.navigation && (
             <div className={"adex-control-page"}>
-              <button onClick={() => setSidebar(!sidebar)}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-layout-text-sidebar-reverse"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M12.5 3a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1zm0 3a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1zm.5 3.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h5a.5.5 0 0 0 .5-.5m-.5 2.5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1z" />
-                  <path d="M16 2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2zM4 1v14H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zm1 0h9a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5z" />
-                </svg>
-              </button>
-              <button disabled={pageNumber <= 1} onClick={() => goToPage(pageNumber - 1)}>
+              {showControls?.sidebarButton ? (
+                <button onClick={() => setSidebar(!sidebar)} aria-label="Toggle sidebar">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-layout-text-sidebar-reverse"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M12.5 3a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1zm0 3a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1zm.5 3.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h5a.5.5 0 0 0 .5-.5m-.5 2.5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1z" />
+                    <path d="M16 2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2zM4 1v14H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zm1 0h9a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5z" />
+                  </svg>
+                </button>
+              ) : (
+                <div></div>
+              )}
+              <button disabled={pageNumber <= 1} onClick={() => goToPage(pageNumber - 1)} aria-label="Previous page">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -252,10 +320,20 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                 </svg>
               </button>
               <p>
-                <input className={"page-number"} type="number" onChange={updatePDFPage} value={previewNumber} /> /{" "}
-                {numPages || "?"}
+                <input
+                  className={"page-number"}
+                  type="number"
+                  onChange={updatePDFPage}
+                  value={previewNumber}
+                  aria-label="Page number"
+                />{" "}
+                / {numPages || "?"}
               </p>
-              <button disabled={numPages === null || pageNumber >= numPages} onClick={() => goToPage(pageNumber + 1)}>
+              <button
+                disabled={numPages === null || pageNumber >= numPages}
+                onClick={() => goToPage(pageNumber + 1)}
+                aria-label="Next page"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -275,7 +353,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
 
           {showControls?.zoom && (
             <div className={"adex-control-zoom"}>
-              <select onChange={(e) => setScale(+e.target.value)} value={scale}>
+              <select onChange={(e) => setScale(+e.target.value)} value={scale} aria-label="Zoom level">
                 {scaleSets.map((scaleLevel) => (
                   <option key={scaleLevel} value={scaleLevel}>
                     {(scaleLevel * 100).toFixed(0)}%
@@ -286,8 +364,44 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
           )}
 
           <div className={"adex-control-options"}>
+            {showControls?.rotation && (
+              <>
+                <button
+                  onClick={() => rotatePage(pageNumber, false)}
+                  aria-label="Rotate counterclockwise"
+                  title="Rotate counterclockwise"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                  >
+                    <path fillRule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z" />
+                    <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => rotatePage(pageNumber, true)}
+                  aria-label="Rotate clockwise"
+                  title="Rotate clockwise"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                  >
+                    <path fillRule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z" />
+                    <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z" />
+                  </svg>
+                </button>
+              </>
+            )}
             {showControls?.fullscreen && (
-              <button onClick={toggleFullscreen}>
+              <button onClick={toggleFullscreen} aria-label={fullScreenView ? "Exit fullscreen" : "Enter fullscreen"}>
                 {!fullScreenView ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -311,14 +425,21 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                     className="bi bi-fullscreen-exit"
                     viewBox="0 0 16 16"
                   >
-                    <path d="M5.5 0a.5.5 0 0 1 .5.5v4A1.5 1.5 0 0 1 4.5 6h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5m5 0a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 10 4.5v-4a.5.5 0 0 1 .5-.5M0 10.5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 6 11.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5m10 1a1.5 1.5 0 0 1 1.5-1.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0z" />
+                    <path d="M5.5 0a.5.5 0 0 1 .5.5v4A1.5 1.5 0 0 1 4.5 6h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5m5 0a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 10 4.5v-4a.5.5 0 0 1 .5-.5M0 10.5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 6 11.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5m10 1a1.5 1.5 0 0 1 1.5-1.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 0-.5.5v4a.5.5.5 0 0 1-1 0z" />
                   </svg>
                 )}
               </button>
             )}
 
             {showControls?.download && (
-              <a href={data?.url} download="sample.pdf" className={"open-link-btn"} target="_blank" rel="noreferrer">
+              <a
+                href={data?.url}
+                download="document.pdf"
+                className={"open-link-btn"}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Download PDF"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -379,6 +500,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                     key={`thumb-${index}`}
                     className={`${"adex-page-thumb"} ${pageNumber === index + 1 ? "active" : ""}`}
                     onClick={() => goToPage(index + 1)}
+                    aria-label={`Page ${index + 1}`}
+                    aria-current={pageNumber === index + 1 ? "page" : undefined}
                   >
                     <Page
                       scale={0.2}
@@ -389,6 +512,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                       }
                       pageNumber={index + 1}
                       width={600}
+                      rotate={pageRotations[index + 1] || 0} // Apply rotation to thumbnails
                     />
                   </button>
                 ))}
@@ -426,7 +550,12 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
               )}
               {numPages &&
                 Array.from({ length: numPages }, (_, index) => (
-                  <div key={`page-${index}`} ref={(el) => (pageRefs.current[index + 1] = el)} className={"adex-page"}>
+                  <div
+                    key={`page-${index}`}
+                    ref={(el) => (pageRefs.current[index + 1] = el)}
+                    className={"adex-page"}
+                    aria-label={`Page ${index + 1} content`}
+                  >
                     <Page
                       loading={
                         <div className={"adex-preview-loader"}>
@@ -436,6 +565,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                       scale={scale}
                       pageNumber={index + 1}
                       width={600}
+                      rotate={pageRotations[index + 1] || 0} // Apply rotation
                     />
                   </div>
                 ))}
@@ -466,6 +596,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                   onClick={() => {
                     setShowInfo(false)
                   }}
+                  aria-label="Close info panel"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -501,6 +632,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
               onClick={() => {
                 setShowInfo(true)
               }}
+              aria-label="Show document information"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

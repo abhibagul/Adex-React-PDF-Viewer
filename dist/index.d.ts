@@ -13,6 +13,13 @@ interface PDFViewerProps {
         fullscreen?: boolean;
         download?: boolean;
         info?: boolean;
+        sidebarButton?: boolean;
+        rotation?: boolean;
+    };
+    defaultValues?: {
+        zoom?: number;
+        page?: number;
+        fullscreen?: boolean;
     };
     responsive?: {
         mobileBreakpoint?: number;

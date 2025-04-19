@@ -53,7 +53,8 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, 30px);
   gap: 5px;
-  width: 65px;
+  width: auto;
+  min-width: 100px;
 }
 .adex-viewer .adex-topbar .adex-control-zoom select {
   background: transparent;
@@ -94,8 +95,8 @@
   display: grid;
   grid-template-columns: 180px auto;
 }
-.adex-viewer .adex-preview-panel :global(.textLayer),
-.adex-viewer .adex-preview-panel :global(.annotationLayer) {
+.adex-viewer .adex-preview-panel .textLayer,
+.adex-viewer .adex-preview-panel .annotationLayer {
   display: none !important;
 }
 .adex-viewer .adex-preview-panel .adex-preview-thumbs {
@@ -153,6 +154,13 @@
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.05), -5px -5px 10px rgba(0, 0, 0, 0.05);
   border-radius: 5px;
   overflow: hidden;
+  position: relative;
+}
+.adex-page-rotation-controls {
+  display: none;
+}
+.adex-page canvas {
+  transition: transform 0.3s ease;
 }
 .adex-viewer .adex-power-row {
   right: 0;
@@ -264,7 +272,7 @@
   top: 0px;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, .2);
+  background: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(2px);
 }
 .adex-preview-panel {
@@ -276,7 +284,7 @@
   top: 0px;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, .2);
+  background: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(2px);
 }
 .adex-preview-panel {
@@ -361,5 +369,41 @@ ul.adex-pdf-meta-info-list {
 }
 .adex-power-row span {
   color: red;
+}
+.adex-mobile .adex-topbar {
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.adex-mobile .adex-topbar .adex-control-page {
+  grid-template-columns: 30px 30px auto 30px;
+  width: 100%;
+}
+.adex-mobile .adex-topbar .adex-control-zoom,
+.adex-mobile .adex-topbar .adex-control-options {
+  margin-left: auto;
+}
+.adex-mobile .adex-preview-panel .adex-preview,
+.adex-mobile .adex-preview-panel .adex-preview-thumbs {
+  max-height: 300px;
+  min-height: 300px;
+}
+.adex-mobile.fullScreenView .adex-preview-panel .adex-preview,
+.adex-mobile.fullScreenView .adex-preview-panel .adex-preview-thumbs {
+  max-height: calc(100vh - 81px);
+  min-height: calc(100vh - 81px);
+}
+.adex-mobile .adex-topbar .adex-control-page p {
+  font-size: 12px;
+}
+.adex-mobile .adex-topbar .adex-control-page input {
+  max-width: 50px;
+}
+.adex-mobile .adex-preview-panel .adex-preview .adex-page {
+  max-width: 100%;
+  overflow: auto;
+}
+.adex-mobile .adex-preview-panel .adex-preview .adex-page canvas {
+  max-width: 100%;
+  height: auto !important;
 }
 /*# sourceMappingURL=index.css.map */
