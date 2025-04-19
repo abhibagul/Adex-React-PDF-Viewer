@@ -10,7 +10,22 @@ import "./index.css"
 // Set worker source for pdf.js
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`
 
-// Update the PDFViewerProps interface to include bookmarks option
+interface Annotation {
+  id: string
+  pageNumber: number
+  type: "highlight" | "note" | "drawing"
+  content?: string
+  color: string
+  position: {
+    x: number
+    y: number
+    width?: number
+    height?: number
+  }
+  points?: { x: number; y: number }[] // For drawing annotations
+  createdAt: number
+}
+
 interface PDFViewerProps {
   data: { url: string }
   credits?: boolean | null
@@ -27,6 +42,7 @@ interface PDFViewerProps {
     print?: boolean // New option for print button
     search?: boolean // New option for search functionality
     bookmarks?: boolean // New option for bookmarks functionality
+    annotations?: boolean // New option for annotations functionality
   }
   defaultValues?: {
     zoom?: number
@@ -92,10 +108,11 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
     download: true,
     info: true,
     sidebarButton: true,
-    rotation: true, // Default to showing rotation controls
-    print: true, // Default to showing print button
-    search: true, // Default to showing search functionality
-    bookmarks: true, // Default to showing bookmarks functionality
+    rotation: true,
+    print: true,
+    search: true,
+    bookmarks: true,
+    annotations: true,
   },
   defaultValues = {
     zoom: 1.25,
@@ -175,6 +192,16 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
   const resizeDividerRef = useRef<HTMLDivElement>(null)
   const startXRef = useRef<number>(0)
   const startWidthRef = useRef<number>(0)
+  // Add these new state variables after the existing state declarations
+  const [annotations, setAnnotations] = useState<Annotation[]>([])
+  const [isAddingAnnotation, setIsAddingAnnotation] = useState<boolean>(false)
+  const [annotationType, setAnnotationType] = useState<"highlight" | "note" | "drawing">("note")
+  const [annotationColor, setAnnotationColor] = useState<string>("#ffeb3b")
+  const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation | null>(null)
+  const [newAnnotationContent, setNewAnnotationContent] = useState<string>("")
+  const [isDrawing, setIsDrawing] = useState<boolean>(false)
+  const [currentDrawingPoints, setCurrentDrawingPoints] = useState<{ x: number; y: number }[]>([])
+  const [showAnnotationsSidebar, setShowAnnotationsSidebar] = useState<boolean>(false)
 
   // Check if we're on mobile based on the responsive settings
   useEffect(() => {
@@ -228,7 +255,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
       document.removeEventListener("mousemove", handleMouseMove)
       document.removeEventListener("mouseup", handleMouseUp)
     }
-  }, [isMobile, responsive?.hideSidebarOnMobile, showSidebar, isDragging])
+  }, [isMobile, responsive?.hideSidebarOnMobile, showSidebar, isDragging, showAnnotationsSidebar])
 
   // Function to start resizing
   const startResize = (e: React.MouseEvent) => {
@@ -499,6 +526,13 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
       setActiveTab("outline")
     }
   }, [showBookmarksSidebar])
+
+  // Add a function to toggle the annotations sidebar after the toggleBookmarksSidebar function
+  const toggleAnnotationsSidebar = useCallback(() => {
+    setLeftPanel(3) // Use a new panel index for annotations
+    setSidebar(true)
+    setShowAnnotationsSidebar((prev) => !prev)
+  }, [showAnnotationsSidebar])
 
   function updatePage(__page: number) {
     if (__page > 0 && numPages !== null && __page <= numPages) {
@@ -876,9 +910,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
 
   // Add a check in the handleSearchKeyDown function to prevent searching when document isn't ready
   // Move the handleSearchKeyDown function after performSearch
-
   // First, remove the current handleSearchKeyDown function
-
   // Now define performSearch first
   const performSearch = useCallback(async () => {
     if (!searchQuery.trim() || !pdfDocument) {
@@ -973,6 +1005,23 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
     },
     [pdfDocument, performSearch],
   )
+
+  // Add these navigation functions that are referenced but missing:
+  const nextSearchResult = useCallback(() => {
+    if (searchResults.length === 0) return
+
+    const nextIndex = (currentSearchResult + 1) % searchResults.length
+    setCurrentSearchResult(nextIndex)
+    navigateToSearchResult(searchResults[nextIndex])
+  }, [currentSearchResult, searchResults, navigateToSearchResult])
+
+  const prevSearchResult = useCallback(() => {
+    if (searchResults.length === 0) return
+
+    const prevIndex = (currentSearchResult - 1 + searchResults.length) % searchResults.length
+    setCurrentSearchResult(prevIndex)
+    navigateToSearchResult(searchResults[prevIndex])
+  }, [currentSearchResult, searchResults, navigateToSearchResult])
 
   // Highlight all search results on the current page
   const highlightAllResultsOnPage = useCallback(
@@ -1155,6 +1204,442 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
       </div>
     ))
   }
+
+  // Add a function to start adding an annotation
+  const startAddingAnnotation = useCallback((type: "highlight" | "note" | "drawing") => {
+    setIsAddingAnnotation(true)
+    setAnnotationType(type)
+    setNewAnnotationContent("")
+  }, [])
+
+  const cancelAddingAnnotation = useCallback(() => {
+    setIsAddingAnnotation(false)
+    setCurrentDrawingPoints([])
+  }, [])
+
+  const addAnnotation = useCallback(
+    (pageNumber: number, position: { x: number; y: number; width?: number; height?: number }) => {
+      if (annotationType === "drawing" && currentDrawingPoints.length < 2) {
+        return // Need at least 2 points for a drawing
+      }
+
+      const newAnnotation: Annotation = {
+        id: `annotation-${Date.now()}`,
+        pageNumber,
+        type: annotationType,
+        content: newAnnotationContent,
+        color: annotationColor,
+        position,
+        points: annotationType === "drawing" ? currentDrawingPoints : undefined,
+        createdAt: Date.now(),
+      }
+
+      setAnnotations((prev) => {
+        const updatedAnnotations = [...prev, newAnnotation]
+        // Save annotations to localStorage
+        localStorage.setItem(`pdf-annotations-${data?.url}`, JSON.stringify(updatedAnnotations))
+        return updatedAnnotations
+      })
+
+      setIsAddingAnnotation(false)
+      setCurrentDrawingPoints([])
+      setNewAnnotationContent("")
+    },
+    [annotationType, newAnnotationContent, annotationColor, currentDrawingPoints, data?.url],
+  )
+
+  const deleteAnnotation = useCallback(
+    (id: string) => {
+      setAnnotations((prev) => {
+        const updatedAnnotations = prev.filter((annotation) => annotation.id !== id)
+        // Save updated annotations to localStorage
+        localStorage.setItem(`pdf-annotations-${data?.url}`, JSON.stringify(updatedAnnotations))
+        return updatedAnnotations
+      })
+
+      if (selectedAnnotation?.id === id) {
+        setSelectedAnnotation(null)
+      }
+    },
+    [selectedAnnotation, data?.url],
+  )
+
+  const updateAnnotation = useCallback(
+    (id: string, updates: Partial<Annotation>) => {
+      setAnnotations((prev) => {
+        const updatedAnnotations = prev.map((annotation) =>
+          annotation.id === id ? { ...annotation, ...updates } : annotation,
+        )
+        // Save updated annotations to localStorage
+        localStorage.setItem(`pdf-annotations-${data?.url}`, JSON.stringify(updatedAnnotations))
+        return updatedAnnotations
+      })
+
+      if (selectedAnnotation?.id === id) {
+        setSelectedAnnotation((prev) => (prev ? { ...prev, ...updates } : null))
+      }
+    },
+    [selectedAnnotation, data?.url],
+  )
+
+  const handleDrawingMouseDown = useCallback(
+    (e: React.MouseEvent, pageNumber: number) => {
+      if (isAddingAnnotation && annotationType === "drawing") {
+        setIsDrawing(true)
+        const target = e.currentTarget as HTMLElement
+        const rect = target.getBoundingClientRect()
+        const x = (e.clientX - rect.left) / scale
+        const y = (e.clientY - rect.top) / scale
+        setCurrentDrawingPoints([{ x, y }])
+      }
+    },
+    [isAddingAnnotation, annotationType, scale],
+  )
+
+  const handleDrawingMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (isDrawing && isAddingAnnotation && annotationType === "drawing") {
+        const target = e.currentTarget as HTMLElement
+        const rect = target.getBoundingClientRect()
+        const x = (e.clientX - rect.left) / scale
+        const y = (e.clientY - rect.top) / scale
+        setCurrentDrawingPoints((prev) => [...prev, { x, y }])
+      }
+    },
+    [isDrawing, isAddingAnnotation, annotationType, scale],
+  )
+
+  // Now let's improve the handleDrawingMouseUp function to ensure proper dimensions
+  // Find the handleDrawingMouseUp function and replace it with:
+
+  const handleDrawingMouseUp = useCallback(
+    (e: React.MouseEvent, pageNumber: number) => {
+      if (isDrawing && isAddingAnnotation && annotationType === "drawing") {
+        setIsDrawing(false)
+
+        // Need at least 2 points for a drawing
+        if (currentDrawingPoints.length < 2) {
+          return
+        }
+
+        // Calculate bounding box for the drawing
+        const minX = Math.min(...currentDrawingPoints.map((p) => p.x))
+        const minY = Math.min(...currentDrawingPoints.map((p) => p.y))
+        const maxX = Math.max(...currentDrawingPoints.map((p) => p.x))
+        const maxY = Math.max(...currentDrawingPoints.map((p) => p.y))
+
+        // Ensure we have some minimum dimensions
+        const width = Math.max(maxX - minX, 1)
+        const height = Math.max(maxY - minY, 1)
+
+        // Create a deep copy of the points array and adjust coordinates relative to the bounding box
+        const adjustedPoints = currentDrawingPoints.map((point) => ({
+          x: point.x - minX,
+          y: point.y - minY,
+        }))
+
+        const newAnnotation: Annotation = {
+          id: `annotation-${Date.now()}`,
+          pageNumber,
+          type: "drawing",
+          content: "",
+          color: annotationColor,
+          position: {
+            x: minX,
+            y: minY,
+            width: width,
+            height: height,
+          },
+          points: adjustedPoints,
+          createdAt: Date.now(),
+        }
+
+        setAnnotations((prev) => {
+          const updatedAnnotations = [...prev, newAnnotation]
+          // Save annotations to localStorage
+          localStorage.setItem(`pdf-annotations-${data?.url}`, JSON.stringify(updatedAnnotations))
+          return updatedAnnotations
+        })
+
+        setIsAddingAnnotation(false)
+        setCurrentDrawingPoints([])
+      }
+    },
+    [isDrawing, isAddingAnnotation, annotationType, currentDrawingPoints, annotationColor, data?.url],
+  )
+
+  const handlePageClick = useCallback(
+    (e: React.MouseEvent, pageNumber: number) => {
+      if (isAddingAnnotation && annotationType === "note") {
+        const target = e.currentTarget as HTMLElement
+        const rect = target.getBoundingClientRect()
+        const x = (e.clientX - rect.left) / scale
+        const y = (e.clientY - rect.top) / scale
+
+        addAnnotation(pageNumber, { x, y })
+      }
+    },
+    [isAddingAnnotation, annotationType, scale, addAnnotation],
+  )
+
+  const handleTextSelection = useCallback(
+    (pageNumber: number) => {
+      if (isAddingAnnotation && annotationType === "highlight") {
+        const selection = window.getSelection()
+        if (!selection || selection.rangeCount === 0) return
+
+        const range = selection.getRangeAt(0)
+        const rects = range.getClientRects() // Call getClientRects() on the range, not the selection
+        if (rects.length === 0) return
+
+        // Get the page element
+        const pageElement = pageRefs.current[pageNumber]
+        if (!pageElement) return
+
+        const pageRect = pageElement.getBoundingClientRect()
+
+        // Calculate the position relative to the page
+        const firstRect = rects[0]
+        const lastRect = rects[rects.length - 1]
+
+        const x = (firstRect.left - pageRect.left) / scale
+        const y = (firstRect.top - pageRect.top) / scale
+        const width = (lastRect.right - firstRect.left) / scale
+        const height = Math.max(...Array.from(rects).map((r) => r.height)) / scale
+
+        addAnnotation(pageNumber, { x, y, width, height })
+
+        // Clear the selection
+        selection.removeAllRanges()
+      }
+    },
+    [isAddingAnnotation, annotationType, scale, addAnnotation],
+  )
+
+  // Add an effect to load annotations from localStorage
+  useEffect(() => {
+    if (data?.url) {
+      const savedAnnotations = localStorage.getItem(`pdf-annotations-${data?.url}`)
+      if (savedAnnotations) {
+        try {
+          setAnnotations(JSON.parse(savedAnnotations))
+        } catch (error) {
+          console.error("Error parsing saved annotations:", error)
+        }
+      }
+    }
+  }, [data?.url])
+
+  const renderAnnotations = useCallback(
+    (pageNumber: number) => {
+      const pageAnnotations = annotations.filter((a) => a.pageNumber === pageNumber)
+
+      return pageAnnotations.map((annotation) => {
+        const { id, type, position, color, content, points } = annotation
+
+        if (type === "note") {
+          return (
+            <div
+              key={id}
+              data-id={id}
+              className="adex-annotation adex-note-annotation"
+              style={{
+                position: "absolute",
+                left: `${position.x * scale}px`,
+                top: `${position.y * scale}px`,
+                zIndex: 100,
+                cursor: "pointer",
+              }}
+              onClick={() => setSelectedAnnotation(annotation)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill={color}
+                stroke="#000"
+                strokeWidth="1"
+              >
+                <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 9h-2V5h2v6zm0 4h-2v-2h2v2z" />
+              </svg>
+            </div>
+          )
+        }
+
+        if (type === "highlight") {
+          return (
+            <div
+              key={id}
+              data-id={id}
+              className="adex-annotation adex-highlight-annotation"
+              style={{
+                position: "absolute",
+                left: `${position.x * scale}px`,
+                top: `${position.y * scale}px`,
+                width: `${(position.width || 0) * scale}px`,
+                height: `${(position.height || 0) * scale}px`,
+                backgroundColor: color,
+                opacity: 0.3,
+                zIndex: 50,
+                pointerEvents: "none",
+              }}
+              onClick={() => setSelectedAnnotation(annotation)}
+            />
+          )
+        }
+
+        if (type === "drawing" && points && points.length > 1) {
+          // Create SVG path from points
+          const pathData = points.reduce((path, point, index) => {
+            return path + (index === 0 ? `M ${point.x} ${point.y}` : ` L ${point.x} ${point.y}`)
+          }, "")
+
+          return (
+            <svg
+              key={id}
+              data-id={id}
+              className="adex-annotation adex-drawing-annotation"
+              style={{
+                position: "absolute",
+                left: `${position.x * scale}px`,
+                top: `${position.y * scale}px`,
+                width: `${(position.width || 0) * scale}px`,
+                height: `${(position.height || 0) * scale}px`,
+                zIndex: 75,
+                pointerEvents: "auto", // Change from "none" to "auto" to make it clickable
+                cursor: "pointer",
+              }}
+              onClick={() => setSelectedAnnotation(annotation)}
+            >
+              <path
+                d={pathData}
+                stroke={color}
+                strokeWidth="2"
+                fill="none"
+                vectorEffect="non-scaling-stroke"
+                transform={`scale(${scale})`}
+              />
+            </svg>
+          )
+        }
+
+        return null
+      })
+    },
+    [annotations, scale],
+  )
+
+  // Let's also update the renderCurrentDrawing function to make it more visible
+  // Find the renderCurrentDrawing function and replace it with:
+
+  const renderCurrentDrawing = useCallback(() => {
+    if (!isDrawing || currentDrawingPoints.length < 2) return null
+
+    // Create SVG path from points
+    const pathData = currentDrawingPoints.reduce((path, point, index) => {
+      return path + (index === 0 ? `M ${point.x} ${point.y}` : ` L ${point.x} ${point.y}`)
+    }, "")
+
+    return (
+      <svg
+        className="adex-current-drawing"
+        style={{
+          position: "absolute",
+          left: 0,
+          top: 0,
+          width: "100%",
+          height: "100%",
+          zIndex: 75,
+          pointerEvents: "none",
+        }}
+      >
+        <path
+          d={pathData}
+          stroke={annotationColor}
+          strokeWidth="3"
+          fill="none"
+          vectorEffect="non-scaling-stroke"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    )
+  }, [isDrawing, currentDrawingPoints, annotationColor])
+
+  const renderAnnotationDetail = useCallback(
+    (annotation: Annotation) => {
+      return (
+        <div className="adex-annotation-detail">
+          <div className="adex-annotation-detail-header">
+            <div className="adex-annotation-detail-actions">
+              <button
+                className="adex-annotation-delete"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  deleteAnnotation(annotation.id)
+                }}
+                aria-label="Delete annotation"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                  <path
+                    fillRule="evenodd"
+                    d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
+                  />
+                </svg>
+              </button>
+              <button
+                className="adex-annotation-close"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setSelectedAnnotation(null)
+                }}
+                aria-label="Close annotation detail"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div className="adex-annotation-detail-content">
+            <div className="adex-annotation-page">Page {annotation.pageNumber}</div>
+            <div className="adex-annotation-date">{new Date(annotation.createdAt).toLocaleString()}</div>
+            <div className="adex-annotation-color-picker">
+              <label>Color:</label>
+              <div className="adex-color-options">
+                {["#ffeb3b", "#4caf50", "#2196f3", "#f44336", "#9c27b0"].map((color) => (
+                  <button
+                    key={color}
+                    className={`adex-color-option ${annotation.color === color ? "active" : ""}`}
+                    style={{ backgroundColor: color }}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      updateAnnotation(annotation.id, { color })
+                    }}
+                    aria-label={`Set color to ${color}`}
+                  />
+                ))}
+              </div>
+            </div>
+            {(annotation.type === "note" || annotation.type === "highlight") && (
+              <div className="adex-annotation-content-editor">
+                <label>Note:</label>
+                <textarea
+                  value={annotation.content || ""}
+                  onChange={(e) => updateAnnotation(annotation.id, { content: e.target.value })}
+                  placeholder="Add a note..."
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      )
+    },
+    [deleteAnnotation, updateAnnotation],
+  )
 
   // Add a class to the main viewer div based on text selection state
   // Update the className in the main div to include the bookmarks sidebar state
@@ -1392,6 +1877,19 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M2 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v11.5a.5.5 0 0 1-.777.416L7 13.101l-4.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v10.566l3.723-2.482a.5.5 0 0 1 .554 0L11 14.566V4a1 1 0 0 0-1-1z" />
                 <path d="M4.268 1H12a1 1 0 0 1 1 1v11.768l.223.148A.5.5 0 0 0 14 13.5V2a2 2 0 0 0-2-2H6a2 2 0 0 0-1.732 1" />
+              </svg>
+            </button>
+          )}
+          {showControls?.annotations && (
+            <button
+              onClick={() => toggleAnnotationsSidebar()}
+              aria-label="Annotations"
+              title="Annotations"
+              className={showAnnotationsSidebar ? "active" : ""}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2.5a2 2 0 0 0-1.6.8L8 14.333 6.1 11.8a2 2 0 0 0-1.6-.8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
+                <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z" />
               </svg>
             </button>
           )}
@@ -1699,6 +2197,181 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
               </div>
             </div>
           )}
+          {/* Add the annotations sidebar panel */}
+          {leftPanel == 3 && (
+            <div className="adex-preview-annotations">
+              <div className="adex-annotations-header">
+                <h3>Annotations</h3>
+                <div className="adex-annotations-tools">
+                  <button
+                    className={`adex-annotation-tool ${isAddingAnnotation && annotationType === "note" ? "active" : ""}`}
+                    onClick={() =>
+                      isAddingAnnotation && annotationType === "note"
+                        ? cancelAddingAnnotation()
+                        : startAddingAnnotation("note")
+                    }
+                    aria-label="Add note"
+                    title="Add note"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                    >
+                      <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2.5a2 2 0 0 0-1.6.8L8 14.333 6.1 11.8a2 2 0 0 0-1.6-.8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
+                    </svg>
+                  </button>
+                  <button
+                    className={`adex-annotation-tool ${isAddingAnnotation && annotationType === "highlight" ? "active" : ""}`}
+                    onClick={() =>
+                      isAddingAnnotation && annotationType === "highlight"
+                        ? cancelAddingAnnotation()
+                        : startAddingAnnotation("highlight")
+                    }
+                    aria-label="Add highlight"
+                    title="Add highlight"
+                    disabled={!textOptions.enableSelection}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                    >
+                      <path d="M9.5 0a.5.5 0 0 1 .5.5.5.5 0 0 0 .5.5.5.5 0 0 1 .5.5V2a.5.5 0 0 1-.5.5h-5A.5.5 0 0 1 5 2v-.5a.5.5 0 0 1 .5-.5.5.5 0 0 0 .5-.5.5.5 0 0 1 .5-.5h3Z" />
+                      <path d="M3.915 2a.5.5 0 0 0-.5.5V14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2.5a.5.5 0 0 0-.5-.5h-8Z" />
+                    </svg>
+                  </button>
+                  <button
+                    className={`adex-annotation-tool ${isAddingAnnotation && annotationType === "drawing" ? "active" : ""}`}
+                    onClick={() =>
+                      isAddingAnnotation && annotationType === "drawing"
+                        ? cancelAddingAnnotation()
+                        : startAddingAnnotation("drawing")
+                    }
+                    aria-label="Add drawing"
+                    title="Add drawing"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                    >
+                      <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z" />
+                    </svg>
+                  </button>
+                </div>
+                {isAddingAnnotation && (
+                  <div className="adex-annotation-color-picker">
+                    <div className="adex-color-options">
+                      {["#ffeb3b", "#4caf50", "#2196f3", "#f44336", "#9c27b0"].map((color) => (
+                        <button
+                          key={color}
+                          className={`adex-color-option ${annotationColor === color ? "active" : ""}`}
+                          style={{ backgroundColor: color }}
+                          onClick={() => setAnnotationColor(color)}
+                          aria-label={`Set color to ${color}`}
+                        />
+                      ))}
+                    </div>
+                    <button className="adex-cancel-annotation" onClick={cancelAddingAnnotation} aria-label="Cancel">
+                      Cancel
+                    </button>
+                  </div>
+                )}
+              </div>
+              <div className="adex-annotations-list">
+                {annotations.length > 0 ? (
+                  annotations
+                    .sort((a, b) => b.createdAt - a.createdAt)
+                    .map((annotation) => (
+                      <div
+                        key={annotation.id}
+                        className={`adex-annotation-item ${selectedAnnotation?.id === annotation.id ? "active" : ""}`}
+                        onClick={() => {
+                          // Toggle the selected annotation
+                          setSelectedAnnotation(selectedAnnotation?.id === annotation.id ? null : annotation)
+                          // Scroll to the annotation's page
+                          goToPage(annotation.pageNumber)
+
+                          // Add a small delay to ensure the page is loaded before trying to focus on the annotation
+                          setTimeout(() => {
+                            // Find the annotation element on the page and scroll to it
+                            const pageElement = pageRefs.current[annotation.pageNumber]
+                            if (pageElement) {
+                              const annotationElements = pageElement.querySelectorAll(
+                                `.adex-annotation[data-id="${annotation.id}"]`,
+                              )
+                              if (annotationElements.length > 0) {
+                                annotationElements[0].scrollIntoView({ behavior: "smooth", block: "center" })
+                              }
+                            }
+                          }, 300)
+                        }}
+                      >
+                        <div className="adex-annotation-icon" style={{ color: annotation.color }}>
+                          {annotation.type === "note" && (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2.5a2 2 0 0 0-1.6.8L8 14.333 6.1 11.8a2 2 0 0 0-1.6-.8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
+                            </svg>
+                          )}
+                          {annotation.type === "highlight" && (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M9.5 0a.5.5 0 0 1 .5.5.5.5 0 0 0 .5.5.5.5 0 0 1 .5.5V2a.5.5 0 0 1-.5.5h-5A.5.5 0 0 1 5 2v-.5a.5.5 0 0 1 .5-.5.5.5 0 0 0 .5-.5.5.5 0 0 1 .5-.5h3Z" />
+                              <path d="M3.915 2a.5.5 0 0 0-.5.5V14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2.5a.5.5 0 0 0-.5-.5h-8Z" />
+                            </svg>
+                          )}
+                          {annotation.type === "drawing" && (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z" />
+                            </svg>
+                          )}
+                        </div>
+                        <div className="adex-annotation-content">
+                          <div className="adex-annotation-title">
+                            {annotation.type.charAt(0).toUpperCase() + annotation.type.slice(1)}
+                            <span className="adex-annotation-page">Page {annotation.pageNumber}</span>
+                          </div>
+                          <div className="adex-annotation-preview">
+                            {annotation.content
+                              ? annotation.content.substring(0, 50) + (annotation.content.length > 50 ? "..." : "")
+                              : "No content"}
+                          </div>
+                        </div>
+                        {selectedAnnotation?.id === annotation.id && renderAnnotationDetail(annotation)}
+                      </div>
+                    ))
+                ) : (
+                  <div className="adex-no-annotations">
+                    No annotations added yet. Use the tools above to add annotations to your document.
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
         {sidebar && (
           <div
@@ -1754,6 +2427,13 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                     ref={(el) => (pageRefs.current[index + 1] = el)}
                     className="adex-page"
                     aria-label={`Page ${index + 1} content`}
+                    onClick={(e) => handlePageClick(e, index + 1)}
+                    onMouseDown={(e) => handleDrawingMouseDown(e, index + 1)}
+                    onMouseMove={handleDrawingMouseMove}
+                    onMouseUp={(e) => {
+                      handleDrawingMouseUp(e, index + 1), handleTextSelection(index + 1)
+                    }}
+                    onMouseLeave={(e) => isDrawing && handleDrawingMouseUp(e, index + 1)}
                   >
                     <Page
                       loading={
@@ -1769,6 +2449,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                       renderAnnotationLayer={isTextLayerEnabled}
                       canvasBackground="white"
                     />
+                    {renderAnnotations(index + 1)}
+                    {isDrawing && index + 1 === pageNumber && renderCurrentDrawing()}
                   </div>
                 ))}
             </Document>

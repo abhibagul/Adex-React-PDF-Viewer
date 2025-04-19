@@ -757,7 +757,7 @@ ul.adex-pdf-meta-info-list {
 .adex-search-input-container {
   display: flex;
   flex: 1;
-  width: 100%;
+  max-width: 400px;
   position: relative;
 }
 .adex-search-input {
@@ -1223,5 +1223,259 @@ button.adex-search-button svg {
 button.adex-search-button:hover {
   background: #bcbbbb;
   transition: .2s all ease-in;
+}
+.adex-preview-annotations {
+  max-height: 400px;
+  min-height: 400px;
+  overflow: auto;
+  background-color: #f7f7f7;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  scroll-behavior: smooth;
+  width: 100%;
+}
+.adex-annotations-header {
+  padding: 10px 15px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+.adex-annotations-header h3 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+.adex-annotations-tools {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.adex-annotation-tool {
+  padding: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.adex-annotation-tool:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+.adex-annotation-tool.active {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+.adex-annotation-tool:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.adex-annotation-color-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.adex-color-options {
+  display: flex;
+  gap: 4px;
+}
+.adex-color-option {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+.adex-color-option.active {
+  border: 2px solid #000;
+}
+.adex-cancel-annotation {
+  padding: 4px 8px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  background: none;
+  cursor: pointer;
+}
+.adex-annotations-list {
+  padding: 0;
+}
+.adex-annotation-item {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 15px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.adex-annotation-item > div:first-child {
+  display: flex;
+}
+.adex-annotation-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+.adex-annotation-item.active {
+  background-color: rgba(20, 127, 212, 0.1);
+  border-left: 3px solid #147fd4;
+}
+.adex-annotation-icon {
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+}
+.adex-annotation-content {
+  flex: 1;
+}
+.adex-annotation-title {
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+.adex-annotation-page {
+  font-size: 11px;
+  color: #666;
+}
+.adex-annotation-preview {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+  word-break: break-word;
+}
+.adex-no-annotations {
+  padding: 20px 15px;
+  text-align: center;
+  color: #666;
+  font-size: 13px;
+}
+.adex-annotation-detail {
+  padding: 10px 0 5px 0;
+  margin-top: 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: transparent;
+}
+.adex-annotation-detail-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.adex-annotation-detail-actions {
+  display: flex;
+  gap: 5px;
+}
+.adex-annotation-delete,
+.adex-annotation-close {
+  background: transparent;
+  border: none;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.adex-annotation-delete:hover {
+  background-color: rgba(255, 0, 0, 0.1);
+  color: #ff0000;
+}
+.adex-annotation-close:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+.adex-annotation-detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.adex-annotation-date {
+  font-size: 12px;
+  color: #666;
+}
+.adex-annotation-color-picker label {
+  font-size: 12px;
+  margin-right: 8px;
+}
+.adex-annotation-content-editor {
+  margin-top: 5px;
+}
+.adex-annotation-content-editor label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+.adex-annotation-content-editor textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  resize: vertical;
+  font-size: 12px;
+}
+.adex-annotation-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 15px;
+}
+.adex-annotation-goto {
+  padding: 6px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  background: #147fd4;
+  color: white;
+  cursor: pointer;
+  font-size: 12px;
+}
+.adex-annotation-goto:hover {
+  background-color: #0e6cb4;
+}
+.adex-annotation {
+  transition: transform 0.2s ease;
+}
+.adex-note-annotation:hover {
+  transform: scale(1.2);
+}
+.adex-highlight-annotation:hover {
+  opacity: 0.5;
+}
+.adex-viewer.fullScreenView .adex-preview-panel .adex-preview-annotations {
+  max-height: calc(100vh - 81px);
+  min-height: calc(100vh - 81px);
+}
+.adex-mobile .adex-preview-panel .adex-preview-annotations {
+  max-height: 300px;
+  min-height: 300px;
+}
+.adex-mobile.fullScreenView .adex-preview-panel .adex-preview-annotations {
+  max-height: calc(100vh - 81px);
+  min-height: calc(100vh - 81px);
+}
+.annotations-slide-in .adex-preview-panel {
+  overflow: hidden;
+  transition: 0.2s all ease;
+}
+.annotations-slide-in .adex-preview-panel .adex-preview-annotations {
+  transform: translateX(0px);
+  transition: 0.2s all ease;
+}
+.annotations-slide-out .adex-preview-panel {
+  overflow: hidden;
+  transition: 0.2s all ease;
+}
+.annotations-slide-out .adex-preview-panel .adex-preview-annotations {
+  transition: 0.2s all ease;
+}
+.adex-annotation.adex-drawing-annotation {
+  overflow: visible;
+}
+.adex-annotation.adex-drawing-annotation path {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.adex-current-drawing path {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.adex-annotation-tool.active {
+  background-color: rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
 }
 /*# sourceMappingURL=index.css.map */

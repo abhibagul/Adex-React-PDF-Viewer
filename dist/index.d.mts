@@ -18,6 +18,7 @@ interface PDFViewerProps {
         print?: boolean;
         search?: boolean;
         bookmarks?: boolean;
+        annotations?: boolean;
     };
     defaultValues?: {
         zoom?: number;

@@ -58,13 +58,10 @@ var AdexViewer = ({
     info: true,
     sidebarButton: true,
     rotation: true,
-    // Default to showing rotation controls
     print: true,
-    // Default to showing print button
     search: true,
-    // Default to showing search functionality
-    bookmarks: true
-    // Default to showing bookmarks functionality
+    bookmarks: true,
+    annotations: true
   },
   defaultValues = {
     zoom: 1.25,
@@ -134,6 +131,15 @@ var AdexViewer = ({
   const resizeDividerRef = useRef(null);
   const startXRef = useRef(0);
   const startWidthRef = useRef(0);
+  const [annotations, setAnnotations] = useState([]);
+  const [isAddingAnnotation, setIsAddingAnnotation] = useState(false);
+  const [annotationType, setAnnotationType] = useState("note");
+  const [annotationColor, setAnnotationColor] = useState("#ffeb3b");
+  const [selectedAnnotation, setSelectedAnnotation] = useState(null);
+  const [newAnnotationContent, setNewAnnotationContent] = useState("");
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [currentDrawingPoints, setCurrentDrawingPoints] = useState([]);
+  const [showAnnotationsSidebar, setShowAnnotationsSidebar] = useState(false);
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < ((responsive == null ? void 0 : responsive.mobileBreakpoint) || 768));
@@ -172,7 +178,7 @@ var AdexViewer = ({
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isMobile, responsive == null ? void 0 : responsive.hideSidebarOnMobile, showSidebar, isDragging]);
+  }, [isMobile, responsive == null ? void 0 : responsive.hideSidebarOnMobile, showSidebar, isDragging, showAnnotationsSidebar]);
   const startResize = (e) => {
     e.preventDefault();
     setIsDragging(true);
@@ -391,6 +397,11 @@ var AdexViewer = ({
       setActiveTab("outline");
     }
   }, [showBookmarksSidebar]);
+  const toggleAnnotationsSidebar = useCallback(() => {
+    setLeftPanel(3);
+    setSidebar(true);
+    setShowAnnotationsSidebar((prev) => !prev);
+  }, [showAnnotationsSidebar]);
   function updatePage(__page) {
     if (__page > 0 && numPages !== null && __page <= numPages) {
       goToPage(__page);
@@ -735,6 +746,18 @@ var AdexViewer = ({
     },
     [pdfDocument, performSearch]
   );
+  const nextSearchResult = useCallback(() => {
+    if (searchResults.length === 0) return;
+    const nextIndex = (currentSearchResult + 1) % searchResults.length;
+    setCurrentSearchResult(nextIndex);
+    navigateToSearchResult(searchResults[nextIndex]);
+  }, [currentSearchResult, searchResults, navigateToSearchResult]);
+  const prevSearchResult = useCallback(() => {
+    if (searchResults.length === 0) return;
+    const prevIndex = (currentSearchResult - 1 + searchResults.length) % searchResults.length;
+    setCurrentSearchResult(prevIndex);
+    navigateToSearchResult(searchResults[prevIndex]);
+  }, [currentSearchResult, searchResults, navigateToSearchResult]);
   const highlightAllResultsOnPage = useCallback(
     (pageIndex) => {
       const pageElement = pageRefs.current[pageIndex + 1];
@@ -863,6 +886,393 @@ var AdexViewer = ({
       item.items && item.items.length > 0 && expandedOutlineItems[item.id] && /* @__PURE__ */ jsx("div", { className: "adex-outline-children", style: { marginLeft: "20px" }, children: renderOutlineItems(item.items) })
     ] }, item.id));
   };
+  const startAddingAnnotation = useCallback((type) => {
+    setIsAddingAnnotation(true);
+    setAnnotationType(type);
+    setNewAnnotationContent("");
+  }, []);
+  const cancelAddingAnnotation = useCallback(() => {
+    setIsAddingAnnotation(false);
+    setCurrentDrawingPoints([]);
+  }, []);
+  const addAnnotation = useCallback(
+    (pageNumber2, position) => {
+      if (annotationType === "drawing" && currentDrawingPoints.length < 2) {
+        return;
+      }
+      const newAnnotation = {
+        id: `annotation-${Date.now()}`,
+        pageNumber: pageNumber2,
+        type: annotationType,
+        content: newAnnotationContent,
+        color: annotationColor,
+        position,
+        points: annotationType === "drawing" ? currentDrawingPoints : void 0,
+        createdAt: Date.now()
+      };
+      setAnnotations((prev) => {
+        const updatedAnnotations = [...prev, newAnnotation];
+        localStorage.setItem(`pdf-annotations-${data == null ? void 0 : data.url}`, JSON.stringify(updatedAnnotations));
+        return updatedAnnotations;
+      });
+      setIsAddingAnnotation(false);
+      setCurrentDrawingPoints([]);
+      setNewAnnotationContent("");
+    },
+    [annotationType, newAnnotationContent, annotationColor, currentDrawingPoints, data == null ? void 0 : data.url]
+  );
+  const deleteAnnotation = useCallback(
+    (id) => {
+      setAnnotations((prev) => {
+        const updatedAnnotations = prev.filter((annotation) => annotation.id !== id);
+        localStorage.setItem(`pdf-annotations-${data == null ? void 0 : data.url}`, JSON.stringify(updatedAnnotations));
+        return updatedAnnotations;
+      });
+      if ((selectedAnnotation == null ? void 0 : selectedAnnotation.id) === id) {
+        setSelectedAnnotation(null);
+      }
+    },
+    [selectedAnnotation, data == null ? void 0 : data.url]
+  );
+  const updateAnnotation = useCallback(
+    (id, updates) => {
+      setAnnotations((prev) => {
+        const updatedAnnotations = prev.map(
+          (annotation) => annotation.id === id ? __spreadValues(__spreadValues({}, annotation), updates) : annotation
+        );
+        localStorage.setItem(`pdf-annotations-${data == null ? void 0 : data.url}`, JSON.stringify(updatedAnnotations));
+        return updatedAnnotations;
+      });
+      if ((selectedAnnotation == null ? void 0 : selectedAnnotation.id) === id) {
+        setSelectedAnnotation((prev) => prev ? __spreadValues(__spreadValues({}, prev), updates) : null);
+      }
+    },
+    [selectedAnnotation, data == null ? void 0 : data.url]
+  );
+  const handleDrawingMouseDown = useCallback(
+    (e, pageNumber2) => {
+      if (isAddingAnnotation && annotationType === "drawing") {
+        setIsDrawing(true);
+        const target = e.currentTarget;
+        const rect = target.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / scale;
+        const y = (e.clientY - rect.top) / scale;
+        setCurrentDrawingPoints([{ x, y }]);
+      }
+    },
+    [isAddingAnnotation, annotationType, scale]
+  );
+  const handleDrawingMouseMove = useCallback(
+    (e) => {
+      if (isDrawing && isAddingAnnotation && annotationType === "drawing") {
+        const target = e.currentTarget;
+        const rect = target.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / scale;
+        const y = (e.clientY - rect.top) / scale;
+        setCurrentDrawingPoints((prev) => [...prev, { x, y }]);
+      }
+    },
+    [isDrawing, isAddingAnnotation, annotationType, scale]
+  );
+  const handleDrawingMouseUp = useCallback(
+    (e, pageNumber2) => {
+      if (isDrawing && isAddingAnnotation && annotationType === "drawing") {
+        setIsDrawing(false);
+        if (currentDrawingPoints.length < 2) {
+          return;
+        }
+        const minX = Math.min(...currentDrawingPoints.map((p) => p.x));
+        const minY = Math.min(...currentDrawingPoints.map((p) => p.y));
+        const maxX = Math.max(...currentDrawingPoints.map((p) => p.x));
+        const maxY = Math.max(...currentDrawingPoints.map((p) => p.y));
+        const width = Math.max(maxX - minX, 1);
+        const height = Math.max(maxY - minY, 1);
+        const adjustedPoints = currentDrawingPoints.map((point) => ({
+          x: point.x - minX,
+          y: point.y - minY
+        }));
+        const newAnnotation = {
+          id: `annotation-${Date.now()}`,
+          pageNumber: pageNumber2,
+          type: "drawing",
+          content: "",
+          color: annotationColor,
+          position: {
+            x: minX,
+            y: minY,
+            width,
+            height
+          },
+          points: adjustedPoints,
+          createdAt: Date.now()
+        };
+        setAnnotations((prev) => {
+          const updatedAnnotations = [...prev, newAnnotation];
+          localStorage.setItem(`pdf-annotations-${data == null ? void 0 : data.url}`, JSON.stringify(updatedAnnotations));
+          return updatedAnnotations;
+        });
+        setIsAddingAnnotation(false);
+        setCurrentDrawingPoints([]);
+      }
+    },
+    [isDrawing, isAddingAnnotation, annotationType, currentDrawingPoints, annotationColor, data == null ? void 0 : data.url]
+  );
+  const handlePageClick = useCallback(
+    (e, pageNumber2) => {
+      if (isAddingAnnotation && annotationType === "note") {
+        const target = e.currentTarget;
+        const rect = target.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / scale;
+        const y = (e.clientY - rect.top) / scale;
+        addAnnotation(pageNumber2, { x, y });
+      }
+    },
+    [isAddingAnnotation, annotationType, scale, addAnnotation]
+  );
+  const handleTextSelection = useCallback(
+    (pageNumber2) => {
+      if (isAddingAnnotation && annotationType === "highlight") {
+        const selection = window.getSelection();
+        if (!selection || selection.rangeCount === 0) return;
+        const range = selection.getRangeAt(0);
+        const rects = range.getClientRects();
+        if (rects.length === 0) return;
+        const pageElement = pageRefs.current[pageNumber2];
+        if (!pageElement) return;
+        const pageRect = pageElement.getBoundingClientRect();
+        const firstRect = rects[0];
+        const lastRect = rects[rects.length - 1];
+        const x = (firstRect.left - pageRect.left) / scale;
+        const y = (firstRect.top - pageRect.top) / scale;
+        const width = (lastRect.right - firstRect.left) / scale;
+        const height = Math.max(...Array.from(rects).map((r) => r.height)) / scale;
+        addAnnotation(pageNumber2, { x, y, width, height });
+        selection.removeAllRanges();
+      }
+    },
+    [isAddingAnnotation, annotationType, scale, addAnnotation]
+  );
+  useEffect(() => {
+    if (data == null ? void 0 : data.url) {
+      const savedAnnotations = localStorage.getItem(`pdf-annotations-${data == null ? void 0 : data.url}`);
+      if (savedAnnotations) {
+        try {
+          setAnnotations(JSON.parse(savedAnnotations));
+        } catch (error) {
+          console.error("Error parsing saved annotations:", error);
+        }
+      }
+    }
+  }, [data == null ? void 0 : data.url]);
+  const renderAnnotations = useCallback(
+    (pageNumber2) => {
+      const pageAnnotations = annotations.filter((a) => a.pageNumber === pageNumber2);
+      return pageAnnotations.map((annotation) => {
+        const { id, type, position, color, content, points } = annotation;
+        if (type === "note") {
+          return /* @__PURE__ */ jsx(
+            "div",
+            {
+              "data-id": id,
+              className: "adex-annotation adex-note-annotation",
+              style: {
+                position: "absolute",
+                left: `${position.x * scale}px`,
+                top: `${position.y * scale}px`,
+                zIndex: 100,
+                cursor: "pointer"
+              },
+              onClick: () => setSelectedAnnotation(annotation),
+              children: /* @__PURE__ */ jsx(
+                "svg",
+                {
+                  xmlns: "http://www.w3.org/2000/svg",
+                  width: "24",
+                  height: "24",
+                  viewBox: "0 0 24 24",
+                  fill: color,
+                  stroke: "#000",
+                  strokeWidth: "1",
+                  children: /* @__PURE__ */ jsx("path", { d: "M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 9h-2V5h2v6zm0 4h-2v-2h2v2z" })
+                }
+              )
+            },
+            id
+          );
+        }
+        if (type === "highlight") {
+          return /* @__PURE__ */ jsx(
+            "div",
+            {
+              "data-id": id,
+              className: "adex-annotation adex-highlight-annotation",
+              style: {
+                position: "absolute",
+                left: `${position.x * scale}px`,
+                top: `${position.y * scale}px`,
+                width: `${(position.width || 0) * scale}px`,
+                height: `${(position.height || 0) * scale}px`,
+                backgroundColor: color,
+                opacity: 0.3,
+                zIndex: 50,
+                pointerEvents: "none"
+              },
+              onClick: () => setSelectedAnnotation(annotation)
+            },
+            id
+          );
+        }
+        if (type === "drawing" && points && points.length > 1) {
+          const pathData = points.reduce((path, point, index) => {
+            return path + (index === 0 ? `M ${point.x} ${point.y}` : ` L ${point.x} ${point.y}`);
+          }, "");
+          return /* @__PURE__ */ jsx(
+            "svg",
+            {
+              "data-id": id,
+              className: "adex-annotation adex-drawing-annotation",
+              style: {
+                position: "absolute",
+                left: `${position.x * scale}px`,
+                top: `${position.y * scale}px`,
+                width: `${(position.width || 0) * scale}px`,
+                height: `${(position.height || 0) * scale}px`,
+                zIndex: 75,
+                pointerEvents: "auto",
+                // Change from "none" to "auto" to make it clickable
+                cursor: "pointer"
+              },
+              onClick: () => setSelectedAnnotation(annotation),
+              children: /* @__PURE__ */ jsx(
+                "path",
+                {
+                  d: pathData,
+                  stroke: color,
+                  strokeWidth: "2",
+                  fill: "none",
+                  vectorEffect: "non-scaling-stroke",
+                  transform: `scale(${scale})`
+                }
+              )
+            },
+            id
+          );
+        }
+        return null;
+      });
+    },
+    [annotations, scale]
+  );
+  const renderCurrentDrawing = useCallback(() => {
+    if (!isDrawing || currentDrawingPoints.length < 2) return null;
+    const pathData = currentDrawingPoints.reduce((path, point, index) => {
+      return path + (index === 0 ? `M ${point.x} ${point.y}` : ` L ${point.x} ${point.y}`);
+    }, "");
+    return /* @__PURE__ */ jsx(
+      "svg",
+      {
+        className: "adex-current-drawing",
+        style: {
+          position: "absolute",
+          left: 0,
+          top: 0,
+          width: "100%",
+          height: "100%",
+          zIndex: 75,
+          pointerEvents: "none"
+        },
+        children: /* @__PURE__ */ jsx(
+          "path",
+          {
+            d: pathData,
+            stroke: annotationColor,
+            strokeWidth: "3",
+            fill: "none",
+            vectorEffect: "non-scaling-stroke",
+            strokeLinecap: "round",
+            strokeLinejoin: "round"
+          }
+        )
+      }
+    );
+  }, [isDrawing, currentDrawingPoints, annotationColor]);
+  const renderAnnotationDetail = useCallback(
+    (annotation) => {
+      return /* @__PURE__ */ jsxs("div", { className: "adex-annotation-detail", children: [
+        /* @__PURE__ */ jsx("div", { className: "adex-annotation-detail-header", children: /* @__PURE__ */ jsxs("div", { className: "adex-annotation-detail-actions", children: [
+          /* @__PURE__ */ jsx(
+            "button",
+            {
+              className: "adex-annotation-delete",
+              onClick: (e) => {
+                e.stopPropagation();
+                deleteAnnotation(annotation.id);
+              },
+              "aria-label": "Delete annotation",
+              children: /* @__PURE__ */ jsxs("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: [
+                /* @__PURE__ */ jsx("path", { d: "M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" }),
+                /* @__PURE__ */ jsx(
+                  "path",
+                  {
+                    fillRule: "evenodd",
+                    d: "M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
+                  }
+                )
+              ] })
+            }
+          ),
+          /* @__PURE__ */ jsx(
+            "button",
+            {
+              className: "adex-annotation-close",
+              onClick: (e) => {
+                e.stopPropagation();
+                setSelectedAnnotation(null);
+              },
+              "aria-label": "Close annotation detail",
+              children: /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: /* @__PURE__ */ jsx("path", { d: "M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" }) })
+            }
+          )
+        ] }) }),
+        /* @__PURE__ */ jsxs("div", { className: "adex-annotation-detail-content", children: [
+          /* @__PURE__ */ jsxs("div", { className: "adex-annotation-page", children: [
+            "Page ",
+            annotation.pageNumber
+          ] }),
+          /* @__PURE__ */ jsx("div", { className: "adex-annotation-date", children: new Date(annotation.createdAt).toLocaleString() }),
+          /* @__PURE__ */ jsxs("div", { className: "adex-annotation-color-picker", children: [
+            /* @__PURE__ */ jsx("label", { children: "Color:" }),
+            /* @__PURE__ */ jsx("div", { className: "adex-color-options", children: ["#ffeb3b", "#4caf50", "#2196f3", "#f44336", "#9c27b0"].map((color) => /* @__PURE__ */ jsx(
+              "button",
+              {
+                className: `adex-color-option ${annotation.color === color ? "active" : ""}`,
+                style: { backgroundColor: color },
+                onClick: (e) => {
+                  e.stopPropagation();
+                  updateAnnotation(annotation.id, { color });
+                },
+                "aria-label": `Set color to ${color}`
+              },
+              color
+            )) })
+          ] }),
+          (annotation.type === "note" || annotation.type === "highlight") && /* @__PURE__ */ jsxs("div", { className: "adex-annotation-content-editor", children: [
+            /* @__PURE__ */ jsx("label", { children: "Note:" }),
+            /* @__PURE__ */ jsx(
+              "textarea",
+              {
+                value: annotation.content || "",
+                onChange: (e) => updateAnnotation(annotation.id, { content: e.target.value }),
+                placeholder: "Add a note...",
+                onClick: (e) => e.stopPropagation()
+              }
+            )
+          ] })
+        ] })
+      ] });
+    },
+    [deleteAnnotation, updateAnnotation]
+  );
   return /* @__PURE__ */ jsxs(
     "div",
     {
@@ -1109,6 +1519,19 @@ var AdexViewer = ({
                   /* @__PURE__ */ jsx("path", { d: "M4.268 1H12a1 1 0 0 1 1 1v11.768l.223.148A.5.5 0 0 0 14 13.5V2a2 2 0 0 0-2-2H6a2 2 0 0 0-1.732 1" })
                 ] })
               }
+            ),
+            (showControls == null ? void 0 : showControls.annotations) && /* @__PURE__ */ jsx(
+              "button",
+              {
+                onClick: () => toggleAnnotationsSidebar(),
+                "aria-label": "Annotations",
+                title: "Annotations",
+                className: showAnnotationsSidebar ? "active" : "",
+                children: /* @__PURE__ */ jsxs("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: [
+                  /* @__PURE__ */ jsx("path", { d: "M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2.5a2 2 0 0 0-1.6.8L8 14.333 6.1 11.8a2 2 0 0 0-1.6-.8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" }),
+                  /* @__PURE__ */ jsx("path", { d: "M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z" })
+                ] })
+              }
             )
           ] }),
           /* @__PURE__ */ jsxs(
@@ -1339,6 +1762,163 @@ var AdexViewer = ({
                       )
                     ] }, bookmark.id)) : /* @__PURE__ */ jsx("div", { className: "adex-no-bookmarks", children: "No bookmarks added yet" }) })
                   ] }) })
+                ] }),
+                leftPanel == 3 && /* @__PURE__ */ jsxs("div", { className: "adex-preview-annotations", children: [
+                  /* @__PURE__ */ jsxs("div", { className: "adex-annotations-header", children: [
+                    /* @__PURE__ */ jsx("h3", { children: "Annotations" }),
+                    /* @__PURE__ */ jsxs("div", { className: "adex-annotations-tools", children: [
+                      /* @__PURE__ */ jsx(
+                        "button",
+                        {
+                          className: `adex-annotation-tool ${isAddingAnnotation && annotationType === "note" ? "active" : ""}`,
+                          onClick: () => isAddingAnnotation && annotationType === "note" ? cancelAddingAnnotation() : startAddingAnnotation("note"),
+                          "aria-label": "Add note",
+                          title: "Add note",
+                          children: /* @__PURE__ */ jsx(
+                            "svg",
+                            {
+                              xmlns: "http://www.w3.org/2000/svg",
+                              width: "16",
+                              height: "16",
+                              fill: "currentColor",
+                              viewBox: "0 0 16 16",
+                              children: /* @__PURE__ */ jsx("path", { d: "M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2.5a2 2 0 0 0-1.6.8L8 14.333 6.1 11.8a2 2 0 0 0-1.6-.8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" })
+                            }
+                          )
+                        }
+                      ),
+                      /* @__PURE__ */ jsx(
+                        "button",
+                        {
+                          className: `adex-annotation-tool ${isAddingAnnotation && annotationType === "highlight" ? "active" : ""}`,
+                          onClick: () => isAddingAnnotation && annotationType === "highlight" ? cancelAddingAnnotation() : startAddingAnnotation("highlight"),
+                          "aria-label": "Add highlight",
+                          title: "Add highlight",
+                          disabled: !textOptions.enableSelection,
+                          children: /* @__PURE__ */ jsxs(
+                            "svg",
+                            {
+                              xmlns: "http://www.w3.org/2000/svg",
+                              width: "16",
+                              height: "16",
+                              fill: "currentColor",
+                              viewBox: "0 0 16 16",
+                              children: [
+                                /* @__PURE__ */ jsx("path", { d: "M9.5 0a.5.5 0 0 1 .5.5.5.5 0 0 0 .5.5.5.5 0 0 1 .5.5V2a.5.5 0 0 1-.5.5h-5A.5.5 0 0 1 5 2v-.5a.5.5 0 0 1 .5-.5.5.5 0 0 0 .5-.5.5.5 0 0 1 .5-.5h3Z" }),
+                                /* @__PURE__ */ jsx("path", { d: "M3.915 2a.5.5 0 0 0-.5.5V14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2.5a.5.5 0 0 0-.5-.5h-8Z" })
+                              ]
+                            }
+                          )
+                        }
+                      ),
+                      /* @__PURE__ */ jsx(
+                        "button",
+                        {
+                          className: `adex-annotation-tool ${isAddingAnnotation && annotationType === "drawing" ? "active" : ""}`,
+                          onClick: () => isAddingAnnotation && annotationType === "drawing" ? cancelAddingAnnotation() : startAddingAnnotation("drawing"),
+                          "aria-label": "Add drawing",
+                          title: "Add drawing",
+                          children: /* @__PURE__ */ jsx(
+                            "svg",
+                            {
+                              xmlns: "http://www.w3.org/2000/svg",
+                              width: "16",
+                              height: "16",
+                              fill: "currentColor",
+                              viewBox: "0 0 16 16",
+                              children: /* @__PURE__ */ jsx("path", { d: "M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z" })
+                            }
+                          )
+                        }
+                      )
+                    ] }),
+                    isAddingAnnotation && /* @__PURE__ */ jsxs("div", { className: "adex-annotation-color-picker", children: [
+                      /* @__PURE__ */ jsx("div", { className: "adex-color-options", children: ["#ffeb3b", "#4caf50", "#2196f3", "#f44336", "#9c27b0"].map((color) => /* @__PURE__ */ jsx(
+                        "button",
+                        {
+                          className: `adex-color-option ${annotationColor === color ? "active" : ""}`,
+                          style: { backgroundColor: color },
+                          onClick: () => setAnnotationColor(color),
+                          "aria-label": `Set color to ${color}`
+                        },
+                        color
+                      )) }),
+                      /* @__PURE__ */ jsx("button", { className: "adex-cancel-annotation", onClick: cancelAddingAnnotation, "aria-label": "Cancel", children: "Cancel" })
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsx("div", { className: "adex-annotations-list", children: annotations.length > 0 ? annotations.sort((a, b) => b.createdAt - a.createdAt).map((annotation) => /* @__PURE__ */ jsxs(
+                    "div",
+                    {
+                      className: `adex-annotation-item ${(selectedAnnotation == null ? void 0 : selectedAnnotation.id) === annotation.id ? "active" : ""}`,
+                      onClick: () => {
+                        setSelectedAnnotation((selectedAnnotation == null ? void 0 : selectedAnnotation.id) === annotation.id ? null : annotation);
+                        goToPage(annotation.pageNumber);
+                        setTimeout(() => {
+                          const pageElement = pageRefs.current[annotation.pageNumber];
+                          if (pageElement) {
+                            const annotationElements = pageElement.querySelectorAll(
+                              `.adex-annotation[data-id="${annotation.id}"]`
+                            );
+                            if (annotationElements.length > 0) {
+                              annotationElements[0].scrollIntoView({ behavior: "smooth", block: "center" });
+                            }
+                          }
+                        }, 300);
+                      },
+                      children: [
+                        /* @__PURE__ */ jsxs("div", { className: "adex-annotation-icon", style: { color: annotation.color }, children: [
+                          annotation.type === "note" && /* @__PURE__ */ jsx(
+                            "svg",
+                            {
+                              xmlns: "http://www.w3.org/2000/svg",
+                              width: "16",
+                              height: "16",
+                              fill: "currentColor",
+                              viewBox: "0 0 16 16",
+                              children: /* @__PURE__ */ jsx("path", { d: "M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2.5a2 2 0 0 0-1.6.8L8 14.333 6.1 11.8a2 2 0 0 0-1.6-.8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" })
+                            }
+                          ),
+                          annotation.type === "highlight" && /* @__PURE__ */ jsxs(
+                            "svg",
+                            {
+                              xmlns: "http://www.w3.org/2000/svg",
+                              width: "16",
+                              height: "16",
+                              fill: "currentColor",
+                              viewBox: "0 0 16 16",
+                              children: [
+                                /* @__PURE__ */ jsx("path", { d: "M9.5 0a.5.5 0 0 1 .5.5.5.5 0 0 0 .5.5.5.5 0 0 1 .5.5V2a.5.5 0 0 1-.5.5h-5A.5.5 0 0 1 5 2v-.5a.5.5 0 0 1 .5-.5.5.5 0 0 0 .5-.5.5.5 0 0 1 .5-.5h3Z" }),
+                                /* @__PURE__ */ jsx("path", { d: "M3.915 2a.5.5 0 0 0-.5.5V14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2.5a.5.5 0 0 0-.5-.5h-8Z" })
+                              ]
+                            }
+                          ),
+                          annotation.type === "drawing" && /* @__PURE__ */ jsx(
+                            "svg",
+                            {
+                              xmlns: "http://www.w3.org/2000/svg",
+                              width: "16",
+                              height: "16",
+                              fill: "currentColor",
+                              viewBox: "0 0 16 16",
+                              children: /* @__PURE__ */ jsx("path", { d: "M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z" })
+                            }
+                          )
+                        ] }),
+                        /* @__PURE__ */ jsxs("div", { className: "adex-annotation-content", children: [
+                          /* @__PURE__ */ jsxs("div", { className: "adex-annotation-title", children: [
+                            annotation.type.charAt(0).toUpperCase() + annotation.type.slice(1),
+                            /* @__PURE__ */ jsxs("span", { className: "adex-annotation-page", children: [
+                              "Page ",
+                              annotation.pageNumber
+                            ] })
+                          ] }),
+                          /* @__PURE__ */ jsx("div", { className: "adex-annotation-preview", children: annotation.content ? annotation.content.substring(0, 50) + (annotation.content.length > 50 ? "..." : "") : "No content" })
+                        ] }),
+                        (selectedAnnotation == null ? void 0 : selectedAnnotation.id) === annotation.id && renderAnnotationDetail(annotation)
+                      ]
+                    },
+                    annotation.id
+                  )) : /* @__PURE__ */ jsx("div", { className: "adex-no-annotations", children: "No annotations added yet. Use the tools above to add annotations to your document." }) })
                 ] })
               ]
             }
@@ -1389,25 +1969,36 @@ var AdexViewer = ({
                   /* @__PURE__ */ jsx("span", { className: "page-loader" }),
                   /* @__PURE__ */ jsx("span", { className: "page-loader" })
                 ] }),
-                numPages && Array.from({ length: numPages }, (_, index) => /* @__PURE__ */ jsx(
+                numPages && Array.from({ length: numPages }, (_, index) => /* @__PURE__ */ jsxs(
                   "div",
                   {
                     ref: (el) => pageRefs.current[index + 1] = el,
                     className: "adex-page",
                     "aria-label": `Page ${index + 1} content`,
-                    children: /* @__PURE__ */ jsx(
-                      Page,
-                      {
-                        loading: /* @__PURE__ */ jsx("div", { className: "adex-preview-loader", children: /* @__PURE__ */ jsx("span", { className: "page-loader" }) }),
-                        scale,
-                        pageNumber: index + 1,
-                        width: 600,
-                        rotate: pageRotations[index + 1] || 0,
-                        renderTextLayer: isTextLayerEnabled,
-                        renderAnnotationLayer: isTextLayerEnabled,
-                        canvasBackground: "white"
-                      }
-                    )
+                    onClick: (e) => handlePageClick(e, index + 1),
+                    onMouseDown: (e) => handleDrawingMouseDown(e, index + 1),
+                    onMouseMove: handleDrawingMouseMove,
+                    onMouseUp: (e) => {
+                      handleDrawingMouseUp(e, index + 1), handleTextSelection(index + 1);
+                    },
+                    onMouseLeave: (e) => isDrawing && handleDrawingMouseUp(e, index + 1),
+                    children: [
+                      /* @__PURE__ */ jsx(
+                        Page,
+                        {
+                          loading: /* @__PURE__ */ jsx("div", { className: "adex-preview-loader", children: /* @__PURE__ */ jsx("span", { className: "page-loader" }) }),
+                          scale,
+                          pageNumber: index + 1,
+                          width: 600,
+                          rotate: pageRotations[index + 1] || 0,
+                          renderTextLayer: isTextLayerEnabled,
+                          renderAnnotationLayer: isTextLayerEnabled,
+                          canvasBackground: "white"
+                        }
+                      ),
+                      renderAnnotations(index + 1),
+                      isDrawing && index + 1 === pageNumber && renderCurrentDrawing()
+                    ]
                   },
                   `page-${index}`
                 ))
