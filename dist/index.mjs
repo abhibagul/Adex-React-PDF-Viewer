@@ -43,7 +43,7 @@ import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/esm/Page/TextLayer.css";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
-import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+import { jsx, jsxs } from "react/jsx-runtime";
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 var AdexViewer = ({
   data,
@@ -128,6 +128,7 @@ var AdexViewer = ({
   const [isAddingBookmark, setIsAddingBookmark] = useState(false);
   const [newBookmarkTitle, setNewBookmarkTitle] = useState("");
   const bookmarksRef = useRef(null);
+  const [leftPanel, setLeftPanel] = useState(0);
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < ((responsive == null ? void 0 : responsive.mobileBreakpoint) || 768));
@@ -350,6 +351,8 @@ var AdexViewer = ({
     }
   }, [data == null ? void 0 : data.url]);
   const toggleBookmarksSidebar = useCallback(() => {
+    setLeftPanel(2);
+    setSidebar(true);
     setShowBookmarksSidebar((prev) => !prev);
     if (!showBookmarksSidebar) {
       setActiveTab("outline");
@@ -499,7 +502,7 @@ var AdexViewer = ({
             width: 100%;
             border: none !important;
           }
-          .adex-topbar, .adex-power-row, .adex-preview-thumbs, .adex-preview-search, .adex-preview-bookmarks, .adex-pdf-meta-info {
+          .adex-topbar, .adex-power-row, .adex-preview-thumbs, .adex-preview-search, .adex-preview-bookmarks, .adex-pdf-meta-info,.adex-left-col {
             display: none !important;
           }
           .adex-preview-panel {
@@ -535,6 +538,8 @@ var AdexViewer = ({
     }
   }, [isPrinting]);
   const toggleSearch = useCallback(() => {
+    setLeftPanel(1);
+    setSidebar(true);
     setShowSearch((prev) => {
       const newState = !prev;
       if (newState && searchInputRef.current) {
@@ -834,7 +839,7 @@ var AdexViewer = ({
     "div",
     {
       ref: viewerRef,
-      className: `PDFViewer adex-viewer ${fullScreenView ? "fullScreenView" : ""} ${sidebar ? "thumbs-slide-in" : "thumbs-slide-out"} ${showSearchSidebar ? "search-slide-in" : "search-slide-out"} ${showBookmarksSidebar ? "bookmarks-slide-in" : "bookmarks-slide-out"} dev-abhishekbagul ${isMobile ? "adex-mobile" : ""} ${!textOptions.enableSelection ? "disable-text-selection" : ""} ${isPrinting ? "adex-printing" : ""}`,
+      className: `PDFViewer adex-viewer ${fullScreenView ? "fullScreenView" : ""} ${sidebar ? "thumbs-slide-in" : "thumbs-slide-out"} dev-abhishekbagul ${isMobile ? "adex-mobile" : ""} ${!textOptions.enableSelection ? "disable-text-selection" : ""} ${isPrinting ? "adex-printing" : ""}`,
       children: [
         showToolbar && /* @__PURE__ */ jsxs("div", { className: "adex-topbar", children: [
           (showControls == null ? void 0 : showControls.navigation) && /* @__PURE__ */ jsxs("div", { className: "adex-control-page", children: [
@@ -913,67 +918,57 @@ var AdexViewer = ({
               }
             )
           ] }),
-          (showControls == null ? void 0 : showControls.zoom) && /* @__PURE__ */ jsx("div", { className: "adex-control-zoom", children: /* @__PURE__ */ jsx("select", { onChange: (e) => setScale(+e.target.value), value: scale, "aria-label": "Zoom level", children: scaleSets.map((scaleLevel) => /* @__PURE__ */ jsxs("option", { value: scaleLevel, children: [
-            (scaleLevel * 100).toFixed(0),
-            "%"
-          ] }, scaleLevel)) }) }),
-          /* @__PURE__ */ jsxs("div", { className: "adex-control-options", children: [
-            (showControls == null ? void 0 : showControls.rotation) && /* @__PURE__ */ jsxs(Fragment, { children: [
-              /* @__PURE__ */ jsx(
-                "button",
-                {
-                  onClick: () => rotatePage(pageNumber, false),
-                  "aria-label": "Rotate counterclockwise",
-                  title: "Rotate counterclockwise",
-                  children: /* @__PURE__ */ jsxs(
-                    "svg",
-                    {
-                      xmlns: "http://www.w3.org/2000/svg",
-                      width: "16",
-                      height: "16",
-                      fill: "currentColor",
-                      viewBox: "0 0 16 16",
-                      children: [
-                        /* @__PURE__ */ jsx("path", { fillRule: "evenodd", d: "M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z" }),
-                        /* @__PURE__ */ jsx("path", { d: "M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z" })
-                      ]
-                    }
-                  )
-                }
-              ),
-              /* @__PURE__ */ jsx(
-                "button",
-                {
-                  onClick: () => rotatePage(pageNumber, true),
-                  "aria-label": "Rotate clockwise",
-                  title: "Rotate clockwise",
-                  children: /* @__PURE__ */ jsxs(
-                    "svg",
-                    {
-                      xmlns: "http://www.w3.org/2000/svg",
-                      width: "16",
-                      height: "16",
-                      fill: "currentColor",
-                      viewBox: "0 0 16 16",
-                      children: [
-                        /* @__PURE__ */ jsx("path", { fillRule: "evenodd", d: "M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z" }),
-                        /* @__PURE__ */ jsx("path", { d: "M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z" })
-                      ]
-                    }
-                  )
-                }
-              )
-            ] }),
-            (showControls == null ? void 0 : showControls.search) && /* @__PURE__ */ jsx(
+          (showControls == null ? void 0 : showControls.zoom) && /* @__PURE__ */ jsxs("div", { className: "adex-control-zoom", children: [
+            (showControls == null ? void 0 : showControls.rotation) && /* @__PURE__ */ jsx(
               "button",
               {
-                onClick: toggleSearch,
-                "aria-label": "Search document",
-                title: "Search document",
-                className: showSearch ? "active" : "",
-                children: /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: /* @__PURE__ */ jsx("path", { d: "M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" }) })
+                onClick: () => rotatePage(pageNumber, false),
+                "aria-label": "Rotate counterclockwise",
+                title: "Rotate counterclockwise",
+                children: /* @__PURE__ */ jsxs(
+                  "svg",
+                  {
+                    xmlns: "http://www.w3.org/2000/svg",
+                    width: "16",
+                    height: "16",
+                    fill: "currentColor",
+                    viewBox: "0 0 16 16",
+                    children: [
+                      /* @__PURE__ */ jsx("path", { fillRule: "evenodd", d: "M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z" }),
+                      /* @__PURE__ */ jsx("path", { d: "M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z" })
+                    ]
+                  }
+                )
               }
             ),
+            /* @__PURE__ */ jsx("select", { onChange: (e) => setScale(+e.target.value), value: scale, "aria-label": "Zoom level", children: scaleSets.map((scaleLevel) => /* @__PURE__ */ jsxs("option", { value: scaleLevel, children: [
+              (scaleLevel * 100).toFixed(0),
+              "%"
+            ] }, scaleLevel)) }),
+            (showControls == null ? void 0 : showControls.rotation) && /* @__PURE__ */ jsx(
+              "button",
+              {
+                onClick: () => rotatePage(pageNumber, true),
+                "aria-label": "Rotate clockwise",
+                title: "Rotate clockwise",
+                children: /* @__PURE__ */ jsxs(
+                  "svg",
+                  {
+                    xmlns: "http://www.w3.org/2000/svg",
+                    width: "16",
+                    height: "16",
+                    fill: "currentColor",
+                    viewBox: "0 0 16 16",
+                    children: [
+                      /* @__PURE__ */ jsx("path", { fillRule: "evenodd", d: "M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z" }),
+                      /* @__PURE__ */ jsx("path", { d: "M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z" })
+                    ]
+                  }
+                )
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "adex-control-options", children: [
             (showControls == null ? void 0 : showControls.print) && /* @__PURE__ */ jsx("button", { onClick: handlePrint, "aria-label": "Print document", title: "Print document", children: /* @__PURE__ */ jsxs("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: [
               /* @__PURE__ */ jsx("path", { d: "M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z" }),
               /* @__PURE__ */ jsx("path", { d: "M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z" })
@@ -1044,301 +1039,258 @@ var AdexViewer = ({
                   }
                 )
               }
+            )
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "adex-preview-panel", children: [
+          /* @__PURE__ */ jsxs("div", { className: "adex-left-col", children: [
+            /* @__PURE__ */ jsx(
+              "button",
+              {
+                onClick: () => {
+                  setLeftPanel(0), setSidebar(true);
+                },
+                "aria-label": "Pages Previews",
+                title: "Pages Previews",
+                className: showBookmarksSidebar ? "active" : "",
+                children: /* @__PURE__ */ jsxs("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: [
+                  /* @__PURE__ */ jsx("path", { d: "M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z" }),
+                  /* @__PURE__ */ jsx("path", { d: "M4.5 12.5A.5.5 0 0 1 5 12h3a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5m0-2A.5.5 0 0 1 5 10h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5m1.639-3.708 1.33.886 1.854-1.855a.25.25 0 0 1 .289-.047l1.888.974V8.5a.5.5 0 0 1-.5.5H5a.5.5 0 0 1-.5-.5V8s1.54-1.274 1.639-1.208M6.25 6a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5" })
+                ] })
+              }
             ),
-            (showControls == null ? void 0 : showControls.bookmarks) !== false && /* @__PURE__ */ jsx(
+            (showControls == null ? void 0 : showControls.search) && /* @__PURE__ */ jsx(
+              "button",
+              {
+                onClick: toggleSearch,
+                "aria-label": "Search document",
+                title: "Search document",
+                className: showSearch ? "active" : "",
+                children: /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: /* @__PURE__ */ jsx("path", { d: "M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" }) })
+              }
+            ),
+            (showControls == null ? void 0 : showControls.bookmarks) && /* @__PURE__ */ jsx(
               "button",
               {
                 onClick: toggleBookmarksSidebar,
                 "aria-label": "Bookmarks and outline",
                 title: "Bookmarks and outline",
                 className: showBookmarksSidebar ? "active" : "",
-                children: /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: /* @__PURE__ */ jsx("path", { d: "M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 2 0 0 0-2 2z" }) })
-              }
-            )
-          ] })
-        ] }),
-        showSearch && /* @__PURE__ */ jsxs("div", { className: "adex-search-bar", children: [
-          /* @__PURE__ */ jsxs("div", { className: "adex-search-input-container", children: [
-            /* @__PURE__ */ jsx(
-              "input",
-              {
-                ref: searchInputRef,
-                type: "text",
-                className: "adex-search-input",
-                placeholder: "Search in document...",
-                value: searchQuery,
-                onChange: handleSearchChange,
-                onKeyDown: handleSearchKeyDown,
-                "aria-label": "Search in document"
-              }
-            ),
-            /* @__PURE__ */ jsx(
-              "button",
-              {
-                className: "adex-search-button",
-                onClick: performSearch,
-                disabled: isSearching || !searchQuery.trim(),
-                "aria-label": "Search",
-                children: isSearching ? /* @__PURE__ */ jsx("span", { className: "adex-search-loading" }) : /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: /* @__PURE__ */ jsx("path", { d: "M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" }) })
+                children: /* @__PURE__ */ jsxs("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: [
+                  /* @__PURE__ */ jsx("path", { d: "M2 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v11.5a.5.5 0 0 1-.777.416L7 13.101l-4.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v10.566l3.723-2.482a.5.5 0 0 1 .554 0L11 14.566V4a1 1 0 0 0-1-1z" }),
+                  /* @__PURE__ */ jsx("path", { d: "M4.268 1H12a1 1 0 0 1 1 1v11.768l.223.148A.5.5 0 0 0 14 13.5V2a2 2 0 0 0-2-2H6a2 2 0 0 0-1.732 1" })
+                ] })
               }
             )
           ] }),
-          searchResults.length > 0 && /* @__PURE__ */ jsxs("div", { className: "adex-search-results", children: [
-            /* @__PURE__ */ jsxs("span", { className: "adex-search-count", children: [
-              currentSearchResult + 1,
-              " of ",
-              searchResults.length,
-              " results"
-            ] }),
-            /* @__PURE__ */ jsxs("div", { className: "adex-search-navigation", children: [
-              /* @__PURE__ */ jsx(
-                "button",
-                {
-                  className: "adex-search-prev",
-                  onClick: prevSearchResult,
-                  disabled: searchResults.length <= 1,
-                  "aria-label": "Previous result",
-                  children: /* @__PURE__ */ jsx(
-                    "svg",
-                    {
-                      xmlns: "http://www.w3.org/2000/svg",
-                      width: "16",
-                      height: "16",
-                      fill: "currentColor",
-                      viewBox: "0 0 16 16",
-                      children: /* @__PURE__ */ jsx(
-                        "path",
-                        {
-                          fillRule: "evenodd",
-                          d: "M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"
-                        }
-                      )
-                    }
-                  )
-                }
-              ),
-              /* @__PURE__ */ jsx(
-                "button",
-                {
-                  className: "adex-search-next",
-                  onClick: nextSearchResult,
-                  disabled: searchResults.length <= 1,
-                  "aria-label": "Next result",
-                  children: /* @__PURE__ */ jsx(
-                    "svg",
-                    {
-                      xmlns: "http://www.w3.org/2000/svg",
-                      width: "16",
-                      height: "16",
-                      fill: "currentColor",
-                      viewBox: "0 0 16 16",
-                      children: /* @__PURE__ */ jsx(
-                        "path",
-                        {
-                          fillRule: "evenodd",
-                          d: "M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"
-                        }
-                      )
-                    }
-                  )
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsx(
-              "button",
+          /* @__PURE__ */ jsxs("div", { className: "adex-left-panel", children: [
+            leftPanel == 0 && /* @__PURE__ */ jsx("div", { className: "adex-preview-thumbs", children: pdfBlobUrl && /* @__PURE__ */ jsxs(
+              Document,
               {
-                className: "adex-search-sidebar-toggle",
-                onClick: toggleSearchSidebar,
-                "aria-label": showSearchSidebar ? "Hide search results" : "Show search results",
-                title: showSearchSidebar ? "Hide search results" : "Show search results",
-                children: /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: /* @__PURE__ */ jsx("path", { d: "M2 2v12h12V2H2zm6.5 1h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1zm-5 1a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zM8.5 6h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1zm-5 1a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zM8.5 9h3a.5.5.0 0 1 0 1h-3a.5.5 0 0 1 0-1zm-5 1a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zM12 13a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" }) })
-              }
-            ),
-            /* @__PURE__ */ jsx("button", { className: "adex-search-close", onClick: toggleSearch, "aria-label": "Close search", children: /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: /* @__PURE__ */ jsx("path", { d: "M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" }) }) })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxs("div", { className: "adex-preview-panel", children: [
-          /* @__PURE__ */ jsx("div", { className: "adex-preview-thumbs", children: pdfBlobUrl && /* @__PURE__ */ jsxs(
-            Document,
-            {
-              file: pdfBlobUrl,
-              loading: /* @__PURE__ */ jsxs("div", { className: "adex-thumb-loader", children: [
-                /* @__PURE__ */ jsx("span", { className: "thumb-loader" }),
-                /* @__PURE__ */ jsx("span", { className: "thumb-loader" }),
-                /* @__PURE__ */ jsx("span", { className: "thumb-loader" })
-              ] }),
-              onLoadSuccess: onDocumentLoadSuccess,
-              onLoadError: onDocumentLoadError,
-              children: [
-                !pdfBlobUrl && /* @__PURE__ */ jsxs("div", { className: "adex-thumb-loader", children: [
+                file: pdfBlobUrl,
+                loading: /* @__PURE__ */ jsxs("div", { className: "adex-thumb-loader", children: [
                   /* @__PURE__ */ jsx("span", { className: "thumb-loader" }),
                   /* @__PURE__ */ jsx("span", { className: "thumb-loader" }),
                   /* @__PURE__ */ jsx("span", { className: "thumb-loader" })
                 ] }),
-                numPages && Array.from({ length: numPages }, (_, index) => /* @__PURE__ */ jsx(
-                  "button",
-                  {
-                    className: `adex-page-thumb ${pageNumber === index + 1 ? "active" : ""}`,
-                    onClick: () => goToPage(index + 1),
-                    "aria-label": `Page ${index + 1}`,
-                    "aria-current": pageNumber === index + 1 ? "page" : void 0,
-                    children: /* @__PURE__ */ jsx(
-                      Page,
-                      {
-                        scale: 0.2,
-                        loading: /* @__PURE__ */ jsx("div", { className: "adex-thumb-loader", children: /* @__PURE__ */ jsx("span", { className: "thumb-loader" }) }),
-                        pageNumber: index + 1,
-                        width: 600,
-                        rotate: pageRotations[index + 1] || 0
-                      }
-                    )
-                  },
-                  `thumb-${index}`
-                ))
-              ]
-            }
-          ) }),
-          /* @__PURE__ */ jsxs("div", { className: "adex-preview-search", ref: searchResultsRef, children: [
-            /* @__PURE__ */ jsxs("div", { className: "adex-search-results-header", children: [
-              /* @__PURE__ */ jsx("h3", { children: "Search Results" }),
-              /* @__PURE__ */ jsxs("span", { className: "adex-search-results-count", children: [
-                searchResults.length,
-                " matches"
-              ] })
-            ] }),
-            /* @__PURE__ */ jsx("div", { className: "adex-search-results-list", children: searchResults.length > 0 ? searchResults.map((result, index) => /* @__PURE__ */ jsxs(
-              "div",
-              {
-                id: `search-result-${result.matchIndex}`,
-                className: `adex-search-result-item ${currentSearchResult === result.matchIndex ? "active" : ""}`,
-                onClick: () => {
-                  setCurrentSearchResult(result.matchIndex);
-                  navigateToSearchResult(result);
-                },
+                onLoadSuccess: onDocumentLoadSuccess,
+                onLoadError: onDocumentLoadError,
                 children: [
-                  /* @__PURE__ */ jsxs("div", { className: "adex-search-result-page", children: [
-                    "Page ",
-                    result.pageIndex + 1
+                  !pdfBlobUrl && /* @__PURE__ */ jsxs("div", { className: "adex-thumb-loader", children: [
+                    /* @__PURE__ */ jsx("span", { className: "thumb-loader" }),
+                    /* @__PURE__ */ jsx("span", { className: "thumb-loader" }),
+                    /* @__PURE__ */ jsx("span", { className: "thumb-loader" })
                   ] }),
-                  /* @__PURE__ */ jsx("div", { className: "adex-search-result-context", children: result.context.split(new RegExp(`(${searchQuery})`, "i")).map(
-                    (part, i) => part.toLowerCase() === searchQuery.toLowerCase() ? /* @__PURE__ */ jsx("span", { className: "adex-search-result-highlight", children: part }, i) : /* @__PURE__ */ jsx("span", { children: part }, i)
-                  ) })
+                  numPages && Array.from({ length: numPages }, (_, index) => /* @__PURE__ */ jsx(
+                    "button",
+                    {
+                      className: `adex-page-thumb ${pageNumber === index + 1 ? "active" : ""}`,
+                      onClick: () => goToPage(index + 1),
+                      "aria-label": `Page ${index + 1}`,
+                      "aria-current": pageNumber === index + 1 ? "page" : void 0,
+                      children: /* @__PURE__ */ jsx(
+                        Page,
+                        {
+                          scale: 0.2,
+                          loading: /* @__PURE__ */ jsx("div", { className: "adex-thumb-loader", children: /* @__PURE__ */ jsx("span", { className: "thumb-loader" }) }),
+                          pageNumber: index + 1,
+                          width: 600,
+                          rotate: pageRotations[index + 1] || 0
+                        }
+                      )
+                    },
+                    `thumb-${index}`
+                  ))
                 ]
-              },
-              `search-result-${index}`
-            )) : /* @__PURE__ */ jsx("div", { className: "adex-search-no-results", children: isSearching ? "Searching..." : "No results found" }) })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { className: "adex-preview-bookmarks", ref: bookmarksRef, children: [
-            /* @__PURE__ */ jsx("div", { className: "adex-bookmarks-header", children: /* @__PURE__ */ jsxs("div", { className: "adex-bookmarks-tabs", children: [
-              /* @__PURE__ */ jsx(
-                "button",
-                {
-                  className: `adex-bookmarks-tab ${activeTab === "outline" ? "active" : ""}`,
-                  onClick: () => setActiveTab("outline"),
-                  children: "Outline"
-                }
-              ),
-              /* @__PURE__ */ jsx(
-                "button",
-                {
-                  className: `adex-bookmarks-tab ${activeTab === "bookmarks" ? "active" : ""}`,
-                  onClick: () => setActiveTab("bookmarks"),
-                  children: "Bookmarks"
-                }
-              )
-            ] }) }),
-            /* @__PURE__ */ jsx("div", { className: "adex-bookmarks-content", children: activeTab === "outline" ? /* @__PURE__ */ jsx("div", { className: "adex-outline-container", children: documentOutline.length > 0 ? /* @__PURE__ */ jsx("div", { className: "adex-outline-list", children: renderOutlineItems(documentOutline) }) : /* @__PURE__ */ jsx("div", { className: "adex-no-outline", children: "No outline available in this document" }) }) : /* @__PURE__ */ jsxs("div", { className: "adex-bookmarks-container", children: [
-              /* @__PURE__ */ jsx("div", { className: "adex-bookmarks-actions", children: isAddingBookmark ? /* @__PURE__ */ jsxs("div", { className: "adex-add-bookmark-form", children: [
+              }
+            ) }),
+            leftPanel == 1 && /* @__PURE__ */ jsxs("div", { className: "adex-preview-search", ref: searchResultsRef, children: [
+              /* @__PURE__ */ jsx("div", { className: "adex-search-bar", children: /* @__PURE__ */ jsxs("div", { className: "adex-search-input-container", children: [
                 /* @__PURE__ */ jsx(
                   "input",
                   {
+                    ref: searchInputRef,
                     type: "text",
-                    className: "adex-bookmark-title-input",
-                    placeholder: "Bookmark title",
-                    value: newBookmarkTitle,
-                    onChange: (e) => setNewBookmarkTitle(e.target.value),
-                    autoFocus: true,
-                    onKeyDown: (e) => {
-                      if (e.key === "Enter") addBookmark();
-                      if (e.key === "Escape") setIsAddingBookmark(false);
-                    }
+                    className: "adex-search-input",
+                    placeholder: "Search in document...",
+                    value: searchQuery,
+                    onChange: handleSearchChange,
+                    onKeyDown: handleSearchKeyDown,
+                    "aria-label": "Search in document"
                   }
                 ),
-                /* @__PURE__ */ jsxs("div", { className: "adex-bookmark-form-actions", children: [
+                /* @__PURE__ */ jsx(
+                  "button",
+                  {
+                    className: "adex-search-button",
+                    onClick: performSearch,
+                    disabled: isSearching || !searchQuery.trim(),
+                    "aria-label": "Search",
+                    children: isSearching ? /* @__PURE__ */ jsx("span", { className: "adex-search-loading" }) : /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: /* @__PURE__ */ jsx("path", { d: "M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" }) })
+                  }
+                )
+              ] }) }),
+              /* @__PURE__ */ jsxs("div", { className: "adex-search-results-header", children: [
+                /* @__PURE__ */ jsx("h3", { children: "Search Results" }),
+                /* @__PURE__ */ jsxs("span", { className: "adex-search-results-count", children: [
+                  searchResults.length,
+                  " matches"
+                ] })
+              ] }),
+              /* @__PURE__ */ jsx("div", { className: "adex-search-results-list", children: searchResults.length > 0 ? searchResults.map((result, index) => /* @__PURE__ */ jsxs(
+                "div",
+                {
+                  id: `search-result-${result.matchIndex}`,
+                  className: `adex-search-result-item ${currentSearchResult === result.matchIndex ? "active" : ""}`,
+                  onClick: () => {
+                    setCurrentSearchResult(result.matchIndex);
+                    navigateToSearchResult(result);
+                  },
+                  children: [
+                    /* @__PURE__ */ jsxs("div", { className: "adex-search-result-page", children: [
+                      "Page ",
+                      result.pageIndex + 1
+                    ] }),
+                    /* @__PURE__ */ jsx("div", { className: "adex-search-result-context", children: result.context.split(new RegExp(`(${searchQuery})`, "i")).map(
+                      (part, i) => part.toLowerCase() === searchQuery.toLowerCase() ? /* @__PURE__ */ jsx("span", { className: "adex-search-result-highlight", children: part }, i) : /* @__PURE__ */ jsx("span", { children: part }, i)
+                    ) })
+                  ]
+                },
+                `search-result-${index}`
+              )) : /* @__PURE__ */ jsx("div", { className: "adex-search-no-results", children: isSearching ? "Searching..." : "No results found" }) })
+            ] }),
+            leftPanel == 2 && /* @__PURE__ */ jsxs("div", { className: "adex-preview-bookmarks", ref: bookmarksRef, children: [
+              /* @__PURE__ */ jsx("div", { className: "adex-bookmarks-header", children: /* @__PURE__ */ jsxs("div", { className: "adex-bookmarks-tabs", children: [
+                /* @__PURE__ */ jsx(
+                  "button",
+                  {
+                    className: `adex-bookmarks-tab ${activeTab === "outline" ? "active" : ""}`,
+                    onClick: () => setActiveTab("outline"),
+                    children: "Outline"
+                  }
+                ),
+                /* @__PURE__ */ jsx(
+                  "button",
+                  {
+                    className: `adex-bookmarks-tab ${activeTab === "bookmarks" ? "active" : ""}`,
+                    onClick: () => setActiveTab("bookmarks"),
+                    children: "Bookmarks"
+                  }
+                )
+              ] }) }),
+              /* @__PURE__ */ jsx("div", { className: "adex-bookmarks-content", children: activeTab === "outline" ? /* @__PURE__ */ jsx("div", { className: "adex-outline-container", children: documentOutline.length > 0 ? /* @__PURE__ */ jsx("div", { className: "adex-outline-list", children: renderOutlineItems(documentOutline) }) : /* @__PURE__ */ jsx("div", { className: "adex-no-outline", children: "No outline available in this document" }) }) : /* @__PURE__ */ jsxs("div", { className: "adex-bookmarks-container", children: [
+                /* @__PURE__ */ jsx("div", { className: "adex-bookmarks-actions", children: isAddingBookmark ? /* @__PURE__ */ jsxs("div", { className: "adex-add-bookmark-form", children: [
                   /* @__PURE__ */ jsx(
-                    "button",
+                    "input",
                     {
-                      className: "adex-bookmark-save",
-                      onClick: addBookmark,
-                      disabled: !newBookmarkTitle.trim(),
-                      children: "Save"
+                      type: "text",
+                      className: "adex-bookmark-title-input",
+                      placeholder: "Bookmark title",
+                      value: newBookmarkTitle,
+                      onChange: (e) => setNewBookmarkTitle(e.target.value),
+                      autoFocus: true,
+                      onKeyDown: (e) => {
+                        if (e.key === "Enter") addBookmark();
+                        if (e.key === "Escape") setIsAddingBookmark(false);
+                      }
                     }
                   ),
-                  /* @__PURE__ */ jsx("button", { className: "adex-bookmark-cancel", onClick: () => setIsAddingBookmark(false), children: "Cancel" })
-                ] })
-              ] }) : /* @__PURE__ */ jsxs("button", { className: "adex-add-bookmark-btn", onClick: () => setIsAddingBookmark(true), children: [
-                /* @__PURE__ */ jsx(
-                  "svg",
-                  {
-                    xmlns: "http://www.w3.org/2000/svg",
-                    width: "14",
-                    height: "14",
-                    fill: "currentColor",
-                    viewBox: "0 0 16 16",
-                    children: /* @__PURE__ */ jsx("path", { d: "M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" })
-                  }
-                ),
-                "Add Bookmark"
-              ] }) }),
-              /* @__PURE__ */ jsx("div", { className: "adex-bookmarks-list", children: bookmarks.length > 0 ? bookmarks.sort((a, b) => a.pageNumber - b.pageNumber).map((bookmark) => /* @__PURE__ */ jsxs("div", { className: "adex-bookmark-item", children: [
-                /* @__PURE__ */ jsxs("button", { className: "adex-bookmark-link", onClick: () => navigateToBookmark(bookmark), children: [
+                  /* @__PURE__ */ jsxs("div", { className: "adex-bookmark-form-actions", children: [
+                    /* @__PURE__ */ jsx(
+                      "button",
+                      {
+                        className: "adex-bookmark-save",
+                        onClick: addBookmark,
+                        disabled: !newBookmarkTitle.trim(),
+                        children: "Save"
+                      }
+                    ),
+                    /* @__PURE__ */ jsx("button", { className: "adex-bookmark-cancel", onClick: () => setIsAddingBookmark(false), children: "Cancel" })
+                  ] })
+                ] }) : /* @__PURE__ */ jsxs("button", { className: "adex-add-bookmark-btn", onClick: () => setIsAddingBookmark(true), children: [
                   /* @__PURE__ */ jsx(
                     "svg",
                     {
                       xmlns: "http://www.w3.org/2000/svg",
-                      width: "16",
-                      height: "16",
+                      width: "14",
+                      height: "14",
                       fill: "currentColor",
                       viewBox: "0 0 16 16",
-                      children: /* @__PURE__ */ jsx("path", { d: "M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 2 0 0 0-2 2z" })
+                      children: /* @__PURE__ */ jsx("path", { d: "M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" })
                     }
                   ),
-                  /* @__PURE__ */ jsx("span", { className: "adex-bookmark-title", children: bookmark.title }),
-                  /* @__PURE__ */ jsxs("span", { className: "adex-bookmark-page", children: [
-                    "p. ",
-                    bookmark.pageNumber
-                  ] })
-                ] }),
-                /* @__PURE__ */ jsx(
-                  "button",
-                  {
-                    className: "adex-bookmark-delete",
-                    onClick: () => deleteBookmark(bookmark.id),
-                    "aria-label": `Delete bookmark: ${bookmark.title}`,
-                    children: /* @__PURE__ */ jsxs(
+                  "Add Bookmark"
+                ] }) }),
+                /* @__PURE__ */ jsx("div", { className: "adex-bookmarks-list", children: bookmarks.length > 0 ? bookmarks.sort((a, b) => a.pageNumber - b.pageNumber).map((bookmark) => /* @__PURE__ */ jsxs("div", { className: "adex-bookmark-item", children: [
+                  /* @__PURE__ */ jsxs("button", { className: "adex-bookmark-link", onClick: () => navigateToBookmark(bookmark), children: [
+                    /* @__PURE__ */ jsx(
                       "svg",
                       {
                         xmlns: "http://www.w3.org/2000/svg",
-                        width: "12",
-                        height: "12",
+                        width: "16",
+                        height: "16",
                         fill: "currentColor",
                         viewBox: "0 0 16 16",
-                        children: [
-                          /* @__PURE__ */ jsx("path", { d: "M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" }),
-                          /* @__PURE__ */ jsx(
-                            "path",
-                            {
-                              fillRule: "evenodd",
-                              d: "M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
-                            }
-                          )
-                        ]
+                        children: /* @__PURE__ */ jsx("path", { d: "M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 2 0 0 0-2 2z" })
                       }
-                    )
-                  }
-                )
-              ] }, bookmark.id)) : /* @__PURE__ */ jsx("div", { className: "adex-no-bookmarks", children: "No bookmarks added yet" }) })
-            ] }) })
+                    ),
+                    /* @__PURE__ */ jsx("span", { className: "adex-bookmark-title", children: bookmark.title }),
+                    /* @__PURE__ */ jsxs("span", { className: "adex-bookmark-page", children: [
+                      "p. ",
+                      bookmark.pageNumber
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsx(
+                    "button",
+                    {
+                      className: "adex-bookmark-delete",
+                      onClick: () => deleteBookmark(bookmark.id),
+                      "aria-label": `Delete bookmark: ${bookmark.title}`,
+                      children: /* @__PURE__ */ jsxs(
+                        "svg",
+                        {
+                          xmlns: "http://www.w3.org/2000/svg",
+                          width: "12",
+                          height: "12",
+                          fill: "currentColor",
+                          viewBox: "0 0 16 16",
+                          children: [
+                            /* @__PURE__ */ jsx("path", { d: "M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" }),
+                            /* @__PURE__ */ jsx(
+                              "path",
+                              {
+                                fillRule: "evenodd",
+                                d: "M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
+                              }
+                            )
+                          ]
+                        }
+                      )
+                    }
+                  )
+                ] }, bookmark.id)) : /* @__PURE__ */ jsx("div", { className: "adex-no-bookmarks", children: "No bookmarks added yet" }) })
+              ] }) })
+            ] })
           ] }),
           /* @__PURE__ */ jsx("div", { ref: previewRef, className: "adex-preview", children: pdfBlobUrl && /* @__PURE__ */ jsxs(
             Document,
