@@ -1868,3 +1868,21 @@ button.adex-search-button:hover {
 .adex-annotation-tool.active {
     background-color: rgba(0, 0, 0, 0.1);
 }
+
+@media (max-width: 768px) {
+    .adex-viewer .adex-topbar {
+        display: grid;
+        grid-template-columns: 2fr 1 fr;
+        align-items: center;
+    }
+
+    .adex-control-page {
+        grid-column: span 2;
+        justify-content: start;
+    }
+
+    .adex-control-options {
+        margin-top: 10px;
+    }
+
+}

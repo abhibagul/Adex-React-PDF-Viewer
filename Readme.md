@@ -1,62 +1,53 @@
 # Adex React PDF Viewer
 
-A simple and lightweight PDF viewer for React apps. Built using [`react-pdf`](https://github.com/wojtekmaj/react-pdf), it provides an easy way to display PDFs with minimal setup.
+A powerful, feature-rich PDF viewer component for React applications. Built on top of `react-pdf`, AdexViewer provides a complete solution for viewing, annotating, and interacting with PDF documents in your web applications.
 
-<img alt="Adex React PDF Viewer" width="100%" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiBLIpbk4gScb_eIyaMDWdXnOUX_ofix9a8zssvT103n-yjiwXl2pn3641lEy661cACqsW-B4krIA2siMDlnRjPBYzWojHQUAX16g5V5nGYygxYHupyDrvq2N0l7VbrBDiw5wszOcMq77L7kg6jWATIDPFMYbZJaISVDPT0Ksc5j-j_qaASjeY6Oh4y3jDn/s1600/screenshot.jpg"/>
-
-## ✨ Features
-
-✅ Easy to use with minimal setup  
-✅ Supports remote PDF URLs  
-✅ No extra dependencies required  
-✅ Lightweight and fast
-
----
+![AdexViewer Screenshot](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiBLIpbk4gScb_eIyaMDWdXnOUX_ofix9a8zssvT103n-yjiwXl2pn3641lEy661cACqsW-B4krIA2siMDlnRjPBYzWojHQUAX16g5V5nGYygxYHupyDrvq2N0l7VbrBDiw5wszOcMq77L7kg6jWATIDPFMYbZJaISVDPT0Ksc5j-j_qaASjeY6Oh4y3jDn/s1600/screenshot.jpg)
 
 ## 🌐 Live Demo
 
-🔗 **[View Demo Here](https://abhibagul.github.io/Adex-React-PDF-Viewer/)**
+🔗 **[View Adex Viewer Here](https://abhibagul.github.io/Adex-React-PDF-Viewer/)**
 
----
+## ✨ Features
 
-## 🖼️ Screenshot
+- 📄 **Document Navigation**: Page thumbnails, navigation controls, and smooth scrolling
+- 🔍 **Search**: Full-text search with result highlighting and navigation
+- 📑 **Bookmarks & Outline**: Support for document outlines and custom bookmarks
+- ✏️ **Annotations**: Add notes, highlights, and drawings to your documents
+- 🔄 **Rotation & Zoom**: Rotate pages and adjust zoom levels
+- 📱 **Responsive Design**: Optimized for both desktop and mobile devices
+- 🖨️ **Print Support**: Print documents with customizable options
+- 🌙 **Text Selection**: Enable or disable text selection and copying
+- 🔗 **Download**: Direct download option for PDF files
+- 🖼️ **Fullscreen Mode**: Immersive viewing experience
+- 📊 **Document Info**: View and display PDF metadata
 
-![PDF Viewer Screenshot](./screenshot.png)
+## 🚀 Installation
 
----
+With NPM:
 
-## 📞 Installation
-
-Install via npm:
-
-```sh
-npm i adex-react-pdf-viewer
+```bash
+npm install adex-react-pdf-viewer
 ```
 
-or with yarn:
+For yarn:
 
-```sh
+```
 yarn add adex-react-pdf-viewer
 ```
 
----
+## 📖 Basic Usage
 
-## 🚀 Usage
-
-Import and use the `AdexViewer` component in your React app:
-
-```jsx
+```javascriptreact
 import React from "react";
-import { AdexViewer } from "adex-react-pdf-viewer";
-import "adex-react-pdf-viewer/index.css";
+import AdexViewer from "adex-react-pdf-viewer";
+import "adex-react-pdf-viewer/index.css"; // Import styles
 
 function App() {
   return (
-    <div>
-      <h1>PDF Viewer</h1>
+    <div style={{ height: "100vh" }}>
       <AdexViewer
-        data={{ url: "https://pdfobject.com/pdf/sample.pdf" }}
-        credits={false}
+        data={{ url: "https://example.com/sample.pdf" }}
       />
     </div>
   );
@@ -65,18 +56,111 @@ function App() {
 export default App;
 ```
 
----
+## 🛠️ Props
 
-## 📚 Props
+| Prop            | Type    | Description                                        | Default    |
+| --------------- | ------- | -------------------------------------------------- | ---------- |
+| `data`          | object  | `{ url: string }` - URL of the PDF file to display | _Required_ |
+| `credits`       | boolean | Show or hide attribution credits                   | `true`     |
+| `showSidebar`   | boolean | Show or hide the sidebar on initial load           | `false`    |
+| `showToolbar`   | boolean | Show or hide the toolbar                           | `true`     |
+| `showControls`  | object  | Configure which controls to display (see below)    | See below  |
+| `defaultValues` | object  | Set default zoom, page, and fullscreen state       | See below  |
+| `responsive`    | object  | Configure responsive behavior                      | See below  |
+| `textOptions`   | object  | Configure text selection and copying               | See below  |
+| `printOptions`  | object  | Configure print behavior                           | See below  |
 
-| Prop      | Type    | Description                              | Default    |
-| --------- | ------- | ---------------------------------------- | ---------- |
-| `data`    | object  | `{ url: "PDF_URL" }` - The PDF file URL. | _Required_ |
-| `credits` | boolean | Show or hide credits in the viewer.      | `true`     |
+### `showControls` Object
 
----
+```javascriptreact
+showControls: {
+  navigation: true,      // Page navigation controls
+  zoom: true,            // Zoom controls
+  fullscreen: true,      // Fullscreen button
+  download: true,        // Download button
+  info: true,            // Document info button
+  sidebarButton: true,   // Sidebar toggle button
+  rotation: true,        // Page rotation controls
+  print: true,           // Print button
+  search: true,          // Search functionality
+  bookmarks: true,       // Bookmarks functionality
+  annotations: true      // Annotations functionality
+}
+```
 
-## 🛠️ Development
+### `defaultValues` Object
+
+```javascriptreact
+defaultValues: {
+  zoom: 1.25,            // Initial zoom level (0.5 to 3)
+  page: 1,               // Initial page number
+  fullscreen: false      // Start in fullscreen mode
+}
+```
+
+### `textOptions` Object
+
+```javascriptreact
+textOptions: {
+  enableSelection: true,   // Allow text selection
+  enableCopy: true         // Allow text copying
+}
+```
+
+### `printOptions` Object
+
+```javascriptreact
+printOptions: {
+  printBackground: true,     // Print background graphics
+  pageRangeEnabled: true     // Enable page range selection
+}
+```
+
+## 🎨 Annotations
+
+AdexViewer supports three types of annotations:
+
+1. **Notes**: Add floating note markers with custom text
+2. **Highlights**: Highlight text selections with custom colors
+3. **Drawings**: Create freehand drawings on any page
+
+Annotations are automatically saved to localStorage and persist between sessions.
+
+## 🔍 Search Functionality
+
+The search feature allows users to:
+
+- Search for text across the entire document
+- Navigate between search results
+- See highlighted matches with context
+- View a list of all matches with page numbers
+
+## 📑 Bookmarks and Document Outline
+
+AdexViewer supports both:
+
+- **Document Outline**: Displays the PDF's built-in table of contents
+- **Custom Bookmarks**: Allows users to add their own bookmarks to specific pages
+
+## 📱 Mobile Support
+
+The viewer is fully responsive and includes:
+
+- Simplified interface on smaller screens
+- Optimized performance for mobile devices
+
+## 🖥️ Browser Compatibility
+
+AdexViewer works in all modern browsers:
+
+- Chrome, Firefox, Safari, Edge (latest versions)
+- IE11 is not supported
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+#### 🛠️ Development
 
 Clone the repository:
 
@@ -86,26 +170,22 @@ cd Adex-React-PDF-Viewer
 npm install
 ```
 
-Run the development server:
-
-```sh
-npm start
-```
-
 Build the package:
 
 ```sh
 npm run build
 ```
 
----
+to link and use in the project:
 
-## 💡 Contributing
+```sh
+npm link
+```
 
-Contributions are welcome! Feel free to submit issues and pull requests on [GitHub](https://github.com/abhibagul/Adex-React-PDF-Viewer).
+## 📄 License
 
----
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 📝 License
+## 👨‍💻 Created By
 
-This project is licensed under the [MIT License](LICENSE).
+AdexViewer is created with ❤️ by [Abhishek Bagul](https://github.com/abhibagul/).
