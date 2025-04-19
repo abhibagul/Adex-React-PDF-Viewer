@@ -120,6 +120,10 @@
   color: #4e4e4e;
 }
 .adex-left-col button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #000;
+}
+.adex-left-col button.active {
   background-color: rgba(0, 0, 0, 0.1);
   color: #000;
 }
@@ -224,9 +228,15 @@
 }
 .adex-viewer .adex-preview-panel .adex-preview-search .adex-search-results-header {
   padding: 10px 15px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0px 0px 10px 0 !important;
+}
+.adex-search-controls {
+  display: flex;
+  gap: 10px;
   align-items: center;
 }
 .adex-viewer .adex-preview-panel .adex-preview-search .adex-search-results-header h3 {
@@ -747,7 +757,7 @@ ul.adex-pdf-meta-info-list {
 .adex-search-bar {
   display: flex;
   padding: 8px 10px;
-  background-color: #f5f5f5;
+  background-color: #fff;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   align-items: center;
   justify-content: space-between;
@@ -757,7 +767,8 @@ ul.adex-pdf-meta-info-list {
 .adex-search-input-container {
   display: flex;
   flex: 1;
-  max-width: 400px;
+  max-width: 100%;
+  width: 100%;
   position: relative;
 }
 .adex-search-input {
@@ -767,10 +778,6 @@ ul.adex-pdf-meta-info-list {
   border-radius: 4px;
   font-size: 14px;
   outline: none;
-}
-.adex-search-input:focus {
-  border-color: #147fd4;
-  box-shadow: 0 0 0 2px rgba(20, 127, 212, 0.2);
 }
 .adex-search-button {
   background-color: #147fd4;
@@ -821,18 +828,20 @@ ul.adex-pdf-meta-info-list {
 }
 .adex-search-prev,
 .adex-search-next {
-  background-color: #f0f0f0;
-  border: 1px solid #ddd;
   border-radius: 4px;
-  padding: 4px 8px;
+  padding: 4px 4px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: transparent;
+  border: none;
+  transition: .2s all ease;
 }
 .adex-search-prev:hover,
 .adex-search-next:hover {
-  background-color: #e0e0e0;
+  background-color: rgba(0, 0, 0, .1);
+  transition: .2s all ease;
 }
 .adex-search-prev:disabled,
 .adex-search-next:disabled {
@@ -914,8 +923,9 @@ ul.adex-pdf-meta-info-list {
   width: 100%;
 }
 .adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-header {
-  padding: 10px 15px;
+  padding: 10px 10px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: #fff;
 }
 .adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-tabs {
   display: flex;
@@ -927,14 +937,20 @@ ul.adex-pdf-meta-info-list {
   background: transparent;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 13px;
   font-weight: 500;
-  color: #666;
+  color: #000;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  transition: .2s all ease;
+}
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-tab:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  transition: .2s all ease;
 }
 .adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-tab.active {
-  background-color: rgba(20, 127, 212, 0.1);
-  color: #147fd4;
-  font-weight: 600;
+  background-color: rgba(0, 0, 0, 0.1);
 }
 .adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-content {
   padding: 10px 0;
@@ -993,7 +1009,7 @@ ul.adex-pdf-meta-info-list {
   opacity: 0.6;
 }
 .adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-outline-link:not(:disabled):hover {
-  background-color: rgba(20, 127, 212, 0.1);
+  background-color: rgba(0, 0, 0, 0.05);
 }
 .adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-outline-page {
   margin-left: 5px;
@@ -1016,18 +1032,21 @@ ul.adex-pdf-meta-info-list {
   display: flex;
   align-items: center;
   gap: 5px;
-  background-color: #147fd4;
-  color: white;
-  border: none;
+  background-color: #fff;
+  color: #000;
   border-radius: 4px;
   padding: 6px 12px;
   font-size: 12px;
   cursor: pointer;
   width: 100%;
   justify-content: center;
+  border: 1px solid rgba(0, 0, 0, .1);
+  transition: .2s all ease;
 }
 .adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-add-bookmark-btn:hover {
-  background-color: #0e6cb4;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, .3);
+  transition: .2s all ease;
 }
 .adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-add-bookmark-form {
   display: flex;
@@ -1208,6 +1227,8 @@ input.adex-search-input {
   width: 100%;
   border: none !important;
   border-radius: unset;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
 }
 button.adex-search-button {
   background: #e9e9e9;
@@ -1216,6 +1237,8 @@ button.adex-search-button {
   border-radius: 0px;
   transition: .2s all ease-in;
   padding: 5px 8px;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 button.adex-search-button svg {
   width: 12px;
@@ -1236,6 +1259,9 @@ button.adex-search-button:hover {
 .adex-annotations-header {
   padding: 10px 15px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  background: #fff;
 }
 .adex-annotations-header h3 {
   margin: 0 0 10px 0;
@@ -1246,16 +1272,17 @@ button.adex-search-button:hover {
   display: flex;
   gap: 8px;
   margin-top: 8px;
+  margin-bottom: 10px;
 }
 .adex-annotation-tool {
   padding: 6px;
-  border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 4px;
   background: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: none;
 }
 .adex-annotation-tool:hover {
   background-color: rgba(0, 0, 0, 0.05);
@@ -1271,7 +1298,11 @@ button.adex-search-button:hover {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 8px;
+  justify-content: space-between;
+  padding: 5px 10px;
+  border: 1px solid rgba(0, 0, 0, .1);
+  border-radius: 5px;
+  background: #f7f7f7;
 }
 .adex-color-options {
   display: flex;
@@ -1280,19 +1311,20 @@ button.adex-search-button:hover {
 .adex-color-option {
   width: 20px;
   height: 20px;
-  border-radius: 50%;
+  border-radius: 2px;
   border: 1px solid rgba(0, 0, 0, 0.2);
   cursor: pointer;
 }
 .adex-color-option.active {
-  border: 2px solid #000;
+  border: 2px solid rgba(0, 0, 0, 0.5);
 }
 .adex-cancel-annotation {
   padding: 4px 8px;
-  border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 4px;
-  background: none;
   cursor: pointer;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, .1);
+  font-size: 11px;
 }
 .adex-annotations-list {
   padding: 0;
@@ -1300,18 +1332,21 @@ button.adex-search-button:hover {
 .adex-annotation-item {
   display: flex;
   flex-direction: column;
-  padding: 10px 15px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
+.adex-annotation-item .adex-annotation-list-item {
+  padding: 15px 20px;
+  background: #fff;
+}
 .adex-annotation-item > div:first-child {
   display: flex;
 }
-.adex-annotation-item:hover {
+.adex-annotation-item:hover .adex-annotation-list-item {
   background-color: rgba(0, 0, 0, 0.05);
 }
-.adex-annotation-item.active {
+.adex-annotation-item.active .adex-annotation-list-item {
   background-color: rgba(20, 127, 212, 0.1);
   border-left: 3px solid #147fd4;
 }
@@ -1319,6 +1354,14 @@ button.adex-search-button:hover {
   margin-right: 10px;
   display: flex;
   align-items: center;
+  color: rgba(0, 0, 0, .5);
+  padding: 5px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  height: 25px;
+}
+.adex-annotation-icon svg {
+  width: 12px;
 }
 .adex-annotation-content {
   flex: 1;
@@ -1346,16 +1389,14 @@ button.adex-search-button:hover {
   font-size: 13px;
 }
 .adex-annotation-detail {
-  padding: 10px 0 5px 0;
-  margin-top: 10px;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
-  background-color: transparent;
+  background-color: #f7f7f7;
+  padding: 15px 20px;
 }
 .adex-annotation-detail-header {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  margin-bottom: 10px;
 }
 .adex-annotation-detail-actions {
   display: flex;
@@ -1394,7 +1435,6 @@ button.adex-search-button:hover {
   margin-right: 8px;
 }
 .adex-annotation-content-editor {
-  margin-top: 5px;
 }
 .adex-annotation-content-editor label {
   display: block;
@@ -1404,11 +1444,25 @@ button.adex-search-button:hover {
 .adex-annotation-content-editor textarea {
   width: 100%;
   min-height: 80px;
-  padding: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
+  border-radius: 0px;
   resize: vertical;
   font-size: 12px;
+  background: rgba(255, 255, 255, 1);
+  border: none;
+  padding: 10px 10px;
+}
+.adex-annotation.adex-note-annotation {
+  padding: 3px 4px;
+  text-align: center;
+  color: rgba(0, 0, 0, .5);
+  line-height: 12px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, .1);
+}
+.adex-annotation-content-editor textarea:focus,
+.adex-annotation-content-editor textarea:focus-visible,
+.adex-annotation-content-editor textarea:focus-within {
+  outline: none;
 }
 .adex-annotation-actions {
   display: flex;
@@ -1476,6 +1530,5 @@ button.adex-search-button:hover {
 }
 .adex-annotation-tool.active {
   background-color: rgba(0, 0, 0, 0.1);
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
 }
 /*# sourceMappingURL=index.css.map */

@@ -162,7 +162,7 @@ var AdexViewer = ({
       if (!isDragging) return;
       const deltaX = e.clientX - startXRef.current;
       let newWidth = startWidthRef.current + deltaX;
-      newWidth = Math.max(100, Math.min(400, newWidth));
+      newWidth = Math.max(210, Math.min(400, newWidth));
       setLeftPanelWidth(newWidth);
     };
     const handleMouseUp = () => {
@@ -546,7 +546,7 @@ var AdexViewer = ({
             width: 100%;
             border: none !important;
           }
-          .adex-topbar, .adex-power-row, .adex-preview-thumbs, .adex-preview-search, .adex-preview-bookmarks, .adex-pdf-meta-info,.adex-left-col {
+          .adex-topbar, .adex-power-row, .adex-preview-thumbs, .adex-preview-search, .adex-preview-bookmarks, .adex-pdf-meta-info,.adex-left-col,.adex-preview-annotations {
             display: none !important;
           }
           .adex-preview-panel {
@@ -1080,22 +1080,13 @@ var AdexViewer = ({
                 left: `${position.x * scale}px`,
                 top: `${position.y * scale}px`,
                 zIndex: 100,
-                cursor: "pointer"
+                cursor: "pointer",
+                background: color
               },
-              onClick: () => setSelectedAnnotation(annotation),
-              children: /* @__PURE__ */ jsx(
-                "svg",
-                {
-                  xmlns: "http://www.w3.org/2000/svg",
-                  width: "24",
-                  height: "24",
-                  viewBox: "0 0 24 24",
-                  fill: color,
-                  stroke: "#000",
-                  strokeWidth: "1",
-                  children: /* @__PURE__ */ jsx("path", { d: "M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 9h-2V5h2v6zm0 4h-2v-2h2v2z" })
-                }
-              )
+              onClick: () => {
+                setSelectedAnnotation(annotation), setSidebar(true), setLeftPanel(3);
+              },
+              children: /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: /* @__PURE__ */ jsx("path", { d: "M2.5 1A1.5 1.5 0 0 0 1 2.5v11A1.5 1.5 0 0 0 2.5 15h6.086a1.5 1.5 0 0 0 1.06-.44l4.915-4.914A1.5 1.5 0 0 0 15 8.586V2.5A1.5 1.5 0 0 0 13.5 1zm6 8.5a1 1 0 0 1 1-1h4.396a.25.25 0 0 1 .177.427l-5.146 5.146a.25.25 0 0 1-.427-.177z" }) })
             },
             id
           );
@@ -1117,7 +1108,9 @@ var AdexViewer = ({
                 zIndex: 50,
                 pointerEvents: "none"
               },
-              onClick: () => setSelectedAnnotation(annotation)
+              onClick: () => {
+                setSelectedAnnotation(annotation), setSidebar(true), setLeftPanel(3);
+              }
             },
             id
           );
@@ -1142,7 +1135,9 @@ var AdexViewer = ({
                 // Change from "none" to "auto" to make it clickable
                 cursor: "pointer"
               },
-              onClick: () => setSelectedAnnotation(annotation),
+              onClick: () => {
+                setSelectedAnnotation(annotation), setSidebar(true), setLeftPanel(3);
+              },
               children: /* @__PURE__ */ jsx(
                 "path",
                 {
@@ -1199,49 +1194,18 @@ var AdexViewer = ({
   const renderAnnotationDetail = useCallback(
     (annotation) => {
       return /* @__PURE__ */ jsxs("div", { className: "adex-annotation-detail", children: [
-        /* @__PURE__ */ jsx("div", { className: "adex-annotation-detail-header", children: /* @__PURE__ */ jsxs("div", { className: "adex-annotation-detail-actions", children: [
-          /* @__PURE__ */ jsx(
-            "button",
-            {
-              className: "adex-annotation-delete",
-              onClick: (e) => {
-                e.stopPropagation();
-                deleteAnnotation(annotation.id);
-              },
-              "aria-label": "Delete annotation",
-              children: /* @__PURE__ */ jsxs("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: [
-                /* @__PURE__ */ jsx("path", { d: "M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" }),
-                /* @__PURE__ */ jsx(
-                  "path",
-                  {
-                    fillRule: "evenodd",
-                    d: "M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
-                  }
-                )
-              ] })
-            }
-          ),
-          /* @__PURE__ */ jsx(
-            "button",
-            {
-              className: "adex-annotation-close",
-              onClick: (e) => {
-                e.stopPropagation();
-                setSelectedAnnotation(null);
-              },
-              "aria-label": "Close annotation detail",
-              children: /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: /* @__PURE__ */ jsx("path", { d: "M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" }) })
-            }
-          )
-        ] }) }),
+        /* @__PURE__ */ jsx("div", { className: "adex-annotation-detail-header", children: /* @__PURE__ */ jsx("div", { className: "adex-annotation-detail-actions" }) }),
         /* @__PURE__ */ jsxs("div", { className: "adex-annotation-detail-content", children: [
-          /* @__PURE__ */ jsxs("div", { className: "adex-annotation-page", children: [
-            "Page ",
-            annotation.pageNumber
-          ] }),
-          /* @__PURE__ */ jsx("div", { className: "adex-annotation-date", children: new Date(annotation.createdAt).toLocaleString() }),
+          (annotation.type === "note" || annotation.type === "highlight") && /* @__PURE__ */ jsx("div", { className: "adex-annotation-content-editor", children: /* @__PURE__ */ jsx(
+            "textarea",
+            {
+              value: annotation.content || "",
+              onChange: (e) => updateAnnotation(annotation.id, { content: e.target.value }),
+              placeholder: "Add a note...",
+              onClick: (e) => e.stopPropagation()
+            }
+          ) }),
           /* @__PURE__ */ jsxs("div", { className: "adex-annotation-color-picker", children: [
-            /* @__PURE__ */ jsx("label", { children: "Color:" }),
             /* @__PURE__ */ jsx("div", { className: "adex-color-options", children: ["#ffeb3b", "#4caf50", "#2196f3", "#f44336", "#9c27b0"].map((color) => /* @__PURE__ */ jsx(
               "button",
               {
@@ -1254,19 +1218,34 @@ var AdexViewer = ({
                 "aria-label": `Set color to ${color}`
               },
               color
-            )) })
-          ] }),
-          (annotation.type === "note" || annotation.type === "highlight") && /* @__PURE__ */ jsxs("div", { className: "adex-annotation-content-editor", children: [
-            /* @__PURE__ */ jsx("label", { children: "Note:" }),
+            )) }),
             /* @__PURE__ */ jsx(
-              "textarea",
+              "button",
               {
-                value: annotation.content || "",
-                onChange: (e) => updateAnnotation(annotation.id, { content: e.target.value }),
-                placeholder: "Add a note...",
-                onClick: (e) => e.stopPropagation()
+                className: "adex-annotation-delete",
+                onClick: (e) => {
+                  e.stopPropagation();
+                  deleteAnnotation(annotation.id);
+                },
+                "aria-label": "Delete annotation",
+                children: /* @__PURE__ */ jsxs("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: [
+                  /* @__PURE__ */ jsx("path", { d: "M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" }),
+                  /* @__PURE__ */ jsx(
+                    "path",
+                    {
+                      fillRule: "evenodd",
+                      d: "M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
+                    }
+                  )
+                ] })
               }
             )
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "adex-annotation-page", children: [
+            "Page ",
+            annotation.pageNumber,
+            " - ",
+            new Date(annotation.createdAt).toLocaleString()
           ] })
         ] })
       ] });
@@ -1490,7 +1469,7 @@ var AdexViewer = ({
                 },
                 "aria-label": "Pages Previews",
                 title: "Pages Previews",
-                className: showBookmarksSidebar ? "active" : "",
+                className: leftPanel == 0 ? "active" : "",
                 children: /* @__PURE__ */ jsxs("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: [
                   /* @__PURE__ */ jsx("path", { d: "M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z" }),
                   /* @__PURE__ */ jsx("path", { d: "M4.5 12.5A.5.5 0 0 1 5 12h3a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5m0-2A.5.5 0 0 1 5 10h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5m1.639-3.708 1.33.886 1.854-1.855a.25.25 0 0 1 .289-.047l1.888.974V8.5a.5.5 0 0 1-.5.5H5a.5.5 0 0 1-.5-.5V8s1.54-1.274 1.639-1.208M6.25 6a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5" })
@@ -1503,7 +1482,7 @@ var AdexViewer = ({
                 onClick: toggleSearch,
                 "aria-label": "Search document",
                 title: "Search document",
-                className: showSearch ? "active" : "",
+                className: leftPanel == 1 ? "active" : "",
                 children: /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: /* @__PURE__ */ jsx("path", { d: "M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" }) })
               }
             ),
@@ -1513,7 +1492,7 @@ var AdexViewer = ({
                 onClick: toggleBookmarksSidebar,
                 "aria-label": "Bookmarks and outline",
                 title: "Bookmarks and outline",
-                className: showBookmarksSidebar ? "active" : "",
+                className: leftPanel == 2 ? "active" : "",
                 children: /* @__PURE__ */ jsxs("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: [
                   /* @__PURE__ */ jsx("path", { d: "M2 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v11.5a.5.5 0 0 1-.777.416L7 13.101l-4.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v10.566l3.723-2.482a.5.5 0 0 1 .554 0L11 14.566V4a1 1 0 0 0-1-1z" }),
                   /* @__PURE__ */ jsx("path", { d: "M4.268 1H12a1 1 0 0 1 1 1v11.768l.223.148A.5.5 0 0 0 14 13.5V2a2 2 0 0 0-2-2H6a2 2 0 0 0-1.732 1" })
@@ -1526,11 +1505,8 @@ var AdexViewer = ({
                 onClick: () => toggleAnnotationsSidebar(),
                 "aria-label": "Annotations",
                 title: "Annotations",
-                className: showAnnotationsSidebar ? "active" : "",
-                children: /* @__PURE__ */ jsxs("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: [
-                  /* @__PURE__ */ jsx("path", { d: "M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2.5a2 2 0 0 0-1.6.8L8 14.333 6.1 11.8a2 2 0 0 0-1.6-.8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" }),
-                  /* @__PURE__ */ jsx("path", { d: "M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z" })
-                ] })
+                className: leftPanel == 3 ? "active" : "",
+                children: /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: /* @__PURE__ */ jsx("path", { d: "M2.5 1A1.5 1.5 0 0 0 1 2.5v11A1.5 1.5 0 0 0 2.5 15h6.086a1.5 1.5 0 0 0 1.06-.44l4.915-4.914A1.5 1.5 0 0 0 15 8.586V2.5A1.5 1.5 0 0 0 13.5 1zM2 2.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 .5.5V8H9.5A1.5 1.5 0 0 0 8 9.5V14H2.5a.5.5 0 0 1-.5-.5zm7 11.293V9.5a.5.5 0 0 1 .5-.5h4.293z" }) })
               }
             )
           ] }),
@@ -1587,46 +1563,72 @@ var AdexViewer = ({
                   }
                 ) }),
                 leftPanel == 1 && /* @__PURE__ */ jsxs("div", { className: "adex-preview-search", ref: searchResultsRef, children: [
-                  /* @__PURE__ */ jsx("div", { className: "adex-search-bar", children: /* @__PURE__ */ jsxs("div", { className: "adex-search-input-container", children: [
-                    /* @__PURE__ */ jsx(
-                      "input",
-                      {
-                        ref: searchInputRef,
-                        type: "text",
-                        className: "adex-search-input",
-                        placeholder: "Search in document...",
-                        value: searchQuery,
-                        onChange: handleSearchChange,
-                        onKeyDown: handleSearchKeyDown,
-                        "aria-label": "Search in document"
-                      }
-                    ),
-                    /* @__PURE__ */ jsx(
-                      "button",
-                      {
-                        className: "adex-search-button",
-                        onClick: performSearch,
-                        disabled: isSearching || !searchQuery.trim() || !pdfDocument || !pdfDocument.numPages,
-                        "aria-label": "Search",
-                        children: isSearching ? /* @__PURE__ */ jsx("span", { className: "adex-search-loading" }) : /* @__PURE__ */ jsx(
-                          "svg",
+                  /* @__PURE__ */ jsxs("div", { className: "adex-search-bar", children: [
+                    /* @__PURE__ */ jsxs("div", { className: "adex-search-results-header", children: [
+                      /* @__PURE__ */ jsxs("div", { children: [
+                        /* @__PURE__ */ jsx("h3", { children: "Search" }),
+                        /* @__PURE__ */ jsxs("span", { className: "adex-search-results-count", children: [
+                          searchResults.length,
+                          " matches"
+                        ] })
+                      ] }),
+                      /* @__PURE__ */ jsx("div", { className: "adex-search-controls", children: searchResults.length > 0 && /* @__PURE__ */ jsxs("div", { className: "adex-search-navigation", children: [
+                        /* @__PURE__ */ jsx(
+                          "button",
                           {
-                            xmlns: "http://www.w3.org/2000/svg",
-                            width: "16",
-                            height: "16",
-                            fill: "currentColor",
-                            viewBox: "0 0 16 16",
-                            children: /* @__PURE__ */ jsx("path", { d: "M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" })
+                            className: "adex-search-prev",
+                            onClick: prevSearchResult,
+                            disabled: searchResults.length <= 1,
+                            "aria-label": "Previous result",
+                            children: /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: /* @__PURE__ */ jsx("path", { "fill-rule": "evenodd", d: "M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708z" }) })
+                          }
+                        ),
+                        /* @__PURE__ */ jsx(
+                          "button",
+                          {
+                            className: "adex-search-next",
+                            onClick: nextSearchResult,
+                            disabled: searchResults.length <= 1,
+                            "aria-label": "Next result",
+                            children: /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: /* @__PURE__ */ jsx("path", { "fill-rule": "evenodd", d: "M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708" }) })
                           }
                         )
-                      }
-                    )
-                  ] }) }),
-                  /* @__PURE__ */ jsxs("div", { className: "adex-search-results-header", children: [
-                    /* @__PURE__ */ jsx("h3", { children: "Search Results" }),
-                    /* @__PURE__ */ jsxs("span", { className: "adex-search-results-count", children: [
-                      searchResults.length,
-                      " matches"
+                      ] }) })
+                    ] }),
+                    /* @__PURE__ */ jsxs("div", { className: "adex-search-input-container", children: [
+                      /* @__PURE__ */ jsx(
+                        "input",
+                        {
+                          ref: searchInputRef,
+                          type: "text",
+                          className: "adex-search-input",
+                          placeholder: "Search in document...",
+                          value: searchQuery,
+                          onChange: handleSearchChange,
+                          onKeyDown: handleSearchKeyDown,
+                          "aria-label": "Search in document"
+                        }
+                      ),
+                      /* @__PURE__ */ jsx(
+                        "button",
+                        {
+                          className: "adex-search-button",
+                          onClick: performSearch,
+                          disabled: isSearching || !searchQuery.trim() || !pdfDocument || !pdfDocument.numPages,
+                          "aria-label": "Search",
+                          children: isSearching ? /* @__PURE__ */ jsx("span", { className: "adex-search-loading" }) : /* @__PURE__ */ jsx(
+                            "svg",
+                            {
+                              xmlns: "http://www.w3.org/2000/svg",
+                              width: "16",
+                              height: "16",
+                              fill: "currentColor",
+                              viewBox: "0 0 16 16",
+                              children: /* @__PURE__ */ jsx("path", { d: "M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" })
+                            }
+                          )
+                        }
+                      )
                     ] })
                   ] }),
                   /* @__PURE__ */ jsx("div", { className: "adex-search-results-list", children: searchResults.length > 0 ? searchResults.map((result, index) => /* @__PURE__ */ jsxs(
@@ -1653,20 +1655,34 @@ var AdexViewer = ({
                 ] }),
                 leftPanel == 2 && /* @__PURE__ */ jsxs("div", { className: "adex-preview-bookmarks", ref: bookmarksRef, children: [
                   /* @__PURE__ */ jsx("div", { className: "adex-bookmarks-header", children: /* @__PURE__ */ jsxs("div", { className: "adex-bookmarks-tabs", children: [
-                    /* @__PURE__ */ jsx(
+                    /* @__PURE__ */ jsxs(
                       "button",
                       {
                         className: `adex-bookmarks-tab ${activeTab === "outline" ? "active" : ""}`,
                         onClick: () => setActiveTab("outline"),
-                        children: "Outline"
+                        children: [
+                          /* @__PURE__ */ jsxs("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: [
+                            /* @__PURE__ */ jsx("path", { "fill-rule": "evenodd", d: "M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5" }),
+                            /* @__PURE__ */ jsx("path", { d: "M1.713 11.865v-.474H2c.217 0 .363-.137.363-.317 0-.185-.158-.31-.361-.31-.223 0-.367.152-.373.31h-.59c.016-.467.373-.787.986-.787.588-.002.954.291.957.703a.595.595 0 0 1-.492.594v.033a.615.615 0 0 1 .569.631c.003.533-.502.8-1.051.8-.656 0-1-.37-1.008-.794h.582c.008.178.186.306.422.309.254 0 .424-.145.422-.35-.002-.195-.155-.348-.414-.348h-.3zm-.004-4.699h-.604v-.035c0-.408.295-.844.958-.844.583 0 .96.326.96.756 0 .389-.257.617-.476.848l-.537.572v.03h1.054V9H1.143v-.395l.957-.99c.138-.142.293-.304.293-.508 0-.18-.147-.32-.342-.32a.33.33 0 0 0-.342.338zM2.564 5h-.635V2.924h-.031l-.598.42v-.567l.629-.443h.635z" })
+                          ] }),
+                          " ",
+                          /* @__PURE__ */ jsx("span", { children: "Outline" })
+                        ]
                       }
                     ),
-                    /* @__PURE__ */ jsx(
+                    /* @__PURE__ */ jsxs(
                       "button",
                       {
                         className: `adex-bookmarks-tab ${activeTab === "bookmarks" ? "active" : ""}`,
                         onClick: () => setActiveTab("bookmarks"),
-                        children: "Bookmarks"
+                        children: [
+                          /* @__PURE__ */ jsxs("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: [
+                            /* @__PURE__ */ jsx("path", { "fill-rule": "evenodd", d: "M6 8V1h1v6.117L8.743 6.07a.5.5 0 0 1 .514 0L11 7.117V1h1v7a.5.5 0 0 1-.757.429L9 7.083 6.757 8.43A.5.5 0 0 1 6 8" }),
+                            /* @__PURE__ */ jsx("path", { d: "M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2" }),
+                            /* @__PURE__ */ jsx("path", { d: "M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1z" })
+                          ] }),
+                          /* @__PURE__ */ jsx("span", { children: "Bookmarks" })
+                        ]
                       }
                     )
                   ] }) }),
@@ -1700,17 +1716,10 @@ var AdexViewer = ({
                         /* @__PURE__ */ jsx("button", { className: "adex-bookmark-cancel", onClick: () => setIsAddingBookmark(false), children: "Cancel" })
                       ] })
                     ] }) : /* @__PURE__ */ jsxs("button", { className: "adex-add-bookmark-btn", onClick: () => setIsAddingBookmark(true), children: [
-                      /* @__PURE__ */ jsx(
-                        "svg",
-                        {
-                          xmlns: "http://www.w3.org/2000/svg",
-                          width: "14",
-                          height: "14",
-                          fill: "currentColor",
-                          viewBox: "0 0 16 16",
-                          children: /* @__PURE__ */ jsx("path", { d: "M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" })
-                        }
-                      ),
+                      /* @__PURE__ */ jsxs("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: [
+                        /* @__PURE__ */ jsx("path", { d: "M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z" }),
+                        /* @__PURE__ */ jsx("path", { d: "M8 4a.5.5 0 0 1 .5.5V6H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V7H6a.5.5 0 0 1 0-1h1.5V4.5A.5.5 0 0 1 8 4" })
+                      ] }),
                       "Add Bookmark"
                     ] }) }),
                     /* @__PURE__ */ jsx("div", { className: "adex-bookmarks-list", children: bookmarks.length > 0 ? bookmarks.sort((a, b) => a.pageNumber - b.pageNumber).map((bookmark) => /* @__PURE__ */ jsxs("div", { className: "adex-bookmark-item", children: [
@@ -1774,17 +1783,7 @@ var AdexViewer = ({
                           onClick: () => isAddingAnnotation && annotationType === "note" ? cancelAddingAnnotation() : startAddingAnnotation("note"),
                           "aria-label": "Add note",
                           title: "Add note",
-                          children: /* @__PURE__ */ jsx(
-                            "svg",
-                            {
-                              xmlns: "http://www.w3.org/2000/svg",
-                              width: "16",
-                              height: "16",
-                              fill: "currentColor",
-                              viewBox: "0 0 16 16",
-                              children: /* @__PURE__ */ jsx("path", { d: "M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2.5a2 2 0 0 0-1.6.8L8 14.333 6.1 11.8a2 2 0 0 0-1.6-.8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" })
-                            }
-                          )
+                          children: /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: /* @__PURE__ */ jsx("path", { d: "M2.5 1A1.5 1.5 0 0 0 1 2.5v11A1.5 1.5 0 0 0 2.5 15h6.086a1.5 1.5 0 0 0 1.06-.44l4.915-4.914A1.5 1.5 0 0 0 15 8.586V2.5A1.5 1.5 0 0 0 13.5 1zM2 2.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 .5.5V8H9.5A1.5 1.5 0 0 0 8 9.5V14H2.5a.5.5 0 0 1-.5-.5zm7 11.293V9.5a.5.5 0 0 1 .5-.5h4.293z" }) })
                         }
                       ),
                       /* @__PURE__ */ jsx(
@@ -1795,20 +1794,7 @@ var AdexViewer = ({
                           "aria-label": "Add highlight",
                           title: "Add highlight",
                           disabled: !textOptions.enableSelection,
-                          children: /* @__PURE__ */ jsxs(
-                            "svg",
-                            {
-                              xmlns: "http://www.w3.org/2000/svg",
-                              width: "16",
-                              height: "16",
-                              fill: "currentColor",
-                              viewBox: "0 0 16 16",
-                              children: [
-                                /* @__PURE__ */ jsx("path", { d: "M9.5 0a.5.5 0 0 1 .5.5.5.5 0 0 0 .5.5.5.5 0 0 1 .5.5V2a.5.5 0 0 1-.5.5h-5A.5.5 0 0 1 5 2v-.5a.5.5 0 0 1 .5-.5.5.5 0 0 0 .5-.5.5.5 0 0 1 .5-.5h3Z" }),
-                                /* @__PURE__ */ jsx("path", { d: "M3.915 2a.5.5 0 0 0-.5.5V14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2.5a.5.5 0 0 0-.5-.5h-8Z" })
-                              ]
-                            }
-                          )
+                          children: /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: /* @__PURE__ */ jsx("path", { "fill-rule": "evenodd", d: "M11.096.644a2 2 0 0 1 2.791.036l1.433 1.433a2 2 0 0 1 .035 2.791l-.413.435-8.07 8.995a.5.5 0 0 1-.372.166h-3a.5.5 0 0 1-.234-.058l-.412.412A.5.5 0 0 1 2.5 15h-2a.5.5 0 0 1-.354-.854l1.412-1.412A.5.5 0 0 1 1.5 12.5v-3a.5.5 0 0 1 .166-.372l8.995-8.07zm-.115 1.47L2.727 9.52l3.753 3.753 7.406-8.254zm3.585 2.17.064-.068a1 1 0 0 0-.017-1.396L13.18 1.387a1 1 0 0 0-1.396-.018l-.068.065zM5.293 13.5 2.5 10.707v1.586L3.707 13.5z" }) })
                         }
                       ),
                       /* @__PURE__ */ jsx(
@@ -1866,53 +1852,32 @@ var AdexViewer = ({
                         }, 300);
                       },
                       children: [
-                        /* @__PURE__ */ jsxs("div", { className: "adex-annotation-icon", style: { color: annotation.color }, children: [
-                          annotation.type === "note" && /* @__PURE__ */ jsx(
-                            "svg",
-                            {
-                              xmlns: "http://www.w3.org/2000/svg",
-                              width: "16",
-                              height: "16",
-                              fill: "currentColor",
-                              viewBox: "0 0 16 16",
-                              children: /* @__PURE__ */ jsx("path", { d: "M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2.5a2 2 0 0 0-1.6.8L8 14.333 6.1 11.8a2 2 0 0 0-1.6-.8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" })
-                            }
-                          ),
-                          annotation.type === "highlight" && /* @__PURE__ */ jsxs(
-                            "svg",
-                            {
-                              xmlns: "http://www.w3.org/2000/svg",
-                              width: "16",
-                              height: "16",
-                              fill: "currentColor",
-                              viewBox: "0 0 16 16",
-                              children: [
-                                /* @__PURE__ */ jsx("path", { d: "M9.5 0a.5.5 0 0 1 .5.5.5.5 0 0 0 .5.5.5.5 0 0 1 .5.5V2a.5.5 0 0 1-.5.5h-5A.5.5 0 0 1 5 2v-.5a.5.5 0 0 1 .5-.5.5.5 0 0 0 .5-.5.5.5 0 0 1 .5-.5h3Z" }),
-                                /* @__PURE__ */ jsx("path", { d: "M3.915 2a.5.5 0 0 0-.5.5V14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2.5a.5.5 0 0 0-.5-.5h-8Z" })
-                              ]
-                            }
-                          ),
-                          annotation.type === "drawing" && /* @__PURE__ */ jsx(
-                            "svg",
-                            {
-                              xmlns: "http://www.w3.org/2000/svg",
-                              width: "16",
-                              height: "16",
-                              fill: "currentColor",
-                              viewBox: "0 0 16 16",
-                              children: /* @__PURE__ */ jsx("path", { d: "M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z" })
-                            }
-                          )
-                        ] }),
-                        /* @__PURE__ */ jsxs("div", { className: "adex-annotation-content", children: [
-                          /* @__PURE__ */ jsxs("div", { className: "adex-annotation-title", children: [
-                            annotation.type.charAt(0).toUpperCase() + annotation.type.slice(1),
-                            /* @__PURE__ */ jsxs("span", { className: "adex-annotation-page", children: [
-                              "Page ",
-                              annotation.pageNumber
-                            ] })
+                        /* @__PURE__ */ jsxs("div", { className: "adex-annotation-list-item", children: [
+                          /* @__PURE__ */ jsxs("div", { className: "adex-annotation-icon", style: { background: annotation.color }, children: [
+                            annotation.type === "note" && /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: /* @__PURE__ */ jsx("path", { d: "M2.5 1A1.5 1.5 0 0 0 1 2.5v11A1.5 1.5 0 0 0 2.5 15h6.086a1.5 1.5 0 0 0 1.06-.44l4.915-4.914A1.5 1.5 0 0 0 15 8.586V2.5A1.5 1.5 0 0 0 13.5 1zM2 2.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 .5.5V8H9.5A1.5 1.5 0 0 0 8 9.5V14H2.5a.5.5 0 0 1-.5-.5zm7 11.293V9.5a.5.5 0 0 1 .5-.5h4.293z" }) }),
+                            annotation.type === "highlight" && /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: /* @__PURE__ */ jsx("path", { "fill-rule": "evenodd", d: "M11.096.644a2 2 0 0 1 2.791.036l1.433 1.433a2 2 0 0 1 .035 2.791l-.413.435-8.07 8.995a.5.5 0 0 1-.372.166h-3a.5.5 0 0 1-.234-.058l-.412.412A.5.5 0 0 1 2.5 15h-2a.5.5 0 0 1-.354-.854l1.412-1.412A.5.5 0 0 1 1.5 12.5v-3a.5.5 0 0 1 .166-.372l8.995-8.07zm-.115 1.47L2.727 9.52l3.753 3.753 7.406-8.254zm3.585 2.17.064-.068a1 1 0 0 0-.017-1.396L13.18 1.387a1 1 0 0 0-1.396-.018l-.068.065zM5.293 13.5 2.5 10.707v1.586L3.707 13.5z" }) }),
+                            annotation.type === "drawing" && /* @__PURE__ */ jsx(
+                              "svg",
+                              {
+                                xmlns: "http://www.w3.org/2000/svg",
+                                width: "16",
+                                height: "16",
+                                fill: "currentColor",
+                                viewBox: "0 0 16 16",
+                                children: /* @__PURE__ */ jsx("path", { d: "M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z" })
+                              }
+                            )
                           ] }),
-                          /* @__PURE__ */ jsx("div", { className: "adex-annotation-preview", children: annotation.content ? annotation.content.substring(0, 50) + (annotation.content.length > 50 ? "..." : "") : "No content" })
+                          /* @__PURE__ */ jsxs("div", { className: "adex-annotation-content", children: [
+                            /* @__PURE__ */ jsxs("div", { className: "adex-annotation-title", children: [
+                              annotation.type.charAt(0).toUpperCase() + annotation.type.slice(1),
+                              /* @__PURE__ */ jsxs("span", { className: "adex-annotation-page", children: [
+                                "Page ",
+                                annotation.pageNumber
+                              ] })
+                            ] }),
+                            /* @__PURE__ */ jsx("div", { className: "adex-annotation-preview", children: annotation.content ? annotation.content.substring(0, 50) + (annotation.content.length > 50 ? "..." : "") : "No content" })
+                          ] })
                         ] }),
                         (selectedAnnotation == null ? void 0 : selectedAnnotation.id) === annotation.id && renderAnnotationDetail(annotation)
                       ]
