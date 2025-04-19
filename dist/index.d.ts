@@ -15,6 +15,7 @@ interface PDFViewerProps {
         info?: boolean;
         sidebarButton?: boolean;
         rotation?: boolean;
+        print?: boolean;
     };
     defaultValues?: {
         zoom?: number;
@@ -29,6 +30,10 @@ interface PDFViewerProps {
     textOptions?: {
         enableSelection?: boolean;
         enableCopy?: boolean;
+    };
+    printOptions?: {
+        printBackground?: boolean;
+        pageRangeEnabled?: boolean;
     };
 }
 declare const AdexViewer: React.FC<PDFViewerProps>;

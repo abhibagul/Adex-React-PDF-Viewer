@@ -574,4 +574,163 @@ ul.adex-pdf-meta-info-list {
     -ms-user-select: none !important;
 }
 
-/*# sourceMappingURL=index.css.map */
+/* Print dialog styles - Fix visibility issues */
+.adex-print-dialog {
+    max-width: 400px;
+    max-height: 400px;
+    z-index: 1001;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.adex-pdf-meta-info {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(2px);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.adex-print-dialog-content {
+    padding: 15px 20px;
+    background: #fff;
+}
+
+.adex-print-range {
+    margin-bottom: 20px;
+}
+
+.adex-print-range label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.adex-print-range-inputs {
+    display: flex;
+    gap: 15px;
+}
+
+.adex-print-range-from,
+.adex-print-range-to {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.adex-print-range-from span,
+.adex-print-range-to span {
+    font-size: 12px;
+}
+
+.adex-print-range-from input,
+.adex-print-range-to input {
+    width: 60px;
+    padding: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+.adex-print-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.adex-print-buttons button {
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    width: auto;
+    height: auto;
+}
+
+.adex-print-cancel {
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    color: #333;
+}
+
+.adex-print-cancel:hover {
+    background-color: #e5e5e5;
+}
+
+.adex-print-confirm {
+    background-color: #147fd4;
+    border: 1px solid #0e6cb4;
+    color: white;
+}
+
+.adex-print-confirm:hover {
+    background-color: #0e6cb4;
+}
+
+/* Print mode styles */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    .adex-viewer.adex-printing,
+    .adex-viewer.adex-printing * {
+        visibility: visible;
+    }
+
+    .adex-viewer.adex-printing {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: auto;
+        overflow: visible;
+        border: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .adex-viewer.adex-printing .adex-topbar,
+    .adex-viewer.adex-printing .adex-power-row,
+    .adex-viewer.adex-printing .adex-preview-thumbs,
+    .adex-viewer.adex-printing .adex-pdf-meta-info {
+        display: none !important;
+    }
+
+    .adex-viewer.adex-printing .adex-preview-panel {
+        display: block !important;
+        grid-template-columns: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .adex-viewer.adex-printing .adex-preview {
+        max-height: none !important;
+        overflow: visible !important;
+        height: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .adex-viewer.adex-printing .adex-page {
+        page-break-after: always;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .adex-viewer.adex-printing .adex-page canvas {
+        width: 100% !important;
+        height: auto !important;
+        max-width: 100% !important;
+        transform: scale(1) !important;
+    }
+}

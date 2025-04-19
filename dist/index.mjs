@@ -57,8 +57,10 @@ var AdexViewer = ({
     download: true,
     info: true,
     sidebarButton: true,
-    rotation: true
+    rotation: true,
     // Default to showing rotation controls
+    print: true
+    // Default to showing print button
   },
   defaultValues = {
     zoom: 1.25,
@@ -73,6 +75,10 @@ var AdexViewer = ({
   textOptions = {
     enableSelection: true,
     enableCopy: true
+  },
+  printOptions = {
+    printBackground: true,
+    pageRangeEnabled: true
   }
 }) => {
   var _a;
@@ -89,15 +95,18 @@ var AdexViewer = ({
   const viewerRef = useRef(null);
   const pageRefs = useRef({});
   const previewRef = useRef(null);
+  const printIframeRef = useRef(null);
   const showCredits = credits != null ? credits : true;
   const [metadata, setMetadata] = useState(null);
   const [showInfo, setShowInfo] = useState(false);
+  const [isPrinting, setIsPrinting] = useState(false);
   const maxRetries = 5;
   const [isMobile, setIsMobile] = useState(false);
   const [pageRotations, setPageRotations] = useState({});
   const [isTextLayerEnabled, setIsTextLayerEnabled] = useState(
     Boolean(textOptions == null ? void 0 : textOptions.enableSelection) || Boolean(textOptions == null ? void 0 : textOptions.enableCopy)
   );
+  const [originalZoom, setOriginalZoom] = useState(null);
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < ((responsive == null ? void 0 : responsive.mobileBreakpoint) || 768));
@@ -274,11 +283,94 @@ var AdexViewer = ({
       setRetryCount((prev) => prev + 1);
     }
   }, [retryCount, maxRetries]);
+  const handlePrint = useCallback(() => {
+    printPdf();
+  }, []);
+  const printPdf = useCallback(() => {
+    try {
+      console.log("Printing PDF directly from the viewer");
+      setOriginalZoom(scale);
+      setScale(1);
+      setIsPrinting(true);
+      setTimeout(() => {
+        window.print();
+        setTimeout(() => {
+          setIsPrinting(false);
+          if (originalZoom !== null) {
+            setScale(originalZoom);
+            setOriginalZoom(null);
+          }
+        }, 1e3);
+      }, 300);
+    } catch (error) {
+      console.error("Error in print function:", error);
+      setIsPrinting(false);
+      if (originalZoom !== null) {
+        setScale(originalZoom);
+        setOriginalZoom(null);
+      }
+      alert("An error occurred while trying to print. Please try again.");
+    }
+  }, [originalZoom, scale]);
+  useEffect(() => {
+    if (isPrinting) {
+      const style = document.createElement("style");
+      style.id = "adex-print-styles";
+      style.innerHTML = `
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          .adex-viewer, .adex-viewer * {
+            visibility: visible;
+          }
+          .adex-viewer {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            border: none !important;
+          }
+          .adex-topbar, .adex-power-row, .adex-preview-thumbs, .adex-pdf-meta-info {
+            display: none !important;
+          }
+          .adex-preview-panel {
+            display: block !important;
+            grid-template-columns: auto !important;
+          }
+          .adex-preview {
+            max-height: none !important;
+            overflow: visible !important;
+            padding: 0 !important;
+          }
+          .adex-page {
+            page-break-after: always;
+            margin: 0 !important;
+            box-shadow: none !important;
+            width: 100% !important;
+            height: auto !important;
+          }
+          .adex-page canvas {
+            width: 100% !important;
+            height: auto !important;
+            max-width: 100% !important;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+      return () => {
+        const styleElement = document.getElementById("adex-print-styles");
+        if (styleElement) {
+          document.head.removeChild(styleElement);
+        }
+      };
+    }
+  }, [isPrinting]);
   return /* @__PURE__ */ jsxs(
     "div",
     {
       ref: viewerRef,
-      className: `PDFViewer adex-viewer ${fullScreenView ? "fullScreenView" : ""} ${sidebar ? "thumbs-slide-in" : "thumbs-slide-out"} dev-abhishekbagul ${isMobile ? "adex-mobile" : ""} ${!textOptions.enableSelection ? "disable-text-selection" : ""}`,
+      className: `PDFViewer adex-viewer ${fullScreenView ? "fullScreenView" : ""} ${sidebar ? "thumbs-slide-in" : "thumbs-slide-out"} dev-abhishekbagul ${isMobile ? "adex-mobile" : ""} ${!textOptions.enableSelection ? "disable-text-selection" : ""} ${isPrinting ? "adex-printing" : ""}`,
       children: [
         showToolbar && /* @__PURE__ */ jsxs("div", { className: "adex-topbar", children: [
           (showControls == null ? void 0 : showControls.navigation) && /* @__PURE__ */ jsxs("div", { className: "adex-control-page", children: [
@@ -408,6 +500,10 @@ var AdexViewer = ({
                 }
               )
             ] }),
+            (showControls == null ? void 0 : showControls.print) && /* @__PURE__ */ jsx("button", { onClick: handlePrint, "aria-label": "Print document", title: "Print document", children: /* @__PURE__ */ jsxs("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: [
+              /* @__PURE__ */ jsx("path", { d: "M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z" }),
+              /* @__PURE__ */ jsx("path", { d: "M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z" })
+            ] }) }),
             (showControls == null ? void 0 : showControls.fullscreen) && /* @__PURE__ */ jsx("button", { onClick: toggleFullscreen, "aria-label": fullScreenView ? "Exit fullscreen" : "Enter fullscreen", children: !fullScreenView ? /* @__PURE__ */ jsx(
               "svg",
               {
@@ -421,7 +517,7 @@ var AdexViewer = ({
                   "path",
                   {
                     fillRule: "evenodd",
-                    d: "M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707m4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707m0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707m-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707"
+                    d: "M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707m4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707m0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707m-4.344 0a.5.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707"
                   }
                 )
               }
@@ -467,7 +563,7 @@ var AdexViewer = ({
                         "path",
                         {
                           fillRule: "evenodd",
-                          d: "M7.646 15.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 14.293V5.5a.5.5 0 0 0-1 0v8.793l-2.146-2.147a.5.5 0 0 0-.708.708z"
+                          d: "M7.646 15.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 14.293V5.5a.5.5 0 0 0-1 0v8.793l-2.146-2.147a.5.5 0 0 0-.708.708l3 3z"
                         }
                       )
                     ]

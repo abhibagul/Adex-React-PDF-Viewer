@@ -24,6 +24,7 @@ interface PDFViewerProps {
     info?: boolean
     sidebarButton?: boolean
     rotation?: boolean // New option for page rotation
+    print?: boolean // New option for print button
   }
   defaultValues?: {
     zoom?: number
@@ -38,6 +39,10 @@ interface PDFViewerProps {
   textOptions?: {
     enableSelection?: boolean
     enableCopy?: boolean
+  }
+  printOptions?: {
+    printBackground?: boolean
+    pageRangeEnabled?: boolean
   }
 }
 
@@ -55,6 +60,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
     info: true,
     sidebarButton: true,
     rotation: true, // Default to showing rotation controls
+    print: true, // Default to showing print button
   },
   defaultValues = {
     zoom: 1.25,
@@ -70,6 +76,10 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
     enableSelection: true,
     enableCopy: true,
   },
+  printOptions = {
+    printBackground: true,
+    pageRangeEnabled: true,
+  },
 }) => {
   const scaleSets = [0.5, 0.75, 1, 1.25, 1.5, 2, 3]
   const [numPages, setNumPages] = useState<number | null>(null)
@@ -84,9 +94,11 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
   const viewerRef = useRef<HTMLDivElement>(null)
   const pageRefs = useRef<{ [key: number]: HTMLDivElement | null }>({})
   const previewRef = useRef<HTMLDivElement>(null)
+  const printIframeRef = useRef<HTMLIFrameElement | null>(null)
   const showCredits = credits ?? true
   const [metadata, setMetadata] = useState<any>(null)
   const [showInfo, setShowInfo] = useState<boolean>(false)
+  const [isPrinting, setIsPrinting] = useState<boolean>(false)
   const maxRetries = 5
   const [isMobile, setIsMobile] = useState<boolean>(false)
   // Add a pageRotations state to track rotation for each page
@@ -95,6 +107,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
   const [isTextLayerEnabled, setIsTextLayerEnabled] = useState<boolean>(
     Boolean(textOptions?.enableSelection) || Boolean(textOptions?.enableCopy),
   )
+  // Add a variable to store the original zoom level
+  const [originalZoom, setOriginalZoom] = useState<number | null>(null)
 
   // Check if we're on mobile based on the responsive settings
   useEffect(() => {
@@ -312,13 +326,118 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
     }
   }, [retryCount, maxRetries])
 
+  // Replace the handlePrint function with a direct call to printPdf
+  const handlePrint = useCallback(() => {
+    printPdf()
+  }, [])
+
+  // Update the printPdf function to remove dialog handling
+  const printPdf = useCallback(() => {
+    try {
+      console.log("Printing PDF directly from the viewer")
+
+      // Store the current zoom level
+      setOriginalZoom(scale)
+
+      // Set a print-friendly zoom level (1 = 100%)
+      setScale(1)
+
+      // Set printing mode to apply print-specific styles
+      setIsPrinting(true)
+
+      // Use setTimeout to ensure the print styles are applied and zoom is updated
+      setTimeout(() => {
+        // Trigger browser print dialog
+        window.print()
+
+        // Reset printing mode and restore zoom after a delay
+        setTimeout(() => {
+          setIsPrinting(false)
+          // Restore the original zoom level
+          if (originalZoom !== null) {
+            setScale(originalZoom)
+            setOriginalZoom(null)
+          }
+        }, 1000)
+      }, 300) // Increased timeout to ensure zoom change is applied
+    } catch (error) {
+      console.error("Error in print function:", error)
+      setIsPrinting(false)
+      // Restore zoom if there's an error
+      if (originalZoom !== null) {
+        setScale(originalZoom)
+        setOriginalZoom(null)
+      }
+      alert("An error occurred while trying to print. Please try again.")
+    }
+  }, [originalZoom, scale])
+
+  // Update the useEffect for print styles to include better page sizing
+  useEffect(() => {
+    if (isPrinting) {
+      // Create a style element for print styles
+      const style = document.createElement("style")
+      style.id = "adex-print-styles"
+      style.innerHTML = `
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          .adex-viewer, .adex-viewer * {
+            visibility: visible;
+          }
+          .adex-viewer {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            border: none !important;
+          }
+          .adex-topbar, .adex-power-row, .adex-preview-thumbs, .adex-pdf-meta-info {
+            display: none !important;
+          }
+          .adex-preview-panel {
+            display: block !important;
+            grid-template-columns: auto !important;
+          }
+          .adex-preview {
+            max-height: none !important;
+            overflow: visible !important;
+            padding: 0 !important;
+          }
+          .adex-page {
+            page-break-after: always;
+            margin: 0 !important;
+            box-shadow: none !important;
+            width: 100% !important;
+            height: auto !important;
+          }
+          .adex-page canvas {
+            width: 100% !important;
+            height: auto !important;
+            max-width: 100% !important;
+          }
+        }
+      `
+      document.head.appendChild(style)
+
+      return () => {
+        // Clean up the style when done printing
+        const styleElement = document.getElementById("adex-print-styles")
+        if (styleElement) {
+          document.head.removeChild(styleElement)
+        }
+      }
+    }
+  }, [isPrinting])
+
   // Add a class to the main viewer div based on text selection state
   return (
     <div
       ref={viewerRef}
       className={`PDFViewer adex-viewer ${
         fullScreenView ? "fullScreenView" : ""
-      } ${sidebar ? "thumbs-slide-in" : "thumbs-slide-out"} dev-abhishekbagul ${isMobile ? "adex-mobile" : ""} ${!textOptions.enableSelection ? "disable-text-selection" : ""}`}
+      } ${sidebar ? "thumbs-slide-in" : "thumbs-slide-out"} dev-abhishekbagul ${isMobile ? "adex-mobile" : ""} ${!textOptions.enableSelection ? "disable-text-selection" : ""} ${isPrinting ? "adex-printing" : ""}`}
     >
       {showToolbar && (
         <div className="adex-topbar">
@@ -437,6 +556,14 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                 </button>
               </>
             )}
+            {showControls?.print && (
+              <button onClick={handlePrint} aria-label="Print document" title="Print document">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z" />
+                  <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z" />
+                </svg>
+              </button>
+            )}
             {showControls?.fullscreen && (
               <button onClick={toggleFullscreen} aria-label={fullScreenView ? "Exit fullscreen" : "Enter fullscreen"}>
                 {!fullScreenView ? (
@@ -450,7 +577,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                   >
                     <path
                       fillRule="evenodd"
-                      d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707m4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707m0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707m-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707"
+                      d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707m4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707m0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707m-4.344 0a.5.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707"
                     />
                   </svg>
                 ) : (
@@ -491,7 +618,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                   />
                   <path
                     fillRule="evenodd"
-                    d="M7.646 15.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 14.293V5.5a.5.5 0 0 0-1 0v8.793l-2.146-2.147a.5.5 0 0 0-.708.708z"
+                    d="M7.646 15.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 14.293V5.5a.5.5 0 0 0-1 0v8.793l-2.146-2.147a.5.5 0 0 0-.708.708l3 3z"
                   />
                 </svg>
               </a>
