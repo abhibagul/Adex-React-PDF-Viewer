@@ -208,7 +208,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
       let newWidth = startWidthRef.current + deltaX
 
       // Enforce min and max width constraints
-      newWidth = Math.max(180, Math.min(450, newWidth))
+      newWidth = Math.max(100, Math.min(400, newWidth))
 
       setLeftPanelWidth(newWidth)
     }
@@ -746,21 +746,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
     }
   }, [showSearch])
 
-  // Handle search input change
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value)
-  }, [])
-
-  // Perform search when Enter key is pressed
-  const handleSearchKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === "Enter") {
-        performSearch()
-      }
-    },
-    [searchQuery, pdfDocument],
-  )
-
+  // Move the getContextAroundMatch function before performSearch
   // Helper function to get context around a match
   const getContextAroundMatch = (text: string, matchIndex: number, matchLength: number, contextLength = 30) => {
     const startIndex = Math.max(0, matchIndex - contextLength)
@@ -775,65 +761,12 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
     return context
   }
 
-  // Search functionality
-  const performSearch = useCallback(async () => {
-    if (!searchQuery.trim() || !pdfDocument) return
+  // Handle search input change
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value)
+  }, [])
 
-    setIsSearching(true)
-    setSearchResults([])
-    setCurrentSearchResult(-1)
-
-    try {
-      const results: SearchResult[] = []
-
-      // Search through each page
-      for (let i = 1; i <= pdfDocument.numPages; i++) {
-        const page = await pdfDocument.getPage(i)
-        const textContent = await page.getTextContent()
-        const viewport = page.getViewport({ scale: 1.0 }) // Use scale 1.0 for base coordinates
-
-        // Extract full page text for context
-        const pageText = textContent.items.map((item: any) => item.str).join(" ")
-
-        // Search for matches in the text
-        const searchRegex = new RegExp(searchQuery, "gi")
-        let match
-
-        while ((match = searchRegex.exec(pageText)) !== null) {
-          // Get context around the match
-          const context = getContextAroundMatch(pageText, match.index, searchQuery.length)
-
-          // Store the match information
-          results.push({
-            pageIndex: i - 1,
-            matchIndex: results.length,
-            text: match[0],
-            context: context,
-            position: {
-              left: 0,
-              top: 0,
-              right: 0,
-              bottom: 0,
-            },
-          })
-        }
-      }
-
-      setSearchResults(results)
-      if (results.length > 0) {
-        setCurrentSearchResult(0)
-        navigateToSearchResult(results[0])
-        // Show search sidebar if we have results
-        setShowSearchSidebar(true)
-      }
-    } catch (error) {
-      console.error("Error searching PDF:", error)
-    } finally {
-      setIsSearching(false)
-    }
-  }, [searchQuery, pdfDocument])
-
-  // Navigate to a specific search result
+  // Update the navigateToSearchResult function to add null checks
   const navigateToSearchResult = useCallback(
     (result: SearchResult) => {
       if (!result) return
@@ -941,39 +874,105 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
     [goToPage, searchQuery],
   )
 
-  // Navigate to the next search result
-  const nextSearchResult = useCallback(() => {
-    if (searchResults.length === 0) return
+  // Add a check in the handleSearchKeyDown function to prevent searching when document isn't ready
+  // Move the handleSearchKeyDown function after performSearch
 
-    const nextIndex = (currentSearchResult + 1) % searchResults.length
-    setCurrentSearchResult(nextIndex)
-    navigateToSearchResult(searchResults[nextIndex])
-  }, [currentSearchResult, searchResults, navigateToSearchResult])
+  // First, remove the current handleSearchKeyDown function
 
-  // Navigate to the previous search result
-  const prevSearchResult = useCallback(() => {
-    if (searchResults.length === 0) return
-
-    const prevIndex = (currentSearchResult - 1 + searchResults.length) % searchResults.length
-    setCurrentSearchResult(prevIndex)
-    navigateToSearchResult(searchResults[prevIndex])
-  }, [currentSearchResult, searchResults, navigateToSearchResult])
-
-  // Toggle search sidebar
-  const toggleSearchSidebar = useCallback(() => {
-    if (searchResults.length > 0) {
-      setShowSearchSidebar((prev) => !prev)
+  // Now define performSearch first
+  const performSearch = useCallback(async () => {
+    if (!searchQuery.trim() || !pdfDocument) {
+      // Exit early if there's no search query or no PDF document
+      return
     }
-  }, [searchResults.length])
 
-  // Clear search highlights when search is closed
-  useEffect(() => {
-    if (!showSearch) {
-      document.querySelectorAll(".adex-search-highlight").forEach((el) => {
-        el.remove()
-      })
+    setIsSearching(true)
+    setSearchResults([])
+    setCurrentSearchResult(-1)
+
+    try {
+      const results: SearchResult[] = []
+
+      // Check if the PDF document is still valid
+      if (!pdfDocument || !pdfDocument.numPages) {
+        throw new Error("PDF document is not available or fully loaded")
+      }
+
+      // Search through each page
+      for (let i = 1; i <= pdfDocument.numPages; i++) {
+        try {
+          // Add null check before getting the page
+          const page = await pdfDocument.getPage(i)
+
+          if (!page) {
+            console.warn(`Page ${i} could not be loaded, skipping`)
+            continue
+          }
+
+          const textContent = await page.getTextContent()
+          const viewport = page.getViewport({ scale: 1.0 }) // Use scale 1.0 for base coordinates
+
+          // Extract full page text for context
+          const pageText = textContent.items.map((item: any) => item.str).join(" ")
+
+          // Search for matches in the text
+          const searchRegex = new RegExp(searchQuery, "gi")
+          let match
+
+          while ((match = searchRegex.exec(pageText)) !== null) {
+            // Get context around the match
+            const context = getContextAroundMatch(pageText, match.index, searchQuery.length)
+
+            // Store the match information
+            results.push({
+              pageIndex: i - 1,
+              matchIndex: results.length,
+              text: match[0],
+              context: context,
+              position: {
+                left: 0,
+                top: 0,
+                right: 0,
+                bottom: 0,
+              },
+            })
+          }
+        } catch (pageError) {
+          console.warn(`Error processing page ${i} during search:`, pageError)
+          // Continue with the next page instead of failing the entire search
+          continue
+        }
+      }
+
+      setSearchResults(results)
+      if (results.length > 0) {
+        setCurrentSearchResult(0)
+        navigateToSearchResult(results[0])
+        // Show search sidebar if we have results
+        setShowSearchSidebar(true)
+      }
+    } catch (error) {
+      console.error("Error searching PDF:", error)
+      // Show a user-friendly error message
+      alert("There was an error while searching. Please try again after the document is fully loaded.")
+    } finally {
+      setIsSearching(false)
     }
-  }, [showSearch])
+  }, [searchQuery, pdfDocument, navigateToSearchResult])
+
+  // Then define handleSearchKeyDown after performSearch
+  const handleSearchKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        if (!pdfDocument || !pdfDocument.numPages) {
+          alert("Please wait for the document to fully load before searching.")
+          return
+        }
+        performSearch()
+      }
+    },
+    [pdfDocument, performSearch],
+  )
 
   // Highlight all search results on the current page
   const highlightAllResultsOnPage = useCallback(
@@ -1475,7 +1474,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                   <button
                     className="adex-search-button"
                     onClick={performSearch}
-                    disabled={isSearching || !searchQuery.trim()}
+                    disabled={isSearching || !searchQuery.trim() || !pdfDocument || !pdfDocument.numPages}
                     aria-label="Search"
                   >
                     {isSearching ? (
@@ -1665,7 +1664,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                                   fill="currentColor"
                                   viewBox="0 0 16 16"
                                 >
-                                  <path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 2 0 0 0-2 2z" />
+                                  <path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z" />
                                 </svg>
                                 <span className="adex-bookmark-title">{bookmark.title}</span>
                                 <span className="adex-bookmark-page">p. {bookmark.pageNumber}</span>

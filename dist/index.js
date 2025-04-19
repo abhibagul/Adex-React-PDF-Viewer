@@ -179,7 +179,7 @@ var AdexViewer = ({
       if (!isDragging) return;
       const deltaX = e.clientX - startXRef.current;
       let newWidth = startWidthRef.current + deltaX;
-      newWidth = Math.max(180, Math.min(450, newWidth));
+      newWidth = Math.max(100, Math.min(400, newWidth));
       setLeftPanelWidth(newWidth);
     };
     const handleMouseUp = () => {
@@ -613,17 +613,6 @@ var AdexViewer = ({
       setShowSearchSidebar(false);
     }
   }, [showSearch]);
-  const handleSearchChange = (0, import_react.useCallback)((e) => {
-    setSearchQuery(e.target.value);
-  }, []);
-  const handleSearchKeyDown = (0, import_react.useCallback)(
-    (e) => {
-      if (e.key === "Enter") {
-        performSearch();
-      }
-    },
-    [searchQuery, pdfDocument]
-  );
   const getContextAroundMatch = (text, matchIndex, matchLength, contextLength = 30) => {
     const startIndex = Math.max(0, matchIndex - contextLength);
     const endIndex = Math.min(text.length, matchIndex + matchLength + contextLength);
@@ -632,48 +621,9 @@ var AdexViewer = ({
     if (endIndex < text.length) context = context + "...";
     return context;
   };
-  const performSearch = (0, import_react.useCallback)(() => __async(void 0, null, function* () {
-    if (!searchQuery.trim() || !pdfDocument) return;
-    setIsSearching(true);
-    setSearchResults([]);
-    setCurrentSearchResult(-1);
-    try {
-      const results = [];
-      for (let i = 1; i <= pdfDocument.numPages; i++) {
-        const page = yield pdfDocument.getPage(i);
-        const textContent = yield page.getTextContent();
-        const viewport = page.getViewport({ scale: 1 });
-        const pageText = textContent.items.map((item) => item.str).join(" ");
-        const searchRegex = new RegExp(searchQuery, "gi");
-        let match;
-        while ((match = searchRegex.exec(pageText)) !== null) {
-          const context = getContextAroundMatch(pageText, match.index, searchQuery.length);
-          results.push({
-            pageIndex: i - 1,
-            matchIndex: results.length,
-            text: match[0],
-            context,
-            position: {
-              left: 0,
-              top: 0,
-              right: 0,
-              bottom: 0
-            }
-          });
-        }
-      }
-      setSearchResults(results);
-      if (results.length > 0) {
-        setCurrentSearchResult(0);
-        navigateToSearchResult(results[0]);
-        setShowSearchSidebar(true);
-      }
-    } catch (error) {
-      console.error("Error searching PDF:", error);
-    } finally {
-      setIsSearching(false);
-    }
-  }), [searchQuery, pdfDocument]);
+  const handleSearchChange = (0, import_react.useCallback)((e) => {
+    setSearchQuery(e.target.value);
+  }, []);
   const navigateToSearchResult = (0, import_react.useCallback)(
     (result) => {
       if (!result) return;
@@ -739,30 +689,75 @@ var AdexViewer = ({
     },
     [goToPage, searchQuery]
   );
-  const nextSearchResult = (0, import_react.useCallback)(() => {
-    if (searchResults.length === 0) return;
-    const nextIndex = (currentSearchResult + 1) % searchResults.length;
-    setCurrentSearchResult(nextIndex);
-    navigateToSearchResult(searchResults[nextIndex]);
-  }, [currentSearchResult, searchResults, navigateToSearchResult]);
-  const prevSearchResult = (0, import_react.useCallback)(() => {
-    if (searchResults.length === 0) return;
-    const prevIndex = (currentSearchResult - 1 + searchResults.length) % searchResults.length;
-    setCurrentSearchResult(prevIndex);
-    navigateToSearchResult(searchResults[prevIndex]);
-  }, [currentSearchResult, searchResults, navigateToSearchResult]);
-  const toggleSearchSidebar = (0, import_react.useCallback)(() => {
-    if (searchResults.length > 0) {
-      setShowSearchSidebar((prev) => !prev);
+  const performSearch = (0, import_react.useCallback)(() => __async(void 0, null, function* () {
+    if (!searchQuery.trim() || !pdfDocument) {
+      return;
     }
-  }, [searchResults.length]);
-  (0, import_react.useEffect)(() => {
-    if (!showSearch) {
-      document.querySelectorAll(".adex-search-highlight").forEach((el) => {
-        el.remove();
-      });
+    setIsSearching(true);
+    setSearchResults([]);
+    setCurrentSearchResult(-1);
+    try {
+      const results = [];
+      if (!pdfDocument || !pdfDocument.numPages) {
+        throw new Error("PDF document is not available or fully loaded");
+      }
+      for (let i = 1; i <= pdfDocument.numPages; i++) {
+        try {
+          const page = yield pdfDocument.getPage(i);
+          if (!page) {
+            console.warn(`Page ${i} could not be loaded, skipping`);
+            continue;
+          }
+          const textContent = yield page.getTextContent();
+          const viewport = page.getViewport({ scale: 1 });
+          const pageText = textContent.items.map((item) => item.str).join(" ");
+          const searchRegex = new RegExp(searchQuery, "gi");
+          let match;
+          while ((match = searchRegex.exec(pageText)) !== null) {
+            const context = getContextAroundMatch(pageText, match.index, searchQuery.length);
+            results.push({
+              pageIndex: i - 1,
+              matchIndex: results.length,
+              text: match[0],
+              context,
+              position: {
+                left: 0,
+                top: 0,
+                right: 0,
+                bottom: 0
+              }
+            });
+          }
+        } catch (pageError) {
+          console.warn(`Error processing page ${i} during search:`, pageError);
+          continue;
+        }
+      }
+      setSearchResults(results);
+      if (results.length > 0) {
+        setCurrentSearchResult(0);
+        navigateToSearchResult(results[0]);
+        setShowSearchSidebar(true);
+      }
+    } catch (error) {
+      console.error("Error searching PDF:", error);
+      alert("There was an error while searching. Please try again after the document is fully loaded.");
+    } finally {
+      setIsSearching(false);
     }
-  }, [showSearch]);
+  }), [searchQuery, pdfDocument, navigateToSearchResult]);
+  const handleSearchKeyDown = (0, import_react.useCallback)(
+    (e) => {
+      if (e.key === "Enter") {
+        if (!pdfDocument || !pdfDocument.numPages) {
+          alert("Please wait for the document to fully load before searching.");
+          return;
+        }
+        performSearch();
+      }
+    },
+    [pdfDocument, performSearch]
+  );
   const highlightAllResultsOnPage = (0, import_react.useCallback)(
     (pageIndex) => {
       const pageElement = pageRefs.current[pageIndex + 1];
@@ -1211,7 +1206,7 @@ var AdexViewer = ({
                       {
                         className: "adex-search-button",
                         onClick: performSearch,
-                        disabled: isSearching || !searchQuery.trim(),
+                        disabled: isSearching || !searchQuery.trim() || !pdfDocument || !pdfDocument.numPages,
                         "aria-label": "Search",
                         children: isSearching ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "adex-search-loading" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
                           "svg",
@@ -1328,7 +1323,7 @@ var AdexViewer = ({
                             height: "16",
                             fill: "currentColor",
                             viewBox: "0 0 16 16",
-                            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: "M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 2 0 0 0-2 2z" })
+                            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: "M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z" })
                           }
                         ),
                         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "adex-bookmark-title", children: bookmark.title }),
