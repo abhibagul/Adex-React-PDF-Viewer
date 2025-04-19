@@ -2,7 +2,7 @@
 
 A powerful, feature-rich PDF viewer component for React applications. Built on top of `react-pdf`, AdexViewer provides a complete solution for viewing, annotating, and interacting with PDF documents in your web applications.
 
-![AdexViewer Screenshot](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiBLIpbk4gScb_eIyaMDWdXnOUX_ofix9a8zssvT103n-yjiwXl2pn3641lEy661cACqsW-B4krIA2siMDlnRjPBYzWojHQUAX16g5V5nGYygxYHupyDrvq2N0l7VbrBDiw5wszOcMq77L7kg6jWATIDPFMYbZJaISVDPT0Ksc5j-j_qaASjeY6Oh4y3jDn/s1600/screenshot.jpg)
+![AdexViewer Screenshot](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiAORxaZuLl6l7ICdLsNZYs5I1GLmViazmsZKBSwCcMtXBWJjH_juerbO4bvf8mKbQfAD1cuBwlanOKT6xW8fiG-oftf2MEYidzdibdHkvKkd_b2IZ7y2cdd3nN4nVZGSMoR7ICVBx_gumh0Yii1uzC7Z_5ViTDHRt7QmUr6QgtHHTF3-nJ2DPV5b6tLjgv/s1600/adex2.jpg)
 
 ## 🌐 Live Demo
 
