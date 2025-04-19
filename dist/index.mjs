@@ -59,8 +59,12 @@ var AdexViewer = ({
     sidebarButton: true,
     rotation: true,
     // Default to showing rotation controls
-    print: true
+    print: true,
     // Default to showing print button
+    search: true,
+    // Default to showing search functionality
+    bookmarks: true
+    // Default to showing bookmarks functionality
   },
   defaultValues = {
     zoom: 1.25,
@@ -107,6 +111,23 @@ var AdexViewer = ({
     Boolean(textOptions == null ? void 0 : textOptions.enableSelection) || Boolean(textOptions == null ? void 0 : textOptions.enableCopy)
   );
   const [originalZoom, setOriginalZoom] = useState(null);
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [currentSearchResult, setCurrentSearchResult] = useState(-1);
+  const [isSearching, setIsSearching] = useState(false);
+  const [pdfDocument, setPdfDocument] = useState(null);
+  const searchInputRef = useRef(null);
+  const [showSearchSidebar, setShowSearchSidebar] = useState(false);
+  const searchResultsRef = useRef(null);
+  const [documentOutline, setDocumentOutline] = useState([]);
+  const [expandedOutlineItems, setExpandedOutlineItems] = useState({});
+  const [bookmarks, setBookmarks] = useState([]);
+  const [activeTab, setActiveTab] = useState("outline");
+  const [showBookmarksSidebar, setShowBookmarksSidebar] = useState(false);
+  const [isAddingBookmark, setIsAddingBookmark] = useState(false);
+  const [newBookmarkTitle, setNewBookmarkTitle] = useState("");
+  const bookmarksRef = useRef(null);
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < ((responsive == null ? void 0 : responsive.mobileBreakpoint) || 768));
@@ -120,6 +141,8 @@ var AdexViewer = ({
   useEffect(() => {
     if (isMobile && (responsive == null ? void 0 : responsive.hideSidebarOnMobile)) {
       setSidebar(false);
+      setShowSearchSidebar(false);
+      setShowBookmarksSidebar(false);
     } else {
       setSidebar(showSidebar || false);
     }
@@ -166,27 +189,172 @@ var AdexViewer = ({
       if (retryTimer) clearTimeout(retryTimer);
     };
   }, [data == null ? void 0 : data.url, retryCount]);
+  const goToPage = useCallback((pageNum) => {
+    setPreviewNumber(pageNum);
+    setPageNumber(pageNum);
+    const pageEl = pageRefs.current[pageNum];
+    if (pageEl) {
+      pageEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, []);
+  const extractOutline = useCallback((pdf) => __async(void 0, null, function* () {
+    try {
+      const outline = yield pdf.getOutline();
+      if (outline && outline.length > 0) {
+        const processedOutline = yield processOutlineItems(outline, pdf);
+        setDocumentOutline(processedOutline);
+      } else {
+        setDocumentOutline([]);
+      }
+    } catch (error) {
+      console.error("Error extracting outline:", error);
+      setDocumentOutline([]);
+    }
+  }), []);
+  const processOutlineItems = useCallback((items, pdf, level = 0) => __async(void 0, null, function* () {
+    const processedItems = [];
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const id = `outline-${level}-${i}-${Date.now()}`;
+      let pageNumber2 = void 0;
+      if (item.dest) {
+        try {
+          if (typeof item.dest === "string") {
+            const dest = yield pdf.getDestination(item.dest);
+            if (dest) {
+              const ref = yield pdf.getPageRef(dest[0]);
+              const pageIndex = yield pdf.getPageIndex(ref);
+              pageNumber2 = pageIndex + 1;
+            }
+          } else if (Array.isArray(item.dest)) {
+            const ref = item.dest[0];
+            if (ref) {
+              try {
+                const pageIndex = yield pdf.getPageIndex(ref);
+                pageNumber2 = pageIndex + 1;
+              } catch (error) {
+                console.error("Error getting page index from ref:", error);
+              }
+            }
+          }
+        } catch (error) {
+          console.error("Error resolving destination:", error);
+        }
+      }
+      const processedItem = {
+        title: item.title,
+        dest: item.dest,
+        pageNumber: pageNumber2,
+        id,
+        expanded: level < 1
+        // Expand only the first level by default
+      };
+      if (item.items && item.items.length > 0) {
+        processedItem.items = yield processOutlineItems(item.items, pdf, level + 1);
+      }
+      processedItems.push(processedItem);
+    }
+    return processedItems;
+  }), []);
   function onDocumentLoadSuccess(pdf) {
     return __async(this, null, function* () {
       setNumPages(pdf.numPages);
+      setPdfDocument(pdf);
       const meta = yield pdf.getMetadata();
       setMetadata(meta.info);
+      yield extractOutline(pdf);
       if (defaultValues.page && defaultValues.page > 1 && defaultValues.page <= pdf.numPages) {
         goToPage(defaultValues.page);
       }
     });
   }
-  const goToPage = useCallback(
-    (pageNum) => {
-      setPreviewNumber(pageNum);
-      setPageNumber(pageNum);
-      const pageEl = pageRefs.current[pageNum];
-      if (pageEl) {
-        pageEl.scrollIntoView({ behavior: "smooth", block: "start" });
+  const toggleOutlineItem = useCallback((itemId) => {
+    setExpandedOutlineItems((prev) => __spreadProps(__spreadValues({}, prev), {
+      [itemId]: !prev[itemId]
+    }));
+  }, []);
+  const navigateToOutlineItem = useCallback(
+    (item) => __async(void 0, null, function* () {
+      if (item.pageNumber) {
+        goToPage(item.pageNumber);
+      } else if (item.dest && pdfDocument) {
+        try {
+          let pageNumber2 = void 0;
+          if (typeof item.dest === "string") {
+            const dest = yield pdfDocument.getDestination(item.dest);
+            if (dest) {
+              const ref = yield pdfDocument.getPageRef(dest[0]);
+              const pageIndex = yield pdfDocument.getPageIndex(ref);
+              pageNumber2 = pageIndex + 1;
+            }
+          } else if (Array.isArray(item.dest)) {
+            const ref = item.dest[0];
+            if (ref) {
+              try {
+                const pageIndex = yield pdfDocument.getPageIndex(ref);
+                pageNumber2 = pageIndex + 1;
+              } catch (error) {
+                console.error("Error getting page index from ref:", error);
+              }
+            }
+          }
+          if (pageNumber2) {
+            goToPage(pageNumber2);
+          }
+        } catch (error) {
+          console.error("Error navigating to outline item:", error);
+        }
       }
-    },
-    [setPageNumber]
+    }),
+    [goToPage, pdfDocument]
   );
+  const addBookmark = useCallback(() => {
+    if (!newBookmarkTitle.trim()) return;
+    const newBookmark = {
+      id: `bookmark-${Date.now()}`,
+      title: newBookmarkTitle.trim(),
+      pageNumber,
+      createdAt: Date.now()
+    };
+    setBookmarks((prev) => [...prev, newBookmark]);
+    setNewBookmarkTitle("");
+    setIsAddingBookmark(false);
+    localStorage.setItem(`pdf-bookmarks-${data == null ? void 0 : data.url}`, JSON.stringify([...bookmarks, newBookmark]));
+  }, [newBookmarkTitle, pageNumber, bookmarks, data == null ? void 0 : data.url]);
+  const deleteBookmark = useCallback(
+    (id) => {
+      setBookmarks((prev) => {
+        const updatedBookmarks = prev.filter((bookmark) => bookmark.id !== id);
+        localStorage.setItem(`pdf-bookmarks-${data == null ? void 0 : data.url}`, JSON.stringify(updatedBookmarks));
+        return updatedBookmarks;
+      });
+    },
+    [data == null ? void 0 : data.url]
+  );
+  const navigateToBookmark = useCallback(
+    (bookmark) => {
+      goToPage(bookmark.pageNumber);
+    },
+    [goToPage]
+  );
+  useEffect(() => {
+    if (data == null ? void 0 : data.url) {
+      const savedBookmarks = localStorage.getItem(`pdf-bookmarks-${data == null ? void 0 : data.url}`);
+      if (savedBookmarks) {
+        try {
+          setBookmarks(JSON.parse(savedBookmarks));
+        } catch (error) {
+          console.error("Error parsing saved bookmarks:", error);
+        }
+      }
+    }
+  }, [data == null ? void 0 : data.url]);
+  const toggleBookmarksSidebar = useCallback(() => {
+    setShowBookmarksSidebar((prev) => !prev);
+    if (!showBookmarksSidebar) {
+      setActiveTab("outline");
+    }
+  }, [showBookmarksSidebar]);
   function updatePage(__page) {
     if (__page > 0 && numPages !== null && __page <= numPages) {
       goToPage(__page);
@@ -331,7 +499,7 @@ var AdexViewer = ({
             width: 100%;
             border: none !important;
           }
-          .adex-topbar, .adex-power-row, .adex-preview-thumbs, .adex-pdf-meta-info {
+          .adex-topbar, .adex-power-row, .adex-preview-thumbs, .adex-preview-search, .adex-preview-bookmarks, .adex-pdf-meta-info {
             display: none !important;
           }
           .adex-preview-panel {
@@ -366,11 +534,307 @@ var AdexViewer = ({
       };
     }
   }, [isPrinting]);
+  const toggleSearch = useCallback(() => {
+    setShowSearch((prev) => {
+      const newState = !prev;
+      if (newState && searchInputRef.current) {
+        setTimeout(() => {
+          var _a2;
+          (_a2 = searchInputRef.current) == null ? void 0 : _a2.focus();
+        }, 100);
+      }
+      return newState;
+    });
+    if (showSearch) {
+      setSearchQuery("");
+      setSearchResults([]);
+      setCurrentSearchResult(-1);
+      setShowSearchSidebar(false);
+    }
+  }, [showSearch]);
+  const handleSearchChange = useCallback((e) => {
+    setSearchQuery(e.target.value);
+  }, []);
+  const handleSearchKeyDown = useCallback(
+    (e) => {
+      if (e.key === "Enter") {
+        performSearch();
+      }
+    },
+    [searchQuery, pdfDocument]
+  );
+  const getContextAroundMatch = (text, matchIndex, matchLength, contextLength = 30) => {
+    const startIndex = Math.max(0, matchIndex - contextLength);
+    const endIndex = Math.min(text.length, matchIndex + matchLength + contextLength);
+    let context = text.substring(startIndex, endIndex);
+    if (startIndex > 0) context = "..." + context;
+    if (endIndex < text.length) context = context + "...";
+    return context;
+  };
+  const performSearch = useCallback(() => __async(void 0, null, function* () {
+    if (!searchQuery.trim() || !pdfDocument) return;
+    setIsSearching(true);
+    setSearchResults([]);
+    setCurrentSearchResult(-1);
+    try {
+      const results = [];
+      for (let i = 1; i <= pdfDocument.numPages; i++) {
+        const page = yield pdfDocument.getPage(i);
+        const textContent = yield page.getTextContent();
+        const viewport = page.getViewport({ scale: 1 });
+        const pageText = textContent.items.map((item) => item.str).join(" ");
+        const searchRegex = new RegExp(searchQuery, "gi");
+        let match;
+        while ((match = searchRegex.exec(pageText)) !== null) {
+          const context = getContextAroundMatch(pageText, match.index, searchQuery.length);
+          results.push({
+            pageIndex: i - 1,
+            matchIndex: results.length,
+            text: match[0],
+            context,
+            position: {
+              left: 0,
+              top: 0,
+              right: 0,
+              bottom: 0
+            }
+          });
+        }
+      }
+      setSearchResults(results);
+      if (results.length > 0) {
+        setCurrentSearchResult(0);
+        navigateToSearchResult(results[0]);
+        setShowSearchSidebar(true);
+      }
+    } catch (error) {
+      console.error("Error searching PDF:", error);
+    } finally {
+      setIsSearching(false);
+    }
+  }), [searchQuery, pdfDocument]);
+  const navigateToSearchResult = useCallback(
+    (result) => {
+      if (!result) return;
+      goToPage(result.pageIndex + 1);
+      setTimeout(() => {
+        const pageElement = pageRefs.current[result.pageIndex + 1];
+        if (!pageElement) return;
+        const textLayer = pageElement.querySelector(".react-pdf__Page__textContent");
+        if (!textLayer) return;
+        document.querySelectorAll(".adex-search-highlight").forEach((el) => {
+          el.remove();
+        });
+        const textSpans = textLayer.querySelectorAll("span");
+        if (!textSpans || textSpans.length === 0) return;
+        const searchLower = searchQuery.toLowerCase();
+        let foundCurrentResult = false;
+        let highlightElement = null;
+        for (let i = 0; i < textSpans.length; i++) {
+          const span = textSpans[i];
+          const text = span.textContent || "";
+          const textLower = text.toLowerCase();
+          let startIndex = 0;
+          let index;
+          while ((index = textLower.indexOf(searchLower, startIndex)) !== -1) {
+            const highlight = document.createElement("div");
+            highlight.className = "adex-search-highlight";
+            const rect = span.getBoundingClientRect();
+            const textLayerRect = textLayer.getBoundingClientRect();
+            const left = rect.left - textLayerRect.left;
+            const top = rect.top - textLayerRect.top;
+            highlight.style.left = `${left}px`;
+            highlight.style.top = `${top}px`;
+            highlight.style.width = `${rect.width}px`;
+            highlight.style.height = `${rect.height}px`;
+            const resultId = `search-highlight-${result.matchIndex}-${i}-${index}`;
+            highlight.id = resultId;
+            if (!foundCurrentResult && result.text.toLowerCase() === searchLower) {
+              highlight.classList.add("current");
+              highlightElement = highlight;
+              foundCurrentResult = true;
+            }
+            textLayer.appendChild(highlight);
+            startIndex = index + searchLower.length;
+          }
+        }
+        if (highlightElement) {
+          highlightElement.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+          });
+        }
+        if (searchResultsRef.current) {
+          const resultElement = searchResultsRef.current.querySelector(`#search-result-${result.matchIndex}`);
+          if (resultElement) {
+            searchResultsRef.current.querySelectorAll(".adex-search-result-item").forEach((el) => {
+              el.classList.remove("active");
+            });
+            resultElement.classList.add("active");
+            resultElement.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          }
+        }
+      }, 300);
+    },
+    [goToPage, searchQuery]
+  );
+  const nextSearchResult = useCallback(() => {
+    if (searchResults.length === 0) return;
+    const nextIndex = (currentSearchResult + 1) % searchResults.length;
+    setCurrentSearchResult(nextIndex);
+    navigateToSearchResult(searchResults[nextIndex]);
+  }, [currentSearchResult, searchResults, navigateToSearchResult]);
+  const prevSearchResult = useCallback(() => {
+    if (searchResults.length === 0) return;
+    const prevIndex = (currentSearchResult - 1 + searchResults.length) % searchResults.length;
+    setCurrentSearchResult(prevIndex);
+    navigateToSearchResult(searchResults[prevIndex]);
+  }, [currentSearchResult, searchResults, navigateToSearchResult]);
+  const toggleSearchSidebar = useCallback(() => {
+    if (searchResults.length > 0) {
+      setShowSearchSidebar((prev) => !prev);
+    }
+  }, [searchResults.length]);
+  useEffect(() => {
+    if (!showSearch) {
+      document.querySelectorAll(".adex-search-highlight").forEach((el) => {
+        el.remove();
+      });
+    }
+  }, [showSearch]);
+  const highlightAllResultsOnPage = useCallback(
+    (pageIndex) => {
+      const pageElement = pageRefs.current[pageIndex + 1];
+      if (!pageElement) return;
+      const textLayer = pageElement.querySelector(".react-pdf__Page__textContent");
+      if (!textLayer) return;
+      pageElement.querySelectorAll(".adex-search-highlight").forEach((el) => el.remove());
+      if (!searchQuery || searchResults.length === 0) return;
+      const textSpans = textLayer.querySelectorAll("span");
+      if (!textSpans || textSpans.length === 0) return;
+      const searchLower = searchQuery.toLowerCase();
+      for (let i = 0; i < textSpans.length; i++) {
+        const span = textSpans[i];
+        const text = span.textContent || "";
+        const textLower = text.toLowerCase();
+        let startIndex = 0;
+        let index;
+        while ((index = textLower.indexOf(searchLower, startIndex)) !== -1) {
+          const highlight = document.createElement("div");
+          highlight.className = "adex-search-highlight";
+          const rect = span.getBoundingClientRect();
+          const textLayerRect = textLayer.getBoundingClientRect();
+          const left = rect.left - textLayerRect.left;
+          const top = rect.top - textLayerRect.top;
+          highlight.style.left = `${left}px`;
+          highlight.style.top = `${top}px`;
+          highlight.style.width = `${rect.width}px`;
+          highlight.style.height = `${rect.height}px`;
+          const isCurrentResult = searchResults.some(
+            (result) => result.pageIndex === pageIndex && result.matchIndex === currentSearchResult && result.text.toLowerCase() === text.substring(index, index + searchLower.length).toLowerCase()
+          );
+          if (isCurrentResult) {
+            highlight.classList.add("current");
+          }
+          textLayer.appendChild(highlight);
+          startIndex = index + searchLower.length;
+        }
+      }
+    },
+    [searchQuery, searchResults, currentSearchResult]
+  );
+  useEffect(() => {
+    if (searchResults.length > 0 && pageNumber > 0) {
+      highlightAllResultsOnPage(pageNumber - 1);
+    }
+  }, [pageNumber, searchResults, highlightAllResultsOnPage]);
+  useEffect(() => {
+    if (searchResults.length > 0 && pageNumber > 0) {
+      const timer = setTimeout(() => {
+        highlightAllResultsOnPage(pageNumber - 1);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [scale, pageNumber, searchResults, highlightAllResultsOnPage]);
+  const searchHighlightStyles = `
+.adex-search-highlight {
+  position: absolute;
+  background-color: rgba(255, 255, 0, 0.4);
+  border-radius: 2px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.adex-search-highlight.current {
+  background-color: rgba(255, 165, 0, 0.6);
+  box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.8);
+  z-index: 11;
+}
+`;
+  useEffect(() => {
+    if (documentOutline.length > 0) {
+      const initialExpandedState = {};
+      const initializeExpandedState = (items, level) => {
+        items.forEach((item) => {
+          initialExpandedState[item.id] = level === 0;
+          if (item.items && item.items.length > 0) {
+            initializeExpandedState(item.items, level + 1);
+          }
+        });
+      };
+      initializeExpandedState(documentOutline, 0);
+      setExpandedOutlineItems(initialExpandedState);
+    }
+  }, [documentOutline]);
+  const renderOutlineItems = (items) => {
+    return items.map((item) => /* @__PURE__ */ jsxs("div", { className: "adex-outline-item", children: [
+      /* @__PURE__ */ jsxs("div", { className: "adex-outline-item-content", children: [
+        item.items && item.items.length > 0 ? /* @__PURE__ */ jsx(
+          "button",
+          {
+            className: "adex-outline-toggle",
+            onClick: () => toggleOutlineItem(item.id),
+            "aria-label": expandedOutlineItems[item.id] ? "Collapse" : "Expand",
+            children: /* @__PURE__ */ jsx(
+              "svg",
+              {
+                xmlns: "http://www.w3.org/2000/svg",
+                width: "16",
+                height: "16",
+                fill: "currentColor",
+                viewBox: "0 0 16 16",
+                style: {
+                  transform: expandedOutlineItems[item.id] ? "rotate(90deg)" : "rotate(0deg)"
+                },
+                children: /* @__PURE__ */ jsx("path", { d: "M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" })
+              }
+            )
+          }
+        ) : /* @__PURE__ */ jsx("span", { className: "adex-outline-toggle", style: { width: "20px" } }),
+        /* @__PURE__ */ jsxs(
+          "button",
+          {
+            className: "adex-outline-link",
+            onClick: () => navigateToOutlineItem(item),
+            disabled: !item.pageNumber && !item.dest,
+            children: [
+              item.title,
+              item.pageNumber && /* @__PURE__ */ jsxs("span", { className: "adex-outline-page", children: [
+                "p. ",
+                item.pageNumber
+              ] })
+            ]
+          }
+        )
+      ] }),
+      item.items && item.items.length > 0 && expandedOutlineItems[item.id] && /* @__PURE__ */ jsx("div", { className: "adex-outline-children", style: { marginLeft: "20px" }, children: renderOutlineItems(item.items) })
+    ] }, item.id));
+  };
   return /* @__PURE__ */ jsxs(
     "div",
     {
       ref: viewerRef,
-      className: `PDFViewer adex-viewer ${fullScreenView ? "fullScreenView" : ""} ${sidebar ? "thumbs-slide-in" : "thumbs-slide-out"} dev-abhishekbagul ${isMobile ? "adex-mobile" : ""} ${!textOptions.enableSelection ? "disable-text-selection" : ""} ${isPrinting ? "adex-printing" : ""}`,
+      className: `PDFViewer adex-viewer ${fullScreenView ? "fullScreenView" : ""} ${sidebar ? "thumbs-slide-in" : "thumbs-slide-out"} ${showSearchSidebar ? "search-slide-in" : "search-slide-out"} ${showBookmarksSidebar ? "bookmarks-slide-in" : "bookmarks-slide-out"} dev-abhishekbagul ${isMobile ? "adex-mobile" : ""} ${!textOptions.enableSelection ? "disable-text-selection" : ""} ${isPrinting ? "adex-printing" : ""}`,
       children: [
         showToolbar && /* @__PURE__ */ jsxs("div", { className: "adex-topbar", children: [
           (showControls == null ? void 0 : showControls.navigation) && /* @__PURE__ */ jsxs("div", { className: "adex-control-page", children: [
@@ -500,6 +964,16 @@ var AdexViewer = ({
                 }
               )
             ] }),
+            (showControls == null ? void 0 : showControls.search) && /* @__PURE__ */ jsx(
+              "button",
+              {
+                onClick: toggleSearch,
+                "aria-label": "Search document",
+                title: "Search document",
+                className: showSearch ? "active" : "",
+                children: /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: /* @__PURE__ */ jsx("path", { d: "M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" }) })
+              }
+            ),
             (showControls == null ? void 0 : showControls.print) && /* @__PURE__ */ jsx("button", { onClick: handlePrint, "aria-label": "Print document", title: "Print document", children: /* @__PURE__ */ jsxs("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: [
               /* @__PURE__ */ jsx("path", { d: "M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z" }),
               /* @__PURE__ */ jsx("path", { d: "M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z" })
@@ -517,7 +991,7 @@ var AdexViewer = ({
                   "path",
                   {
                     fillRule: "evenodd",
-                    d: "M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707m4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707m0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707m-4.344 0a.5.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707"
+                    d: "M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707m4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707m0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707m-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707"
                   }
                 )
               }
@@ -570,7 +1044,117 @@ var AdexViewer = ({
                   }
                 )
               }
+            ),
+            (showControls == null ? void 0 : showControls.bookmarks) !== false && /* @__PURE__ */ jsx(
+              "button",
+              {
+                onClick: toggleBookmarksSidebar,
+                "aria-label": "Bookmarks and outline",
+                title: "Bookmarks and outline",
+                className: showBookmarksSidebar ? "active" : "",
+                children: /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: /* @__PURE__ */ jsx("path", { d: "M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 2 0 0 0-2 2z" }) })
+              }
             )
+          ] })
+        ] }),
+        showSearch && /* @__PURE__ */ jsxs("div", { className: "adex-search-bar", children: [
+          /* @__PURE__ */ jsxs("div", { className: "adex-search-input-container", children: [
+            /* @__PURE__ */ jsx(
+              "input",
+              {
+                ref: searchInputRef,
+                type: "text",
+                className: "adex-search-input",
+                placeholder: "Search in document...",
+                value: searchQuery,
+                onChange: handleSearchChange,
+                onKeyDown: handleSearchKeyDown,
+                "aria-label": "Search in document"
+              }
+            ),
+            /* @__PURE__ */ jsx(
+              "button",
+              {
+                className: "adex-search-button",
+                onClick: performSearch,
+                disabled: isSearching || !searchQuery.trim(),
+                "aria-label": "Search",
+                children: isSearching ? /* @__PURE__ */ jsx("span", { className: "adex-search-loading" }) : /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: /* @__PURE__ */ jsx("path", { d: "M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" }) })
+              }
+            )
+          ] }),
+          searchResults.length > 0 && /* @__PURE__ */ jsxs("div", { className: "adex-search-results", children: [
+            /* @__PURE__ */ jsxs("span", { className: "adex-search-count", children: [
+              currentSearchResult + 1,
+              " of ",
+              searchResults.length,
+              " results"
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: "adex-search-navigation", children: [
+              /* @__PURE__ */ jsx(
+                "button",
+                {
+                  className: "adex-search-prev",
+                  onClick: prevSearchResult,
+                  disabled: searchResults.length <= 1,
+                  "aria-label": "Previous result",
+                  children: /* @__PURE__ */ jsx(
+                    "svg",
+                    {
+                      xmlns: "http://www.w3.org/2000/svg",
+                      width: "16",
+                      height: "16",
+                      fill: "currentColor",
+                      viewBox: "0 0 16 16",
+                      children: /* @__PURE__ */ jsx(
+                        "path",
+                        {
+                          fillRule: "evenodd",
+                          d: "M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"
+                        }
+                      )
+                    }
+                  )
+                }
+              ),
+              /* @__PURE__ */ jsx(
+                "button",
+                {
+                  className: "adex-search-next",
+                  onClick: nextSearchResult,
+                  disabled: searchResults.length <= 1,
+                  "aria-label": "Next result",
+                  children: /* @__PURE__ */ jsx(
+                    "svg",
+                    {
+                      xmlns: "http://www.w3.org/2000/svg",
+                      width: "16",
+                      height: "16",
+                      fill: "currentColor",
+                      viewBox: "0 0 16 16",
+                      children: /* @__PURE__ */ jsx(
+                        "path",
+                        {
+                          fillRule: "evenodd",
+                          d: "M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"
+                        }
+                      )
+                    }
+                  )
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsx(
+              "button",
+              {
+                className: "adex-search-sidebar-toggle",
+                onClick: toggleSearchSidebar,
+                "aria-label": showSearchSidebar ? "Hide search results" : "Show search results",
+                title: showSearchSidebar ? "Hide search results" : "Show search results",
+                children: /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: /* @__PURE__ */ jsx("path", { d: "M2 2v12h12V2H2zm6.5 1h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1zm-5 1a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zM8.5 6h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1zm-5 1a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zM8.5 9h3a.5.5.0 0 1 0 1h-3a.5.5 0 0 1 0-1zm-5 1a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zM12 13a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" }) })
+              }
+            ),
+            /* @__PURE__ */ jsx("button", { className: "adex-search-close", onClick: toggleSearch, "aria-label": "Close search", children: /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", fill: "currentColor", viewBox: "0 0 16 16", children: /* @__PURE__ */ jsx("path", { d: "M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" }) }) })
           ] })
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "adex-preview-panel", children: [
@@ -614,6 +1198,148 @@ var AdexViewer = ({
               ]
             }
           ) }),
+          /* @__PURE__ */ jsxs("div", { className: "adex-preview-search", ref: searchResultsRef, children: [
+            /* @__PURE__ */ jsxs("div", { className: "adex-search-results-header", children: [
+              /* @__PURE__ */ jsx("h3", { children: "Search Results" }),
+              /* @__PURE__ */ jsxs("span", { className: "adex-search-results-count", children: [
+                searchResults.length,
+                " matches"
+              ] })
+            ] }),
+            /* @__PURE__ */ jsx("div", { className: "adex-search-results-list", children: searchResults.length > 0 ? searchResults.map((result, index) => /* @__PURE__ */ jsxs(
+              "div",
+              {
+                id: `search-result-${result.matchIndex}`,
+                className: `adex-search-result-item ${currentSearchResult === result.matchIndex ? "active" : ""}`,
+                onClick: () => {
+                  setCurrentSearchResult(result.matchIndex);
+                  navigateToSearchResult(result);
+                },
+                children: [
+                  /* @__PURE__ */ jsxs("div", { className: "adex-search-result-page", children: [
+                    "Page ",
+                    result.pageIndex + 1
+                  ] }),
+                  /* @__PURE__ */ jsx("div", { className: "adex-search-result-context", children: result.context.split(new RegExp(`(${searchQuery})`, "i")).map(
+                    (part, i) => part.toLowerCase() === searchQuery.toLowerCase() ? /* @__PURE__ */ jsx("span", { className: "adex-search-result-highlight", children: part }, i) : /* @__PURE__ */ jsx("span", { children: part }, i)
+                  ) })
+                ]
+              },
+              `search-result-${index}`
+            )) : /* @__PURE__ */ jsx("div", { className: "adex-search-no-results", children: isSearching ? "Searching..." : "No results found" }) })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "adex-preview-bookmarks", ref: bookmarksRef, children: [
+            /* @__PURE__ */ jsx("div", { className: "adex-bookmarks-header", children: /* @__PURE__ */ jsxs("div", { className: "adex-bookmarks-tabs", children: [
+              /* @__PURE__ */ jsx(
+                "button",
+                {
+                  className: `adex-bookmarks-tab ${activeTab === "outline" ? "active" : ""}`,
+                  onClick: () => setActiveTab("outline"),
+                  children: "Outline"
+                }
+              ),
+              /* @__PURE__ */ jsx(
+                "button",
+                {
+                  className: `adex-bookmarks-tab ${activeTab === "bookmarks" ? "active" : ""}`,
+                  onClick: () => setActiveTab("bookmarks"),
+                  children: "Bookmarks"
+                }
+              )
+            ] }) }),
+            /* @__PURE__ */ jsx("div", { className: "adex-bookmarks-content", children: activeTab === "outline" ? /* @__PURE__ */ jsx("div", { className: "adex-outline-container", children: documentOutline.length > 0 ? /* @__PURE__ */ jsx("div", { className: "adex-outline-list", children: renderOutlineItems(documentOutline) }) : /* @__PURE__ */ jsx("div", { className: "adex-no-outline", children: "No outline available in this document" }) }) : /* @__PURE__ */ jsxs("div", { className: "adex-bookmarks-container", children: [
+              /* @__PURE__ */ jsx("div", { className: "adex-bookmarks-actions", children: isAddingBookmark ? /* @__PURE__ */ jsxs("div", { className: "adex-add-bookmark-form", children: [
+                /* @__PURE__ */ jsx(
+                  "input",
+                  {
+                    type: "text",
+                    className: "adex-bookmark-title-input",
+                    placeholder: "Bookmark title",
+                    value: newBookmarkTitle,
+                    onChange: (e) => setNewBookmarkTitle(e.target.value),
+                    autoFocus: true,
+                    onKeyDown: (e) => {
+                      if (e.key === "Enter") addBookmark();
+                      if (e.key === "Escape") setIsAddingBookmark(false);
+                    }
+                  }
+                ),
+                /* @__PURE__ */ jsxs("div", { className: "adex-bookmark-form-actions", children: [
+                  /* @__PURE__ */ jsx(
+                    "button",
+                    {
+                      className: "adex-bookmark-save",
+                      onClick: addBookmark,
+                      disabled: !newBookmarkTitle.trim(),
+                      children: "Save"
+                    }
+                  ),
+                  /* @__PURE__ */ jsx("button", { className: "adex-bookmark-cancel", onClick: () => setIsAddingBookmark(false), children: "Cancel" })
+                ] })
+              ] }) : /* @__PURE__ */ jsxs("button", { className: "adex-add-bookmark-btn", onClick: () => setIsAddingBookmark(true), children: [
+                /* @__PURE__ */ jsx(
+                  "svg",
+                  {
+                    xmlns: "http://www.w3.org/2000/svg",
+                    width: "14",
+                    height: "14",
+                    fill: "currentColor",
+                    viewBox: "0 0 16 16",
+                    children: /* @__PURE__ */ jsx("path", { d: "M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" })
+                  }
+                ),
+                "Add Bookmark"
+              ] }) }),
+              /* @__PURE__ */ jsx("div", { className: "adex-bookmarks-list", children: bookmarks.length > 0 ? bookmarks.sort((a, b) => a.pageNumber - b.pageNumber).map((bookmark) => /* @__PURE__ */ jsxs("div", { className: "adex-bookmark-item", children: [
+                /* @__PURE__ */ jsxs("button", { className: "adex-bookmark-link", onClick: () => navigateToBookmark(bookmark), children: [
+                  /* @__PURE__ */ jsx(
+                    "svg",
+                    {
+                      xmlns: "http://www.w3.org/2000/svg",
+                      width: "16",
+                      height: "16",
+                      fill: "currentColor",
+                      viewBox: "0 0 16 16",
+                      children: /* @__PURE__ */ jsx("path", { d: "M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 2 0 0 0-2 2z" })
+                    }
+                  ),
+                  /* @__PURE__ */ jsx("span", { className: "adex-bookmark-title", children: bookmark.title }),
+                  /* @__PURE__ */ jsxs("span", { className: "adex-bookmark-page", children: [
+                    "p. ",
+                    bookmark.pageNumber
+                  ] })
+                ] }),
+                /* @__PURE__ */ jsx(
+                  "button",
+                  {
+                    className: "adex-bookmark-delete",
+                    onClick: () => deleteBookmark(bookmark.id),
+                    "aria-label": `Delete bookmark: ${bookmark.title}`,
+                    children: /* @__PURE__ */ jsxs(
+                      "svg",
+                      {
+                        xmlns: "http://www.w3.org/2000/svg",
+                        width: "12",
+                        height: "12",
+                        fill: "currentColor",
+                        viewBox: "0 0 16 16",
+                        children: [
+                          /* @__PURE__ */ jsx("path", { d: "M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" }),
+                          /* @__PURE__ */ jsx(
+                            "path",
+                            {
+                              fillRule: "evenodd",
+                              d: "M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
+                            }
+                          )
+                        ]
+                      }
+                    )
+                  }
+                )
+              ] }, bookmark.id)) : /* @__PURE__ */ jsx("div", { className: "adex-no-bookmarks", children: "No bookmarks added yet" }) })
+            ] }) })
+          ] }),
           /* @__PURE__ */ jsx("div", { ref: previewRef, className: "adex-preview", children: pdfBlobUrl && /* @__PURE__ */ jsxs(
             Document,
             {

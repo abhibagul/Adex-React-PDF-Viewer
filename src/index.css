@@ -103,7 +103,8 @@
 }
 
 .adex-viewer .adex-topbar button:hover,
-.adex-viewer .adex-topbar .open-link-btn:hover {
+.adex-viewer .adex-topbar .open-link-btn:hover,
+.adex-viewer .adex-topbar button.active {
     background-color: rgba(0, 0, 0, 0.1);
     color: #000;
 }
@@ -213,6 +214,83 @@
     border-radius: 5px;
 }
 
+/* Search results sidebar */
+.adex-viewer .adex-preview-panel .adex-preview-search {
+    max-height: 400px;
+    min-height: 400px;
+    overflow: auto;
+    background-color: #f7f7f7;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    scroll-behavior: smooth;
+    width: 250px;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-search .adex-search-results-header {
+    padding: 10px 15px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-search .adex-search-results-header h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-search .adex-search-results-count {
+    font-size: 12px;
+    color: #666;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-search .adex-search-results-list {
+    padding: 0;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-search .adex-search-result-item {
+    padding: 10px 15px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-search .adex-search-result-item:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-search .adex-search-result-item.active {
+    background-color: rgba(20, 127, 212, 0.1);
+    border-left: 3px solid #147fd4;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-search .adex-search-result-page {
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-search .adex-search-result-context {
+    font-size: 12px;
+    line-height: 1.4;
+    color: #333;
+    word-break: break-word;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-search .adex-search-result-highlight {
+    background-color: rgba(255, 255, 0, 0.4);
+    font-weight: bold;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-search .adex-search-no-results {
+    padding: 20px 15px;
+    text-align: center;
+    color: #666;
+    font-size: 13px;
+}
+
 .adex-viewer .adex-preview-panel .adex-preview {
     max-height: 400px;
     min-height: 400px;
@@ -277,6 +355,7 @@
 }
 
 .adex-viewer.fullScreenView .adex-preview-panel .adex-preview-thumbs,
+.adex-viewer.fullScreenView .adex-preview-panel .adex-preview-search,
 .adex-viewer.fullScreenView .adex-preview-panel .adex-preview {
     max-height: calc(100vh - 81px);
     min-height: calc(100vh - 81px);
@@ -294,6 +373,7 @@
     display: flex;
 }
 
+/* Sidebar slide animations */
 .thumbs-slide-in .adex-preview-panel {
     overflow: hidden;
     grid-template-columns: 180px auto;
@@ -314,6 +394,34 @@
 .thumbs-slide-out .adex-preview-panel .adex-preview-thumbs {
     transform: translateX(-180px);
     transition: 0.2s all ease;
+}
+
+/* Search sidebar slide animations */
+.search-slide-in .adex-preview-panel {
+    overflow: hidden;
+    grid-template-columns: 180px 250px auto;
+    transition: 0.2s all ease;
+}
+
+.search-slide-in .adex-preview-panel .adex-preview-search {
+    transform: translateX(0px);
+    transition: 0.2s all ease;
+}
+
+.search-slide-out .adex-preview-panel {
+    overflow: hidden;
+    grid-template-columns: 180px 0px auto;
+    transition: 0.2s all ease;
+}
+
+.search-slide-out .adex-preview-panel .adex-preview-search {
+    transform: translateX(-250px);
+    transition: 0.2s all ease;
+}
+
+/* When both sidebars are closed */
+.thumbs-slide-out.search-slide-out .adex-preview-panel {
+    grid-template-columns: 0px 0px auto;
 }
 
 @keyframes placeHolderShimmer {
@@ -501,13 +609,15 @@ ul.adex-pdf-meta-info-list {
 }
 
 .adex-mobile .adex-preview-panel .adex-preview,
-.adex-mobile .adex-preview-panel .adex-preview-thumbs {
+.adex-mobile .adex-preview-panel .adex-preview-thumbs,
+.adex-mobile .adex-preview-panel .adex-preview-search {
     max-height: 300px;
     min-height: 300px;
 }
 
 .adex-mobile.fullScreenView .adex-preview-panel .adex-preview,
-.adex-mobile.fullScreenView .adex-preview-panel .adex-preview-thumbs {
+.adex-mobile.fullScreenView .adex-preview-panel .adex-preview-thumbs,
+.adex-mobile.fullScreenView .adex-preview-panel .adex-preview-search {
     max-height: calc(100vh - 81px);
     min-height: calc(100vh - 81px);
 }
@@ -699,6 +809,7 @@ ul.adex-pdf-meta-info-list {
     .adex-viewer.adex-printing .adex-topbar,
     .adex-viewer.adex-printing .adex-power-row,
     .adex-viewer.adex-printing .adex-preview-thumbs,
+    .adex-viewer.adex-printing .adex-preview-search,
     .adex-viewer.adex-printing .adex-pdf-meta-info {
         display: none !important;
     }
@@ -733,4 +844,526 @@ ul.adex-pdf-meta-info-list {
         max-width: 100% !important;
         transform: scale(1) !important;
     }
+}
+
+/* Search functionality styles */
+.adex-search-bar {
+    display: flex;
+    padding: 8px 10px;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    align-items: center;
+    justify-content: space-between;
+}
+
+.adex-search-input-container {
+    display: flex;
+    flex: 1;
+    max-width: 400px;
+    position: relative;
+}
+
+.adex-search-input {
+    flex: 1;
+    padding: 6px 12px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    font-size: 14px;
+    outline: none;
+}
+
+.adex-search-input:focus {
+    border-color: #147fd4;
+    box-shadow: 0 0 0 2px rgba(20, 127, 212, 0.2);
+}
+
+.adex-search-button {
+    background-color: #147fd4;
+    color: white;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    padding: 6px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: -1px;
+}
+
+.adex-search-button:hover {
+    background-color: #0e6cb4;
+}
+
+.adex-search-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.adex-search-loading {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.adex-search-results {
+    display: flex;
+    align-items: center;
+    margin-left: 16px;
+}
+
+.adex-search-count {
+    font-size: 14px;
+    color: #555;
+    margin-right: 16px;
+}
+
+.adex-search-navigation {
+    display: flex;
+    gap: 8px;
+}
+
+.adex-search-prev,
+.adex-search-next {
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.adex-search-prev:hover,
+.adex-search-next:hover {
+    background-color: #e0e0e0;
+}
+
+.adex-search-prev:disabled,
+.adex-search-next:disabled {
+    background-color: #f5f5f5;
+    color: #aaa;
+    cursor: not-allowed;
+}
+
+.adex-search-sidebar-toggle {
+    background-color: transparent;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    padding: 4px;
+    margin-left: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.adex-search-sidebar-toggle:hover {
+    background-color: #e0e0e0;
+}
+
+.adex-search-close {
+    background-color: transparent;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    padding: 4px;
+    margin-left: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.adex-search-close:hover {
+    background-color: #e0e0e0;
+}
+
+/* Search highlight styles - Update these */
+.adex-search-highlight {
+    position: absolute;
+    background-color: rgba(255, 255, 0, 0.4);
+    border-radius: 2px;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.adex-search-highlight.current {
+    background-color: rgba(255, 165, 0, 0.6);
+    box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.8);
+    z-index: 11;
+}
+
+/* Mobile search styles */
+.adex-mobile .adex-search-bar {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.adex-mobile .adex-search-input-container {
+    max-width: 100%;
+}
+
+.adex-mobile .adex-search-results {
+    margin-left: 0;
+    margin-top: 8px;
+    justify-content: space-between;
+}
+
+.adex-mobile .adex-search-count {
+    font-size: 12px;
+}
+
+/* Mobile search sidebar styles */
+.adex-mobile .adex-preview-panel .adex-preview-search {
+    width: 100%;
+}
+
+.adex-mobile.search-slide-in .adex-preview-panel {
+    grid-template-columns: 0px 100% 0px;
+}
+
+.adex-mobile.search-slide-out .adex-preview-panel {
+    grid-template-columns: 0px 0px auto;
+}
+
+/* Bookmarks and Outline sidebar */
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks {
+    max-height: 400px;
+    min-height: 400px;
+    overflow: auto;
+    background-color: #f7f7f7;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    scroll-behavior: smooth;
+    width: 250px;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-header {
+    padding: 10px 15px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-tabs {
+    display: flex;
+    gap: 5px;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-tab {
+    padding: 5px 10px;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-tab.active {
+    background-color: rgba(20, 127, 212, 0.1);
+    color: #147fd4;
+    font-weight: 600;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-content {
+    padding: 10px 0;
+}
+
+/* Outline styles */
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-outline-container {
+    padding: 0 10px;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-outline-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-outline-item {
+    margin-bottom: 2px;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-outline-item-content {
+    display: flex;
+    align-items: center;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-outline-toggle {
+    background: transparent;
+    border: none;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #666;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-outline-toggle svg {
+    width: 12px;
+    height: 12px;
+    transition: transform 0.2s ease;
+}
+
+/* Update the outline link styles to show when it's clickable */
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-outline-link {
+    background: transparent;
+    border: none;
+    text-align: left;
+    padding: 5px;
+    font-size: 12px;
+    color: #333;
+    cursor: pointer;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-radius: 4px;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-outline-link:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-outline-link:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-outline-link:not(:disabled):hover {
+    background-color: rgba(20, 127, 212, 0.1);
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-outline-page {
+    margin-left: 5px;
+    font-size: 10px;
+    color: #666;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-no-outline {
+    padding: 20px 15px;
+    text-align: center;
+    color: #666;
+    font-size: 13px;
+}
+
+/* Bookmarks styles */
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-container {
+    padding: 0 10px;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-actions {
+    margin-bottom: 15px;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-add-bookmark-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: #147fd4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    width: 100%;
+    justify-content: center;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-add-bookmark-btn:hover {
+    background-color: #0e6cb4;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-add-bookmark-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmark-title-input {
+    padding: 6px 10px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmark-form-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmark-save,
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmark-cancel {
+    flex: 1;
+    padding: 6px 0;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmark-save {
+    background-color: #147fd4;
+    color: white;
+    border: none;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmark-save:hover {
+    background-color: #0e6cb4;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmark-save:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmark-cancel {
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    color: #333;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmark-cancel:hover {
+    background-color: #e0e0e0;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmark-item {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmark-link {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 5px;
+    background: transparent;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmark-link:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmark-link svg {
+    color: #147fd4;
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmark-title {
+    font-size: 12px;
+    color: #333;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmark-page {
+    font-size: 10px;
+    color: #666;
+    flex-shrink: 0;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmark-delete {
+    background: transparent;
+    border: none;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #666;
+    border-radius: 4px;
+    opacity: 0.5;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-bookmark-delete:hover {
+    background-color: rgba(255, 0, 0, 0.1);
+    color: #ff0000;
+    opacity: 1;
+}
+
+.adex-viewer .adex-preview-panel .adex-preview-bookmarks .adex-no-bookmarks {
+    padding: 20px 15px;
+    text-align: center;
+    color: #666;
+    font-size: 13px;
+}
+
+/* Bookmarks sidebar slide animations */
+.bookmarks-slide-in .adex-preview-panel {
+    overflow: hidden;
+    grid-template-columns: 180px 0px 250px auto;
+    transition: 0.2s all ease;
+}
+
+.bookmarks-slide-in .adex-preview-panel .adex-preview-bookmarks {
+    transform: translateX(0px);
+    transition: 0.2s all ease;
+}
+
+.bookmarks-slide-out .adex-preview-panel {
+    overflow: hidden;
+    grid-template-columns: 180px 0px 0px auto;
+    transition: 0.2s all ease;
+}
+
+.bookmarks-slide-out .adex-preview-panel .adex-preview-bookmarks {
+    transform: translateX(-250px);
+    transition: 0.2s all ease;
+}
+
+/* When all sidebars are closed */
+.thumbs-slide-out.search-slide-out.bookmarks-slide-out .adex-preview-panel {
+    grid-template-columns: 0px 0px 0px auto;
+}
+
+/* Mobile bookmarks sidebar styles */
+.adex-mobile .adex-preview-panel .adex-preview-bookmarks {
+    width: 100%;
+}
+
+.adex-mobile.bookmarks-slide-in .adex-preview-panel {
+    grid-template-columns: 0px 0px 100% 0px;
+}
+
+.adex-mobile.bookmarks-slide-out .adex-preview-panel {
+    grid-template-columns: 0px 0px 0px auto;
+}
+
+/* Update fullscreen styles to include bookmarks sidebar */
+.adex-viewer.fullScreenView .adex-preview-panel .adex-preview-bookmarks {
+    max-height: calc(100vh - 81px);
+    min-height: calc(100vh - 81px);
 }

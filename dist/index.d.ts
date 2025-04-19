@@ -16,6 +16,8 @@ interface PDFViewerProps {
         sidebarButton?: boolean;
         rotation?: boolean;
         print?: boolean;
+        search?: boolean;
+        bookmarks?: boolean;
     };
     defaultValues?: {
         zoom?: number;

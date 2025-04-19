@@ -10,7 +10,7 @@ import "./index.css"
 // Set worker source for pdf.js
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`
 
-// Update the PDFViewerProps interface to include textOptions
+// Update the PDFViewerProps interface to include bookmarks option
 interface PDFViewerProps {
   data: { url: string }
   credits?: boolean | null
@@ -25,6 +25,8 @@ interface PDFViewerProps {
     sidebarButton?: boolean
     rotation?: boolean // New option for page rotation
     print?: boolean // New option for print button
+    search?: boolean // New option for search functionality
+    bookmarks?: boolean // New option for bookmarks functionality
   }
   defaultValues?: {
     zoom?: number
@@ -46,7 +48,38 @@ interface PDFViewerProps {
   }
 }
 
-// Update the default props to include textOptions
+// Define a type for search results
+interface SearchResult {
+  pageIndex: number
+  matchIndex: number
+  text: string
+  context: string // Added context field for displaying text around the match
+  position: {
+    left: number
+    top: number
+    right: number
+    bottom: number
+  }
+}
+
+// Add these new interfaces for outline and bookmarks
+interface OutlineItem {
+  title: string
+  dest?: any
+  items?: OutlineItem[]
+  pageNumber?: number
+  expanded?: boolean
+  id: string
+}
+
+interface Bookmark {
+  id: string
+  title: string
+  pageNumber: number
+  createdAt: number
+}
+
+// Update the default props to include bookmarks
 const AdexViewer: React.FC<PDFViewerProps> = ({
   data,
   credits,
@@ -61,6 +94,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
     sidebarButton: true,
     rotation: true, // Default to showing rotation controls
     print: true, // Default to showing print button
+    search: true, // Default to showing search functionality
+    bookmarks: true, // Default to showing bookmarks functionality
   },
   defaultValues = {
     zoom: 1.25,
@@ -110,6 +145,29 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
   // Add a variable to store the original zoom level
   const [originalZoom, setOriginalZoom] = useState<number | null>(null)
 
+  // Search functionality states
+  const [showSearch, setShowSearch] = useState<boolean>(false)
+  const [searchQuery, setSearchQuery] = useState<string>("")
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([])
+  const [currentSearchResult, setCurrentSearchResult] = useState<number>(-1)
+  const [isSearching, setIsSearching] = useState<boolean>(false)
+  const [pdfDocument, setPdfDocument] = useState<any>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
+
+  // Search sidebar state
+  const [showSearchSidebar, setShowSearchSidebar] = useState<boolean>(false)
+  const searchResultsRef = useRef<HTMLDivElement>(null)
+
+  // Add these new state variables after the search sidebar state
+  const [documentOutline, setDocumentOutline] = useState<OutlineItem[]>([])
+  const [expandedOutlineItems, setExpandedOutlineItems] = useState<{ [key: string]: boolean }>({})
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>([])
+  const [activeTab, setActiveTab] = useState<"outline" | "bookmarks">("outline")
+  const [showBookmarksSidebar, setShowBookmarksSidebar] = useState<boolean>(false)
+  const [isAddingBookmark, setIsAddingBookmark] = useState<boolean>(false)
+  const [newBookmarkTitle, setNewBookmarkTitle] = useState<string>("")
+  const bookmarksRef = useRef<HTMLDivElement>(null)
+
   // Check if we're on mobile based on the responsive settings
   useEffect(() => {
     const checkMobile = () => {
@@ -128,6 +186,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
   useEffect(() => {
     if (isMobile && responsive?.hideSidebarOnMobile) {
       setSidebar(false)
+      setShowSearchSidebar(false)
+      setShowBookmarksSidebar(false)
     } else {
       setSidebar(showSidebar || false)
     }
@@ -185,10 +245,96 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
     }
   }, [data?.url, retryCount])
 
+  const goToPage = useCallback((pageNum: number) => {
+    setPreviewNumber(pageNum)
+    setPageNumber(pageNum)
+    const pageEl = pageRefs.current[pageNum]
+    if (pageEl) {
+      pageEl.scrollIntoView({ behavior: "smooth", block: "start" })
+    }
+  }, [])
+
+  // Add this function to extract the outline from the PDF document
+  // Add this after the onDocumentLoadSuccess function
+  const extractOutline = useCallback(async (pdf: any) => {
+    try {
+      const outline = await pdf.getOutline()
+      if (outline && outline.length > 0) {
+        // Process the outline to add unique IDs and page numbers
+        const processedOutline = await processOutlineItems(outline, pdf)
+        setDocumentOutline(processedOutline)
+      } else {
+        setDocumentOutline([])
+      }
+    } catch (error) {
+      console.error("Error extracting outline:", error)
+      setDocumentOutline([])
+    }
+  }, [])
+
+  // Add this function to process outline items and get their page numbers
+  const processOutlineItems = useCallback(async (items: any[], pdf: any, level = 0): Promise<OutlineItem[]> => {
+    const processedItems: OutlineItem[] = []
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i]
+      const id = `outline-${level}-${i}-${Date.now()}`
+
+      let pageNumber: number | undefined = undefined
+
+      if (item.dest) {
+        try {
+          // Try to resolve the destination to get the page number
+          if (typeof item.dest === "string") {
+            const dest = await pdf.getDestination(item.dest)
+            if (dest) {
+              const ref = await pdf.getPageRef(dest[0])
+              const pageIndex = await pdf.getPageIndex(ref)
+              pageNumber = pageIndex + 1
+            }
+          } else if (Array.isArray(item.dest)) {
+            // Handle direct destination arrays
+            const ref = item.dest[0]
+            if (ref) {
+              try {
+                const pageIndex = await pdf.getPageIndex(ref)
+                pageNumber = pageIndex + 1
+              } catch (error) {
+                console.error("Error getting page index from ref:", error)
+              }
+            }
+          }
+        } catch (error) {
+          console.error("Error resolving destination:", error)
+        }
+      }
+
+      const processedItem: OutlineItem = {
+        title: item.title,
+        dest: item.dest,
+        pageNumber,
+        id,
+        expanded: level < 1, // Expand only the first level by default
+      }
+
+      if (item.items && item.items.length > 0) {
+        processedItem.items = await processOutlineItems(item.items, pdf, level + 1)
+      }
+
+      processedItems.push(processedItem)
+    }
+
+    return processedItems
+  }, [])
+
   async function onDocumentLoadSuccess(pdf: any) {
     setNumPages(pdf.numPages)
+    setPdfDocument(pdf)
     const meta = await pdf.getMetadata()
     setMetadata(meta.info)
+
+    // Extract the document outline
+    await extractOutline(pdf)
 
     // If default page is set and it's valid, navigate to it
     if (defaultValues.page && defaultValues.page > 1 && defaultValues.page <= pdf.numPages) {
@@ -196,17 +342,114 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
     }
   }
 
-  const goToPage = useCallback(
-    (pageNum: number) => {
-      setPreviewNumber(pageNum)
-      setPageNumber(pageNum)
-      const pageEl = pageRefs.current[pageNum]
-      if (pageEl) {
-        pageEl.scrollIntoView({ behavior: "smooth", block: "start" })
+  // Add this function to toggle the expansion state of an outline item
+  const toggleOutlineItem = useCallback((itemId: string) => {
+    setExpandedOutlineItems((prev) => ({
+      ...prev,
+      [itemId]: !prev[itemId],
+    }))
+  }, [])
+
+  // Add this function to navigate to an outline item's page
+  const navigateToOutlineItem = useCallback(
+    async (item: OutlineItem) => {
+      if (item.pageNumber) {
+        goToPage(item.pageNumber)
+      } else if (item.dest && pdfDocument) {
+        try {
+          // Try to resolve the destination if pageNumber is not available
+          let pageNumber: number | undefined = undefined
+
+          if (typeof item.dest === "string") {
+            const dest = await pdfDocument.getDestination(item.dest)
+            if (dest) {
+              const ref = await pdfDocument.getPageRef(dest[0])
+              const pageIndex = await pdfDocument.getPageIndex(ref)
+              pageNumber = pageIndex + 1
+            }
+          } else if (Array.isArray(item.dest)) {
+            // Handle direct destination arrays
+            const ref = item.dest[0]
+            if (ref) {
+              try {
+                const pageIndex = await pdfDocument.getPageIndex(ref)
+                pageNumber = pageIndex + 1
+              } catch (error) {
+                console.error("Error getting page index from ref:", error)
+              }
+            }
+          }
+
+          if (pageNumber) {
+            goToPage(pageNumber)
+          }
+        } catch (error) {
+          console.error("Error navigating to outline item:", error)
+        }
       }
     },
-    [setPageNumber],
+    [goToPage, pdfDocument],
   )
+
+  // Add these functions to manage bookmarks
+  const addBookmark = useCallback(() => {
+    if (!newBookmarkTitle.trim()) return
+
+    const newBookmark: Bookmark = {
+      id: `bookmark-${Date.now()}`,
+      title: newBookmarkTitle.trim(),
+      pageNumber: pageNumber,
+      createdAt: Date.now(),
+    }
+
+    setBookmarks((prev) => [...prev, newBookmark])
+    setNewBookmarkTitle("")
+    setIsAddingBookmark(false)
+
+    // Save bookmarks to localStorage
+    localStorage.setItem(`pdf-bookmarks-${data?.url}`, JSON.stringify([...bookmarks, newBookmark]))
+  }, [newBookmarkTitle, pageNumber, bookmarks, data?.url])
+
+  const deleteBookmark = useCallback(
+    (id: string) => {
+      setBookmarks((prev) => {
+        const updatedBookmarks = prev.filter((bookmark) => bookmark.id !== id)
+        // Save updated bookmarks to localStorage
+        localStorage.setItem(`pdf-bookmarks-${data?.url}`, JSON.stringify(updatedBookmarks))
+        return updatedBookmarks
+      })
+    },
+    [data?.url],
+  )
+
+  const navigateToBookmark = useCallback(
+    (bookmark: Bookmark) => {
+      goToPage(bookmark.pageNumber)
+    },
+    [goToPage],
+  )
+
+  // Add this effect to load bookmarks from localStorage
+  useEffect(() => {
+    if (data?.url) {
+      const savedBookmarks = localStorage.getItem(`pdf-bookmarks-${data?.url}`)
+      if (savedBookmarks) {
+        try {
+          setBookmarks(JSON.parse(savedBookmarks))
+        } catch (error) {
+          console.error("Error parsing saved bookmarks:", error)
+        }
+      }
+    }
+  }, [data?.url])
+
+  // Add this function to toggle the bookmarks sidebar
+  const toggleBookmarksSidebar = useCallback(() => {
+    setShowBookmarksSidebar((prev) => !prev)
+    if (!showBookmarksSidebar) {
+      setActiveTab("outline")
+    }
+  }, [showBookmarksSidebar])
 
   function updatePage(__page: number) {
     if (__page > 0 && numPages !== null && __page <= numPages) {
@@ -393,7 +636,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
             width: 100%;
             border: none !important;
           }
-          .adex-topbar, .adex-power-row, .adex-preview-thumbs, .adex-pdf-meta-info {
+          .adex-topbar, .adex-power-row, .adex-preview-thumbs, .adex-preview-search, .adex-preview-bookmarks, .adex-pdf-meta-info {
             display: none !important;
           }
           .adex-preview-panel {
@@ -431,13 +674,446 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
     }
   }, [isPrinting])
 
+  // Toggle search bar visibility
+  const toggleSearch = useCallback(() => {
+    setShowSearch((prev) => {
+      const newState = !prev
+      if (newState && searchInputRef.current) {
+        // Focus the search input when opening
+        setTimeout(() => {
+          searchInputRef.current?.focus()
+        }, 100)
+      }
+      return newState
+    })
+    // Clear search results when closing
+    if (showSearch) {
+      setSearchQuery("")
+      setSearchResults([])
+      setCurrentSearchResult(-1)
+      setShowSearchSidebar(false)
+    }
+  }, [showSearch])
+
+  // Handle search input change
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value)
+  }, [])
+
+  // Perform search when Enter key is pressed
+  const handleSearchKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        performSearch()
+      }
+    },
+    [searchQuery, pdfDocument],
+  )
+
+  // Helper function to get context around a match
+  const getContextAroundMatch = (text: string, matchIndex: number, matchLength: number, contextLength = 30) => {
+    const startIndex = Math.max(0, matchIndex - contextLength)
+    const endIndex = Math.min(text.length, matchIndex + matchLength + contextLength)
+
+    let context = text.substring(startIndex, endIndex)
+
+    // Add ellipsis if we're not at the beginning or end
+    if (startIndex > 0) context = "..." + context
+    if (endIndex < text.length) context = context + "..."
+
+    return context
+  }
+
+  // Search functionality
+  const performSearch = useCallback(async () => {
+    if (!searchQuery.trim() || !pdfDocument) return
+
+    setIsSearching(true)
+    setSearchResults([])
+    setCurrentSearchResult(-1)
+
+    try {
+      const results: SearchResult[] = []
+
+      // Search through each page
+      for (let i = 1; i <= pdfDocument.numPages; i++) {
+        const page = await pdfDocument.getPage(i)
+        const textContent = await page.getTextContent()
+        const viewport = page.getViewport({ scale: 1.0 }) // Use scale 1.0 for base coordinates
+
+        // Extract full page text for context
+        const pageText = textContent.items.map((item: any) => item.str).join(" ")
+
+        // Search for matches in the text
+        const searchRegex = new RegExp(searchQuery, "gi")
+        let match
+
+        while ((match = searchRegex.exec(pageText)) !== null) {
+          // Get context around the match
+          const context = getContextAroundMatch(pageText, match.index, searchQuery.length)
+
+          // Store the match information
+          results.push({
+            pageIndex: i - 1,
+            matchIndex: results.length,
+            text: match[0],
+            context: context,
+            position: {
+              left: 0,
+              top: 0,
+              right: 0,
+              bottom: 0,
+            },
+          })
+        }
+      }
+
+      setSearchResults(results)
+      if (results.length > 0) {
+        setCurrentSearchResult(0)
+        navigateToSearchResult(results[0])
+        // Show search sidebar if we have results
+        setShowSearchSidebar(true)
+      }
+    } catch (error) {
+      console.error("Error searching PDF:", error)
+    } finally {
+      setIsSearching(false)
+    }
+  }, [searchQuery, pdfDocument])
+
+  // Navigate to a specific search result
+  const navigateToSearchResult = useCallback(
+    (result: SearchResult) => {
+      if (!result) return
+
+      // Navigate to the page containing the result
+      goToPage(result.pageIndex + 1)
+
+      // Scroll to the result position
+      setTimeout(() => {
+        const pageElement = pageRefs.current[result.pageIndex + 1]
+        if (!pageElement) return
+
+        // Get the text layer
+        const textLayer = pageElement.querySelector(".react-pdf__Page__textContent")
+        if (!textLayer) return
+
+        // Clear all existing highlights first
+        document.querySelectorAll(".adex-search-highlight").forEach((el) => {
+          el.remove()
+        })
+
+        // Find all text spans in the text layer
+        const textSpans = textLayer.querySelectorAll("span")
+        if (!textSpans || textSpans.length === 0) return
+
+        // Convert search query to lowercase for case-insensitive comparison
+        const searchLower = searchQuery.toLowerCase()
+
+        // Track if we've found the current result
+        let foundCurrentResult = false
+        let highlightElement = null
+
+        // Loop through all text spans to find matches
+        for (let i = 0; i < textSpans.length; i++) {
+          const span = textSpans[i]
+          const text = span.textContent || ""
+          const textLower = text.toLowerCase()
+
+          let startIndex = 0
+          let index
+
+          // Find all instances of the search query in this span
+          while ((index = textLower.indexOf(searchLower, startIndex)) !== -1) {
+            // Create a highlight element
+            const highlight = document.createElement("div")
+            highlight.className = "adex-search-highlight"
+
+            // Get the position of the span
+            const rect = span.getBoundingClientRect()
+            const textLayerRect = textLayer.getBoundingClientRect()
+
+            // Calculate the relative position within the text layer
+            const left = rect.left - textLayerRect.left
+            const top = rect.top - textLayerRect.top
+
+            // Set the position and size
+            highlight.style.left = `${left}px`
+            highlight.style.top = `${top}px`
+            highlight.style.width = `${rect.width}px`
+            highlight.style.height = `${rect.height}px`
+
+            // Add a unique ID for the current result
+            const resultId = `search-highlight-${result.matchIndex}-${i}-${index}`
+            highlight.id = resultId
+
+            // Check if this is the current result
+            if (!foundCurrentResult && result.text.toLowerCase() === searchLower) {
+              highlight.classList.add("current")
+              highlightElement = highlight
+              foundCurrentResult = true
+            }
+
+            // Add the highlight to the text layer
+            textLayer.appendChild(highlight)
+
+            // Move to the next potential match in this span
+            startIndex = index + searchLower.length
+          }
+        }
+
+        // If we found the current result, scroll to it
+        if (highlightElement) {
+          highlightElement.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          })
+        }
+
+        // Highlight the corresponding result in the sidebar
+        if (searchResultsRef.current) {
+          const resultElement = searchResultsRef.current.querySelector(`#search-result-${result.matchIndex}`)
+          if (resultElement) {
+            // Remove active class from all results
+            searchResultsRef.current.querySelectorAll(".adex-search-result-item").forEach((el) => {
+              el.classList.remove("active")
+            })
+            // Add active class to current result
+            resultElement.classList.add("active")
+            // Scroll the result into view in the sidebar
+            resultElement.scrollIntoView({ behavior: "smooth", block: "nearest" })
+          }
+        }
+      }, 300) // Increased timeout to ensure the page is fully rendered
+    },
+    [goToPage, searchQuery],
+  )
+
+  // Navigate to the next search result
+  const nextSearchResult = useCallback(() => {
+    if (searchResults.length === 0) return
+
+    const nextIndex = (currentSearchResult + 1) % searchResults.length
+    setCurrentSearchResult(nextIndex)
+    navigateToSearchResult(searchResults[nextIndex])
+  }, [currentSearchResult, searchResults, navigateToSearchResult])
+
+  // Navigate to the previous search result
+  const prevSearchResult = useCallback(() => {
+    if (searchResults.length === 0) return
+
+    const prevIndex = (currentSearchResult - 1 + searchResults.length) % searchResults.length
+    setCurrentSearchResult(prevIndex)
+    navigateToSearchResult(searchResults[prevIndex])
+  }, [currentSearchResult, searchResults, navigateToSearchResult])
+
+  // Toggle search sidebar
+  const toggleSearchSidebar = useCallback(() => {
+    if (searchResults.length > 0) {
+      setShowSearchSidebar((prev) => !prev)
+    }
+  }, [searchResults.length])
+
+  // Clear search highlights when search is closed
+  useEffect(() => {
+    if (!showSearch) {
+      document.querySelectorAll(".adex-search-highlight").forEach((el) => {
+        el.remove()
+      })
+    }
+  }, [showSearch])
+
+  // Highlight all search results on the current page
+  const highlightAllResultsOnPage = useCallback(
+    (pageIndex: number) => {
+      const pageElement = pageRefs.current[pageIndex + 1]
+      if (!pageElement) return
+
+      const textLayer = pageElement.querySelector(".react-pdf__Page__textContent")
+      if (!textLayer) return
+
+      // Clear existing highlights on this page
+      pageElement.querySelectorAll(".adex-search-highlight").forEach((el) => el.remove())
+
+      // If no search query or results, exit
+      if (!searchQuery || searchResults.length === 0) return
+
+      // Find all text spans in the text layer
+      const textSpans = textLayer.querySelectorAll("span")
+      if (!textSpans || textSpans.length === 0) return
+
+      // Convert search query to lowercase for case-insensitive comparison
+      const searchLower = searchQuery.toLowerCase()
+
+      // Loop through all text spans to find matches
+      for (let i = 0; i < textSpans.length; i++) {
+        const span = textSpans[i]
+        const text = span.textContent || ""
+        const textLower = text.toLowerCase()
+
+        let startIndex = 0
+        let index: any
+
+        // Find all instances of the search query in this span
+        while ((index = textLower.indexOf(searchLower, startIndex)) !== -1) {
+          // Create a highlight element
+          const highlight = document.createElement("div")
+          highlight.className = "adex-search-highlight"
+
+          // Get the position of the span
+          const rect = span.getBoundingClientRect()
+          const textLayerRect = textLayer.getBoundingClientRect()
+
+          // Calculate the relative position within the text layer
+          const left = rect.left - textLayerRect.left
+          const top = rect.top - textLayerRect.top
+
+          // Set the position and size
+          highlight.style.left = `${left}px`
+          highlight.style.top = `${top}px`
+          highlight.style.width = `${rect.width}px`
+          highlight.style.height = `${rect.height}px`
+
+          // Check if this is the current result
+          const isCurrentResult = searchResults.some(
+            (result) =>
+              result.pageIndex === pageIndex &&
+              result.matchIndex === currentSearchResult &&
+              result.text.toLowerCase() === text.substring(index, index + searchLower.length).toLowerCase(),
+          )
+
+          if (isCurrentResult) {
+            highlight.classList.add("current")
+          }
+
+          // Add the highlight to the text layer
+          textLayer.appendChild(highlight)
+
+          // Move to the next potential match in this span
+          startIndex = index + searchLower.length
+        }
+      }
+    },
+    [searchQuery, searchResults, currentSearchResult],
+  )
+
+  // Highlight results when page changes
+  useEffect(() => {
+    if (searchResults.length > 0 && pageNumber > 0) {
+      highlightAllResultsOnPage(pageNumber - 1)
+    }
+  }, [pageNumber, searchResults, highlightAllResultsOnPage])
+
+  // Add this new function to update highlights when scale changes
+  useEffect(() => {
+    if (searchResults.length > 0 && pageNumber > 0) {
+      // Use a timeout to ensure the page has been re-rendered with the new scale
+      const timer = setTimeout(() => {
+        highlightAllResultsOnPage(pageNumber - 1)
+      }, 100)
+
+      return () => clearTimeout(timer)
+    }
+  }, [scale, pageNumber, searchResults, highlightAllResultsOnPage])
+
+  // Add this CSS class to the style element
+  const searchHighlightStyles = `
+.adex-search-highlight {
+  position: absolute;
+  background-color: rgba(255, 255, 0, 0.4);
+  border-radius: 2px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.adex-search-highlight.current {
+  background-color: rgba(255, 165, 0, 0.6);
+  box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.8);
+  z-index: 11;
+}
+`
+
+  // Add this useEffect inside the component, before the return statement
+  // Add this right before the renderOutlineItems function
+
+  // Initialize expanded state for outline items
+  useEffect(() => {
+    if (documentOutline.length > 0) {
+      // Initialize expanded state for all outline items
+      const initialExpandedState: { [key: string]: boolean } = {}
+
+      const initializeExpandedState = (items: OutlineItem[], level: number) => {
+        items.forEach((item) => {
+          // Expand only the first level by default
+          initialExpandedState[item.id] = level === 0
+
+          if (item.items && item.items.length > 0) {
+            initializeExpandedState(item.items, level + 1)
+          }
+        })
+      }
+
+      initializeExpandedState(documentOutline, 0)
+      setExpandedOutlineItems(initialExpandedState)
+    }
+  }, [documentOutline])
+
+  // Add this function to render outline items recursively
+  // Add this function before the return statement
+  const renderOutlineItems = (items: OutlineItem[]) => {
+    return items.map((item) => (
+      <div key={item.id} className="adex-outline-item">
+        <div className="adex-outline-item-content">
+          {item.items && item.items.length > 0 ? (
+            <button
+              className="adex-outline-toggle"
+              onClick={() => toggleOutlineItem(item.id)}
+              aria-label={expandedOutlineItems[item.id] ? "Collapse" : "Expand"}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+                style={{
+                  transform: expandedOutlineItems[item.id] ? "rotate(90deg)" : "rotate(0deg)",
+                }}
+              >
+                <path d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
+              </svg>
+            </button>
+          ) : (
+            <span className="adex-outline-toggle" style={{ width: "20px" }}></span>
+          )}
+          <button
+            className="adex-outline-link"
+            onClick={() => navigateToOutlineItem(item)}
+            disabled={!item.pageNumber && !item.dest}
+          >
+            {item.title}
+            {item.pageNumber && <span className="adex-outline-page">p. {item.pageNumber}</span>}
+          </button>
+        </div>
+
+        {item.items && item.items.length > 0 && expandedOutlineItems[item.id] && (
+          <div className="adex-outline-children" style={{ marginLeft: "20px" }}>
+            {renderOutlineItems(item.items)}
+          </div>
+        )}
+      </div>
+    ))
+  }
+
   // Add a class to the main viewer div based on text selection state
+  // Update the className in the main div to include the bookmarks sidebar state
   return (
     <div
       ref={viewerRef}
       className={`PDFViewer adex-viewer ${
         fullScreenView ? "fullScreenView" : ""
-      } ${sidebar ? "thumbs-slide-in" : "thumbs-slide-out"} dev-abhishekbagul ${isMobile ? "adex-mobile" : ""} ${!textOptions.enableSelection ? "disable-text-selection" : ""} ${isPrinting ? "adex-printing" : ""}`}
+      } ${sidebar ? "thumbs-slide-in" : "thumbs-slide-out"} ${showSearchSidebar ? "search-slide-in" : "search-slide-out"} ${showBookmarksSidebar ? "bookmarks-slide-in" : "bookmarks-slide-out"} dev-abhishekbagul ${isMobile ? "adex-mobile" : ""} ${!textOptions.enableSelection ? "disable-text-selection" : ""} ${isPrinting ? "adex-printing" : ""}`}
     >
       {showToolbar && (
         <div className="adex-topbar">
@@ -556,6 +1232,18 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                 </button>
               </>
             )}
+            {showControls?.search && (
+              <button
+                onClick={toggleSearch}
+                aria-label="Search document"
+                title="Search document"
+                className={showSearch ? "active" : ""}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                </svg>
+              </button>
+            )}
             {showControls?.print && (
               <button onClick={handlePrint} aria-label="Print document" title="Print document">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -577,7 +1265,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                   >
                     <path
                       fillRule="evenodd"
-                      d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707m4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707m0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707m-4.344 0a.5.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707"
+                      d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707m4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707m0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707m-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707"
                     />
                   </svg>
                 ) : (
@@ -623,7 +1311,113 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                 </svg>
               </a>
             )}
+            {showControls?.bookmarks !== false && (
+              <button
+                onClick={toggleBookmarksSidebar}
+                aria-label="Bookmarks and outline"
+                title="Bookmarks and outline"
+                className={showBookmarksSidebar ? "active" : ""}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 2 0 0 0-2 2z" />
+                </svg>
+              </button>
+            )}
           </div>
+        </div>
+      )}
+
+      {/* Search bar */}
+      {showSearch && (
+        <div className="adex-search-bar">
+          <div className="adex-search-input-container">
+            <input
+              ref={searchInputRef}
+              type="text"
+              className="adex-search-input"
+              placeholder="Search in document..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onKeyDown={handleSearchKeyDown}
+              aria-label="Search in document"
+            />
+            <button
+              className="adex-search-button"
+              onClick={performSearch}
+              disabled={isSearching || !searchQuery.trim()}
+              aria-label="Search"
+            >
+              {isSearching ? (
+                <span className="adex-search-loading"></span>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                </svg>
+              )}
+            </button>
+          </div>
+          {searchResults.length > 0 && (
+            <div className="adex-search-results">
+              <span className="adex-search-count">
+                {currentSearchResult + 1} of {searchResults.length} results
+              </span>
+              <div className="adex-search-navigation">
+                <button
+                  className="adex-search-prev"
+                  onClick={prevSearchResult}
+                  disabled={searchResults.length <= 1}
+                  aria-label="Previous result"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"
+                    />
+                  </svg>
+                </button>
+                <button
+                  className="adex-search-next"
+                  onClick={nextSearchResult}
+                  disabled={searchResults.length <= 1}
+                  aria-label="Next result"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <button
+                className="adex-search-sidebar-toggle"
+                onClick={toggleSearchSidebar}
+                aria-label={showSearchSidebar ? "Hide search results" : "Show search results"}
+                title={showSearchSidebar ? "Hide search results" : "Show search results"}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M2 2v12h12V2H2zm6.5 1h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1zm-5 1a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zM8.5 6h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1zm-5 1a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zM8.5 9h3a.5.5.0 0 1 0 1h-3a.5.5 0 0 1 0-1zm-5 1a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zM12 13a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+                </svg>
+              </button>
+              <button className="adex-search-close" onClick={toggleSearch} aria-label="Close search">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -674,6 +1468,167 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                 ))}
             </Document>
           )}
+        </div>
+
+        {/* Search Results Sidebar */}
+        <div className="adex-preview-search" ref={searchResultsRef}>
+          <div className="adex-search-results-header">
+            <h3>Search Results</h3>
+            <span className="adex-search-results-count">{searchResults.length} matches</span>
+          </div>
+          <div className="adex-search-results-list">
+            {searchResults.length > 0 ? (
+              searchResults.map((result, index) => (
+                <div
+                  key={`search-result-${index}`}
+                  id={`search-result-${result.matchIndex}`}
+                  className={`adex-search-result-item ${currentSearchResult === result.matchIndex ? "active" : ""}`}
+                  onClick={() => {
+                    setCurrentSearchResult(result.matchIndex)
+                    navigateToSearchResult(result)
+                  }}
+                >
+                  <div className="adex-search-result-page">Page {result.pageIndex + 1}</div>
+                  <div className="adex-search-result-context">
+                    {result.context.split(new RegExp(`(${searchQuery})`, "i")).map((part, i) =>
+                      part.toLowerCase() === searchQuery.toLowerCase() ? (
+                        <span key={i} className="adex-search-result-highlight">
+                          {part}
+                        </span>
+                      ) : (
+                        <span key={i}>{part}</span>
+                      ),
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="adex-search-no-results">{isSearching ? "Searching..." : "No results found"}</div>
+            )}
+          </div>
+        </div>
+
+        {/* Bookmarks and Outline Sidebar */}
+        <div className="adex-preview-bookmarks" ref={bookmarksRef}>
+          <div className="adex-bookmarks-header">
+            <div className="adex-bookmarks-tabs">
+              <button
+                className={`adex-bookmarks-tab ${activeTab === "outline" ? "active" : ""}`}
+                onClick={() => setActiveTab("outline")}
+              >
+                Outline
+              </button>
+              <button
+                className={`adex-bookmarks-tab ${activeTab === "bookmarks" ? "active" : ""}`}
+                onClick={() => setActiveTab("bookmarks")}
+              >
+                Bookmarks
+              </button>
+            </div>
+          </div>
+
+          <div className="adex-bookmarks-content">
+            {activeTab === "outline" ? (
+              <div className="adex-outline-container">
+                {documentOutline.length > 0 ? (
+                  <div className="adex-outline-list">{renderOutlineItems(documentOutline)}</div>
+                ) : (
+                  <div className="adex-no-outline">No outline available in this document</div>
+                )}
+              </div>
+            ) : (
+              <div className="adex-bookmarks-container">
+                <div className="adex-bookmarks-actions">
+                  {isAddingBookmark ? (
+                    <div className="adex-add-bookmark-form">
+                      <input
+                        type="text"
+                        className="adex-bookmark-title-input"
+                        placeholder="Bookmark title"
+                        value={newBookmarkTitle}
+                        onChange={(e) => setNewBookmarkTitle(e.target.value)}
+                        autoFocus
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") addBookmark()
+                          if (e.key === "Escape") setIsAddingBookmark(false)
+                        }}
+                      />
+                      <div className="adex-bookmark-form-actions">
+                        <button
+                          className="adex-bookmark-save"
+                          onClick={addBookmark}
+                          disabled={!newBookmarkTitle.trim()}
+                        >
+                          Save
+                        </button>
+                        <button className="adex-bookmark-cancel" onClick={() => setIsAddingBookmark(false)}>
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button className="adex-add-bookmark-btn" onClick={() => setIsAddingBookmark(true)}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="14"
+                        height="14"
+                        fill="currentColor"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                      </svg>
+                      Add Bookmark
+                    </button>
+                  )}
+                </div>
+
+                <div className="adex-bookmarks-list">
+                  {bookmarks.length > 0 ? (
+                    bookmarks
+                      .sort((a, b) => a.pageNumber - b.pageNumber)
+                      .map((bookmark) => (
+                        <div key={bookmark.id} className="adex-bookmark-item">
+                          <button className="adex-bookmark-link" onClick={() => navigateToBookmark(bookmark)}>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 2 0 0 0-2 2z" />
+                            </svg>
+                            <span className="adex-bookmark-title">{bookmark.title}</span>
+                            <span className="adex-bookmark-page">p. {bookmark.pageNumber}</span>
+                          </button>
+                          <button
+                            className="adex-bookmark-delete"
+                            onClick={() => deleteBookmark(bookmark.id)}
+                            aria-label={`Delete bookmark: ${bookmark.title}`}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="12"
+                              height="12"
+                              fill="currentColor"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                              <path
+                                fillRule="evenodd"
+                                d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      ))
+                  ) : (
+                    <div className="adex-no-bookmarks">No bookmarks added yet</div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* PDF Pages */}
