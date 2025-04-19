@@ -1,15 +1,16 @@
 "use client"
-import { useEffect, useState, useRef, useCallback } from "react"
+import { useEffect, useState, useRef, useCallback, useMemo } from "react"
 import type React from "react"
 
-import { Document, Page } from "react-pdf"
-import { pdfjs } from "react-pdf"
+import { Document, Page, pdfjs } from "react-pdf"
+import "react-pdf/dist/esm/Page/TextLayer.css" // Import text layer styles
+import "react-pdf/dist/esm/Page/AnnotationLayer.css" // Import annotation layer styles
 import "./index.css"
 
 // Set worker source for pdf.js
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`
 
-// Update the showControls interface to include rotation
+// Update the PDFViewerProps interface to include textOptions
 interface PDFViewerProps {
   data: { url: string }
   credits?: boolean | null
@@ -34,9 +35,13 @@ interface PDFViewerProps {
     hideSidebarOnMobile?: boolean
     reduceToolbarOnMobile?: boolean
   }
+  textOptions?: {
+    enableSelection?: boolean
+    enableCopy?: boolean
+  }
 }
 
-// Update the default showControls to include rotation
+// Update the default props to include textOptions
 const AdexViewer: React.FC<PDFViewerProps> = ({
   data,
   credits,
@@ -61,6 +66,10 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
     hideSidebarOnMobile: true,
     reduceToolbarOnMobile: true,
   },
+  textOptions = {
+    enableSelection: true,
+    enableCopy: true,
+  },
 }) => {
   const scaleSets = [0.5, 0.75, 1, 1.25, 1.5, 2, 3]
   const [numPages, setNumPages] = useState<number | null>(null)
@@ -82,6 +91,10 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
   const [isMobile, setIsMobile] = useState<boolean>(false)
   // Add a pageRotations state to track rotation for each page
   const [pageRotations, setPageRotations] = useState<{ [key: number]: number }>({})
+  // Add a state to track if text layer should be enabled
+  const [isTextLayerEnabled, setIsTextLayerEnabled] = useState<boolean>(
+    Boolean(textOptions?.enableSelection) || Boolean(textOptions?.enableCopy),
+  )
 
   // Check if we're on mobile based on the responsive settings
   useEffect(() => {
@@ -276,17 +289,41 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
     })
   }
 
+  // Update the useEffect that runs on component mount to set text layer state
+  useEffect(() => {
+    setIsTextLayerEnabled(Boolean(textOptions?.enableSelection) || Boolean(textOptions?.enableCopy))
+  }, [textOptions?.enableSelection, textOptions?.enableCopy])
+
+  // Memoize Document options to prevent unnecessary re-renders
+  const documentOptions = useMemo(
+    () => ({
+      cMapUrl: "https://unpkg.com/pdfjs-dist@3.4.120/cmaps/",
+      cMapPacked: true,
+      standardFontDataUrl: "https://unpkg.com/pdfjs-dist@3.4.120/standard_fonts/",
+    }),
+    [],
+  )
+
+  // Handle document load error
+  const onDocumentLoadError = useCallback(() => {
+    console.error(`Failed to load PDF (Attempt ${retryCount + 1})`)
+    if (retryCount < maxRetries) {
+      setRetryCount((prev) => prev + 1)
+    }
+  }, [retryCount, maxRetries])
+
+  // Add a class to the main viewer div based on text selection state
   return (
     <div
       ref={viewerRef}
-      className={`PDFViewer ${"adex-viewer"} ${
-        fullScreenView && "fullScreenView"
-      } ${sidebar ? "thumbs-slide-in" : "thumbs-slide-out"} ${"dev-abhishekbagul"} ${isMobile ? "adex-mobile" : ""}`}
+      className={`PDFViewer adex-viewer ${
+        fullScreenView ? "fullScreenView" : ""
+      } ${sidebar ? "thumbs-slide-in" : "thumbs-slide-out"} dev-abhishekbagul ${isMobile ? "adex-mobile" : ""} ${!textOptions.enableSelection ? "disable-text-selection" : ""}`}
     >
       {showToolbar && (
-        <div className={"adex-topbar"}>
+        <div className="adex-topbar">
           {showControls?.navigation && (
-            <div className={"adex-control-page"}>
+            <div className="adex-control-page">
               {showControls?.sidebarButton ? (
                 <button onClick={() => setSidebar(!sidebar)} aria-label="Toggle sidebar">
                   <svg
@@ -321,7 +358,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
               </button>
               <p>
                 <input
-                  className={"page-number"}
+                  className="page-number"
                   type="number"
                   onChange={updatePDFPage}
                   value={previewNumber}
@@ -352,7 +389,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
           )}
 
           {showControls?.zoom && (
-            <div className={"adex-control-zoom"}>
+            <div className="adex-control-zoom">
               <select onChange={(e) => setScale(+e.target.value)} value={scale} aria-label="Zoom level">
                 {scaleSets.map((scaleLevel) => (
                   <option key={scaleLevel} value={scaleLevel}>
@@ -363,7 +400,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
             </div>
           )}
 
-          <div className={"adex-control-options"}>
+          <div className="adex-control-options">
             {showControls?.rotation && (
               <>
                 <button
@@ -425,7 +462,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                     className="bi bi-fullscreen-exit"
                     viewBox="0 0 16 16"
                   >
-                    <path d="M5.5 0a.5.5 0 0 1 .5.5v4A1.5 1.5 0 0 1 4.5 6h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5m5 0a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 10 4.5v-4a.5.5 0 0 1 .5-.5M0 10.5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 6 11.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5m10 1a1.5 1.5 0 0 1 1.5-1.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 0-.5.5v4a.5.5.5 0 0 1-1 0z" />
+                    <path d="M5.5 0a.5.5 0 0 1 .5.5v4A1.5 1.5 0 0 1 4.5 6h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5m5 0a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 10 4.5v-4a.5.5 0 0 1 .5-.5M0 10.5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 6 11.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5m10 1a1.5 1.5 0 0 1 1.5-1.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0z" />
                   </svg>
                 )}
               </button>
@@ -435,7 +472,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
               <a
                 href={data?.url}
                 download="document.pdf"
-                className={"open-link-btn"}
+                className="open-link-btn"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Download PDF"
@@ -463,42 +500,34 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
         </div>
       )}
 
-      <div className={"adex-preview-panel"}>
+      <div className="adex-preview-panel">
         {/* Thumbnail Sidebar */}
-        <div className={"adex-preview-thumbs"}>
+        <div className="adex-preview-thumbs">
           {pdfBlobUrl && (
             <Document
               file={pdfBlobUrl}
               loading={
-                <div
-                  className={"adex-thumb-loader"}
-                  //@ts-ignore
-                  onLoadError={() => {
-                    //@ts-ignore
-                    if (retryCount < maxRetries) {
-                      setRetryCount((prev) => prev + 1)
-                    }
-                  }}
-                >
-                  <span className={"thumb-loader"}></span>
-                  <span className={"thumb-loader"}></span>
-                  <span className={"thumb-loader"}></span>
+                <div className="adex-thumb-loader">
+                  <span className="thumb-loader"></span>
+                  <span className="thumb-loader"></span>
+                  <span className="thumb-loader"></span>
                 </div>
               }
               onLoadSuccess={onDocumentLoadSuccess}
+              onLoadError={onDocumentLoadError}
             >
               {!pdfBlobUrl && (
-                <div className={"adex-thumb-loader"}>
-                  <span className={"thumb-loader"}></span>
-                  <span className={"thumb-loader"}></span>
-                  <span className={"thumb-loader"}></span>
+                <div className="adex-thumb-loader">
+                  <span className="thumb-loader"></span>
+                  <span className="thumb-loader"></span>
+                  <span className="thumb-loader"></span>
                 </div>
               )}
               {numPages &&
                 Array.from({ length: numPages }, (_, index) => (
                   <button
                     key={`thumb-${index}`}
-                    className={`${"adex-page-thumb"} ${pageNumber === index + 1 ? "active" : ""}`}
+                    className={`adex-page-thumb ${pageNumber === index + 1 ? "active" : ""}`}
                     onClick={() => goToPage(index + 1)}
                     aria-label={`Page ${index + 1}`}
                     aria-current={pageNumber === index + 1 ? "page" : undefined}
@@ -506,8 +535,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                     <Page
                       scale={0.2}
                       loading={
-                        <div className={"adex-thumb-loader"}>
-                          <span className={"thumb-loader"}></span>
+                        <div className="adex-thumb-loader">
+                          <span className="thumb-loader"></span>
                         </div>
                       }
                       pageNumber={index + 1}
@@ -521,31 +550,24 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
         </div>
 
         {/* PDF Pages */}
-        <div ref={previewRef} className={"adex-preview"}>
+        <div ref={previewRef} className="adex-preview">
           {pdfBlobUrl && (
             <Document
               file={pdfBlobUrl}
               loading={
-                <div
-                  className={"adex-preview-loader"}
-                  //@ts-ignore
-                  onLoadError={() => {
-                    //@ts-ignore
-                    if (retryCount < maxRetries) {
-                      setRetryCount((prev) => prev + 1)
-                    }
-                  }}
-                >
-                  <span className={"page-loader"}></span>
-                  <span className={"page-loader"}></span>
+                <div className="adex-preview-loader">
+                  <span className="page-loader"></span>
+                  <span className="page-loader"></span>
                 </div>
               }
               onLoadSuccess={onDocumentLoadSuccess}
+              onLoadError={onDocumentLoadError}
+              options={documentOptions}
             >
               {!pdfBlobUrl && (
-                <div className={"adex-preview-loader"}>
-                  <span className={"page-loader"}></span>
-                  <span className={"page-loader"}></span>
+                <div className="adex-preview-loader">
+                  <span className="page-loader"></span>
+                  <span className="page-loader"></span>
                 </div>
               )}
               {numPages &&
@@ -553,19 +575,22 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                   <div
                     key={`page-${index}`}
                     ref={(el) => (pageRefs.current[index + 1] = el)}
-                    className={"adex-page"}
+                    className="adex-page"
                     aria-label={`Page ${index + 1} content`}
                   >
                     <Page
                       loading={
-                        <div className={"adex-preview-loader"}>
-                          <span className={"page-loader"}></span>
+                        <div className="adex-preview-loader">
+                          <span className="page-loader"></span>
                         </div>
                       }
                       scale={scale}
                       pageNumber={index + 1}
                       width={600}
                       rotate={pageRotations[index + 1] || 0} // Apply rotation
+                      renderTextLayer={isTextLayerEnabled}
+                      renderAnnotationLayer={isTextLayerEnabled}
+                      canvasBackground="white"
                     />
                   </div>
                 ))}
@@ -625,7 +650,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
           </div>
         )}
       </div>
-      <div className={"adex-power-row"}>
+      <div className="adex-power-row">
         <div className="adex-left-option">
           {showControls?.info && (
             <button

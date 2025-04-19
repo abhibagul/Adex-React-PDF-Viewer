@@ -26,6 +26,10 @@ interface PDFViewerProps {
         hideSidebarOnMobile?: boolean;
         reduceToolbarOnMobile?: boolean;
     };
+    textOptions?: {
+        enableSelection?: boolean;
+        enableCopy?: boolean;
+    };
 }
 declare const AdexViewer: React.FC<PDFViewerProps>;
 

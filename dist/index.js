@@ -64,9 +64,10 @@ module.exports = __toCommonJS(index_exports);
 // src/AdexViewer.tsx
 var import_react = require("react");
 var import_react_pdf = require("react-pdf");
-var import_react_pdf2 = require("react-pdf");
+var import_TextLayer = require("react-pdf/dist/esm/Page/TextLayer.css");
+var import_AnnotationLayer = require("react-pdf/dist/esm/Page/AnnotationLayer.css");
 var import_jsx_runtime = require("react/jsx-runtime");
-import_react_pdf2.pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${import_react_pdf2.pdfjs.version}/pdf.worker.min.js`;
+import_react_pdf.pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${import_react_pdf.pdfjs.version}/pdf.worker.min.js`;
 var AdexViewer = ({
   data,
   credits,
@@ -91,6 +92,10 @@ var AdexViewer = ({
     mobileBreakpoint: 768,
     hideSidebarOnMobile: true,
     reduceToolbarOnMobile: true
+  },
+  textOptions = {
+    enableSelection: true,
+    enableCopy: true
   }
 }) => {
   var _a;
@@ -113,6 +118,9 @@ var AdexViewer = ({
   const maxRetries = 5;
   const [isMobile, setIsMobile] = (0, import_react.useState)(false);
   const [pageRotations, setPageRotations] = (0, import_react.useState)({});
+  const [isTextLayerEnabled, setIsTextLayerEnabled] = (0, import_react.useState)(
+    Boolean(textOptions == null ? void 0 : textOptions.enableSelection) || Boolean(textOptions == null ? void 0 : textOptions.enableCopy)
+  );
   (0, import_react.useEffect)(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < ((responsive == null ? void 0 : responsive.mobileBreakpoint) || 768));
@@ -272,11 +280,28 @@ var AdexViewer = ({
       return __spreadProps(__spreadValues({}, prev), { [pageNum]: newRotation < 0 ? newRotation + 360 : newRotation });
     });
   };
+  (0, import_react.useEffect)(() => {
+    setIsTextLayerEnabled(Boolean(textOptions == null ? void 0 : textOptions.enableSelection) || Boolean(textOptions == null ? void 0 : textOptions.enableCopy));
+  }, [textOptions == null ? void 0 : textOptions.enableSelection, textOptions == null ? void 0 : textOptions.enableCopy]);
+  const documentOptions = (0, import_react.useMemo)(
+    () => ({
+      cMapUrl: "https://unpkg.com/pdfjs-dist@3.4.120/cmaps/",
+      cMapPacked: true,
+      standardFontDataUrl: "https://unpkg.com/pdfjs-dist@3.4.120/standard_fonts/"
+    }),
+    []
+  );
+  const onDocumentLoadError = (0, import_react.useCallback)(() => {
+    console.error(`Failed to load PDF (Attempt ${retryCount + 1})`);
+    if (retryCount < maxRetries) {
+      setRetryCount((prev) => prev + 1);
+    }
+  }, [retryCount, maxRetries]);
   return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
     "div",
     {
       ref: viewerRef,
-      className: `PDFViewer ${"adex-viewer"} ${fullScreenView && "fullScreenView"} ${sidebar ? "thumbs-slide-in" : "thumbs-slide-out"} ${"dev-abhishekbagul"} ${isMobile ? "adex-mobile" : ""}`,
+      className: `PDFViewer adex-viewer ${fullScreenView ? "fullScreenView" : ""} ${sidebar ? "thumbs-slide-in" : "thumbs-slide-out"} dev-abhishekbagul ${isMobile ? "adex-mobile" : ""} ${!textOptions.enableSelection ? "disable-text-selection" : ""}`,
       children: [
         showToolbar && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "adex-topbar", children: [
           (showControls == null ? void 0 : showControls.navigation) && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "adex-control-page", children: [
@@ -432,7 +457,7 @@ var AdexViewer = ({
                 fill: "currentColor",
                 className: "bi bi-fullscreen-exit",
                 viewBox: "0 0 16 16",
-                children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: "M5.5 0a.5.5 0 0 1 .5.5v4A1.5 1.5 0 0 1 4.5 6h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5m5 0a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 10 4.5v-4a.5.5 0 0 1 .5-.5M0 10.5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 6 11.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5m10 1a1.5 1.5 0 0 1 1.5-1.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 0-.5.5v4a.5.5.5 0 0 1-1 0z" })
+                children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: "M5.5 0a.5.5 0 0 1 .5.5v4A1.5 1.5 0 0 1 4.5 6h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5m5 0a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 10 4.5v-4a.5.5 0 0 1 .5-.5M0 10.5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 6 11.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5m10 1a1.5 1.5 0 0 1 1.5-1.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0z" })
               }
             ) }),
             (showControls == null ? void 0 : showControls.download) && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
@@ -480,23 +505,13 @@ var AdexViewer = ({
             import_react_pdf.Document,
             {
               file: pdfBlobUrl,
-              loading: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
-                "div",
-                {
-                  className: "adex-thumb-loader",
-                  onLoadError: () => {
-                    if (retryCount < maxRetries) {
-                      setRetryCount((prev) => prev + 1);
-                    }
-                  },
-                  children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "thumb-loader" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "thumb-loader" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "thumb-loader" })
-                  ]
-                }
-              ),
+              loading: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "adex-thumb-loader", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "thumb-loader" }),
+                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "thumb-loader" }),
+                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "thumb-loader" })
+              ] }),
               onLoadSuccess: onDocumentLoadSuccess,
+              onLoadError: onDocumentLoadError,
               children: [
                 !pdfBlobUrl && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "adex-thumb-loader", children: [
                   /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "thumb-loader" }),
@@ -506,7 +521,7 @@ var AdexViewer = ({
                 numPages && Array.from({ length: numPages }, (_, index) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
                   "button",
                   {
-                    className: `${"adex-page-thumb"} ${pageNumber === index + 1 ? "active" : ""}`,
+                    className: `adex-page-thumb ${pageNumber === index + 1 ? "active" : ""}`,
                     onClick: () => goToPage(index + 1),
                     "aria-label": `Page ${index + 1}`,
                     "aria-current": pageNumber === index + 1 ? "page" : void 0,
@@ -530,22 +545,13 @@ var AdexViewer = ({
             import_react_pdf.Document,
             {
               file: pdfBlobUrl,
-              loading: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
-                "div",
-                {
-                  className: "adex-preview-loader",
-                  onLoadError: () => {
-                    if (retryCount < maxRetries) {
-                      setRetryCount((prev) => prev + 1);
-                    }
-                  },
-                  children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "page-loader" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "page-loader" })
-                  ]
-                }
-              ),
+              loading: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "adex-preview-loader", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "page-loader" }),
+                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "page-loader" })
+              ] }),
               onLoadSuccess: onDocumentLoadSuccess,
+              onLoadError: onDocumentLoadError,
+              options: documentOptions,
               children: [
                 !pdfBlobUrl && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "adex-preview-loader", children: [
                   /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "page-loader" }),
@@ -564,7 +570,10 @@ var AdexViewer = ({
                         scale,
                         pageNumber: index + 1,
                         width: 600,
-                        rotate: pageRotations[index + 1] || 0
+                        rotate: pageRotations[index + 1] || 0,
+                        renderTextLayer: isTextLayerEnabled,
+                        renderAnnotationLayer: isTextLayerEnabled,
+                        canvasBackground: "white"
                       }
                     )
                   },

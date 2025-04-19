@@ -20,7 +20,8 @@
 
 .adex-page>div>div,
 .adex-page-thumb>div>div {
-    display: none;
+    display: block !important;
+    /* Changed from 'none' to 'block' to ensure text layer is visible */
 }
 
 .adex-viewer .adex-topbar {
@@ -112,9 +113,63 @@
     grid-template-columns: 180px auto;
 }
 
-.adex-viewer .adex-preview-panel .textLayer,
-.adex-viewer .adex-preview-panel .annotationLayer {
-    display: none !important;
+/* Improved text layer styles */
+.adex-viewer .adex-preview-panel .textLayer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    opacity: 0.2;
+    line-height: 1.0;
+    z-index: 2;
+    /* Ensure text layer is above the canvas */
+}
+
+.adex-viewer .adex-preview-panel .textLayer>span {
+    color: transparent;
+    position: absolute;
+    white-space: pre;
+    cursor: text;
+    transform-origin: 0% 0%;
+}
+
+.adex-viewer .adex-preview-panel .textLayer .highlight {
+    margin: -1px;
+    padding: 1px;
+    background-color: rgb(180, 0, 170);
+    border-radius: 4px;
+}
+
+.adex-viewer .adex-preview-panel .textLayer .highlight.begin {
+    border-radius: 4px 0px 0px 4px;
+}
+
+.adex-viewer .adex-preview-panel .textLayer .highlight.end {
+    border-radius: 0px 4px 4px 0px;
+}
+
+.adex-viewer .adex-preview-panel .textLayer .highlight.middle {
+    border-radius: 0px;
+}
+
+.adex-viewer .adex-preview-panel .textLayer .highlight.selected {
+    background-color: rgb(0, 100, 0);
+}
+
+.adex-viewer .adex-preview-panel .textLayer ::selection {
+    background: rgba(0, 0, 255, 0.3);
+}
+
+/* Disable text selection if not enabled */
+.adex-viewer.disable-text-selection .adex-preview-panel .textLayer {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    pointer-events: none;
+    /* Prevent interaction with text layer */
 }
 
 .adex-viewer .adex-preview-panel .adex-preview-thumbs {
@@ -180,6 +235,13 @@
     border-radius: 5px;
     overflow: hidden;
     position: relative;
+    background-color: white;
+    /* Add this line */
+}
+
+/* Also ensure the canvas has a white background */
+.adex-viewer .adex-preview-panel .adex-preview .adex-page canvas {
+    background-color: white !important;
 }
 
 /* Remove the page-specific rotation controls styles */
@@ -468,6 +530,48 @@ ul.adex-pdf-meta-info-list {
 .adex-mobile .adex-preview-panel .adex-preview .adex-page canvas {
     max-width: 100%;
     height: auto !important;
+}
+
+/* React-PDF text layer styles */
+.react-pdf__Page__textContent {
+    border: 1px solid transparent;
+    box-sizing: border-box;
+    cursor: text;
+    left: 0;
+    line-height: 1;
+    opacity: 0.2;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    user-select: text;
+    z-index: 2;
+}
+
+.react-pdf__Page__textContent span {
+    color: transparent;
+    cursor: text;
+    position: absolute;
+    white-space: pre;
+}
+
+.react-pdf__Page__textContent ::selection {
+    background-color: rgba(0, 0, 255, 0.3);
+}
+
+/* Ensure text layer is visible and selectable */
+.adex-page .react-pdf__Page__textContent {
+    display: block !important;
+    pointer-events: auto !important;
+}
+
+/* Disable text selection when not enabled */
+.disable-text-selection .react-pdf__Page__textContent {
+    pointer-events: none !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
 }
 
 /*# sourceMappingURL=index.css.map */
