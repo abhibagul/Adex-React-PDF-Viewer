@@ -1,6 +1,6 @@
 {
   "name": "adex-react-pdf-viewer",
-  "version": "1.0.3",
+  "version": "1.0.7",
   "description": "A simple React PDF viewer component using react-pdf.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -26,7 +26,8 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
-    "./index.css": "./dist/index.css"
+    "./index.css": "./dist/index.css",
+    "./locales/*.json": "./locales/*.json"
   },
   "devDependencies": {
     "@types/react": "^18.3.19",

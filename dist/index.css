@@ -1545,4 +1545,40 @@ button.adex-search-button:hover {
     margin-top: 10px;
   }
 }
+.adex-pdf-meta-info.adex-locales-panel .adex-meta-panel {
+  width: 80%;
+  max-width: unset;
+  max-height: unset;
+  height: 70%;
+}
+.adex-pdf-meta-info.adex-locales-panel .adex-pdf-meta-info-content {
+  min-height: calc(100% - 50px);
+}
+ul.adex-language-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 150px);
+  list-style-type: none;
+  padding: 20px;
+  gap: 10px;
+}
+ul.adex-language-list li {
+  background: #fff;
+  padding: 10px 20px;
+  font-size: 13px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, .1);
+  cursor: pointer;
+  transition: .2s all ease;
+}
+.adex-left-option {
+  display: flex;
+  gap: 5px;
+}
+ul.adex-language-list li.adex-language-option.active-lang {
+  background-color: rgba(20, 127, 212, 0.1);
+  border-top: 3px solid #147fd4;
+}
+ul.adex-language-list li:hover {
+  box-shadow: 2px 2px 5px rgba(20, 127, 212, 0.1), -2px -2px 5px rgba(20, 127, 212, 0.1);
+}
 /*# sourceMappingURL=index.css.map */

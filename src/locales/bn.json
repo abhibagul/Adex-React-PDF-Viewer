@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "আগের পৃষ্ঠা",
+    "nextPage": "পরবর্তী পৃষ্ঠা",
+    "pageOf": "এর"
+  },
+  "leftPanel": {
+    "previews": "পৃষ্ঠার প্রিভিউ",
+    "search": "নথি অনুসন্ধান",
+    "bookmarks": "বুকমার্ক এবং রূপরেখা",
+    "annotations": "টীকা"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "ঘড়ির কাঁটার বিপরীত দিকে ঘোরান",
+    "rotateClockwise": "ঘড়ির কাঁটার দিকে ঘোরান",
+    "zoomLevel": "জুম স্তর",
+    "print": "নথি প্রিন্ট করুন",
+    "fullscreen": "পূর্ণ স্ক্রিন",
+    "exitFullscreen": "পূর্ণ স্ক্রিন থেকে প্রস্থান করুন",
+    "download": "পিডিএফ ডাউনলোড করুন"
+  },
+  "search": {
+    "title": "অনুসন্ধান",
+    "placeholder": "নথিতে অনুসন্ধান করুন...",
+    "matches": "মিল",
+    "noResults": "কোন ফলাফল পাওয়া যায়নি",
+    "searching": "অনুসন্ধান করা হচ্ছে...",
+    "previousResult": "আগের ফলাফল",
+    "nextResult": "পরবর্তী ফলাফল",
+    "page": "পৃষ্ঠা",
+    "incompleteDocumentError": "অনুসন্ধান করার সময় একটি ত্রুটি ঘটেছে। নথি সম্পূর্ণরূপে লোড হওয়ার পরে আবার চেষ্টা করুন।",
+    "waitLoading": "অনুসন্ধান করার আগে নথি সম্পূর্ণরূপে লোড হওয়া পর্যন্ত অপেক্ষা করুন।"
+  },
+  "bookmarks": {
+    "outline": "রূপরেখা",
+    "bookmarks": "বুকমার্ক",
+    "noOutline": "এই নথিতে কোন রূপরেখা উপলব্ধ নেই",
+    "addBookmark": "বুকমার্ক যোগ করুন",
+    "save": "সংরক্ষণ করুন",
+    "cancel": "বাতিল করুন",
+    "noBookmarks": "এখনও কোন বুকমার্ক যোগ করা হয়নি",
+    "bookmarkTitle": "বুকমার্ক শিরোনাম",
+    "deleteBookmark": "বুকমার্ক মুছুন:"
+  },
+  "annotations": {
+    "title": "টীকা",
+    "addNote": "নোট যোগ করুন",
+    "addHighlight": "হাইলাইট যোগ করুন",
+    "addDrawing": "ড্রয়িং যোগ করুন",
+    "note": "নোট",
+    "highlight": "হাইলাইট",
+    "drawing": "ড্রয়িং",
+    "noAnnotations": "এখনও কোন টীকা যোগ করা হয়নি। আপনার নথিতে টীকা যোগ করতে উপরের টুল ব্যবহার করুন।",
+    "addNoteHint": "একটি নোট যোগ করুন...",
+    "page": "পৃষ্ঠা",
+    "cancel": "বাতিল করুন",
+    "colorSetTo": "রঙ সেট করুন",
+    "noContent": "কোন বিষয়বস্তু নেই",
+    "delete": "টীকা মুছুন"
+  },
+  "info": {
+    "title": "তথ্য",
+    "close": "তথ্য প্যানেল বন্ধ করুন"
+  },
+  "locale": {
+    "selectLanguage": "ভাষা নির্বাচন করুন",
+    "changeTo": "ভাষা পরিবর্তন করুন"
+  },
+  "credits": {
+    "createdWith": "দ্বারা তৈরি",
+    "by": "দ্বারা"
+  }
+}

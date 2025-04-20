@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "Halaman sebelumnya",
+    "nextPage": "Halaman seterusnya",
+    "pageOf": "daripada"
+  },
+  "leftPanel": {
+    "previews": "Pratonton Halaman",
+    "search": "Cari dokumen",
+    "bookmarks": "Penanda dan rangka",
+    "annotations": "Anotasi"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "Putar lawan arah jam",
+    "rotateClockwise": "Putar ikut arah jam",
+    "zoomLevel": "Tahap zum",
+    "print": "Cetak dokumen",
+    "fullscreen": "Skrin penuh",
+    "exitFullscreen": "Keluar dari skrin penuh",
+    "download": "Muat turun PDF"
+  },
+  "search": {
+    "title": "Cari",
+    "placeholder": "Cari dalam dokumen...",
+    "matches": "padanan",
+    "noResults": "Tiada hasil ditemui",
+    "searching": "Mencari...",
+    "previousResult": "Hasil sebelumnya",
+    "nextResult": "Hasil seterusnya",
+    "page": "Halaman",
+    "incompleteDocumentError": "Berlaku ralat semasa mencari. Sila cuba lagi selepas dokumen dimuat sepenuhnya.",
+    "waitLoading": "Sila tunggu dokumen dimuat sepenuhnya sebelum mencari."
+  },
+  "bookmarks": {
+    "outline": "Rangka",
+    "bookmarks": "Penanda",
+    "noOutline": "Tiada rangka tersedia dalam dokumen ini",
+    "addBookmark": "Tambah penanda",
+    "save": "Simpan",
+    "cancel": "Batal",
+    "noBookmarks": "Belum ada penanda ditambah",
+    "bookmarkTitle": "Tajuk penanda",
+    "deleteBookmark": "Padam penanda:"
+  },
+  "annotations": {
+    "title": "Anotasi",
+    "addNote": "Tambah nota",
+    "addHighlight": "Tambah sorotan",
+    "addDrawing": "Tambah lukisan",
+    "note": "Nota",
+    "highlight": "Sorotan",
+    "drawing": "Lukisan",
+    "noAnnotations": "Belum ada anotasi ditambah. Gunakan alat di atas untuk menambah anotasi ke dokumen anda.",
+    "addNoteHint": "Tambah nota...",
+    "page": "Halaman",
+    "cancel": "Batal",
+    "colorSetTo": "Tetapkan warna kepada",
+    "noContent": "Tiada kandungan",
+    "delete": "Padam anotasi"
+  },
+  "info": {
+    "title": "Maklumat",
+    "close": "Tutup Panel Maklumat"
+  },
+  "locale": {
+    "selectLanguage": "Pilih Bahasa",
+    "changeTo": "Tukar bahasa kepada"
+  },
+  "credits": {
+    "createdWith": "Dicipta dengan",
+    "by": "oleh"
+  }
+}

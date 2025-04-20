@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "Pàgina anterior",
+    "nextPage": "Pàgina següent",
+    "pageOf": "de"
+  },
+  "leftPanel": {
+    "previews": "Previsualització de pàgines",
+    "search": "Cerca al document",
+    "bookmarks": "Marcadors i esquema",
+    "annotations": "Anotacions"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "Gira en sentit antihorari",
+    "rotateClockwise": "Gira en sentit horari",
+    "zoomLevel": "Nivell de zoom",
+    "print": "Imprimeix document",
+    "fullscreen": "Pantalla completa",
+    "exitFullscreen": "Surt de pantalla completa",
+    "download": "Descarrega PDF"
+  },
+  "search": {
+    "title": "Cerca",
+    "placeholder": "Cerca al document...",
+    "matches": "coincidències",
+    "noResults": "No s'han trobat resultats",
+    "searching": "Cercant...",
+    "previousResult": "Resultat anterior",
+    "nextResult": "Resultat següent",
+    "page": "Pàgina",
+    "incompleteDocumentError": "S'ha produït un error durant la cerca. Torneu-ho a provar després que el document s'hagi carregat completament.",
+    "waitLoading": "Espereu que el document es carregui completament abans de cercar."
+  },
+  "bookmarks": {
+    "outline": "Esquema",
+    "bookmarks": "Marcadors",
+    "noOutline": "No hi ha esquema disponible en aquest document",
+    "addBookmark": "Afegeix marcador",
+    "save": "Desa",
+    "cancel": "Cancel·la",
+    "noBookmarks": "Encara no s'han afegit marcadors",
+    "bookmarkTitle": "Títol del marcador",
+    "deleteBookmark": "Elimina marcador:"
+  },
+  "annotations": {
+    "title": "Anotacions",
+    "addNote": "Afegeix nota",
+    "addHighlight": "Afegeix ressaltat",
+    "addDrawing": "Afegeix dibuix",
+    "note": "Nota",
+    "highlight": "Ressaltat",
+    "drawing": "Dibuix",
+    "noAnnotations": "Encara no s'han afegit anotacions. Utilitzeu les eines anteriors per afegir anotacions al vostre document.",
+    "addNoteHint": "Afegeix una nota...",
+    "page": "Pàgina",
+    "cancel": "Cancel·la",
+    "colorSetTo": "Estableix color a",
+    "noContent": "Sense contingut",
+    "delete": "Elimina anotació"
+  },
+  "info": {
+    "title": "Informació",
+    "close": "Tanca el panell d'informació"
+  },
+  "locale": {
+    "selectLanguage": "Selecciona idioma",
+    "changeTo": "Canvia idioma a"
+  },
+  "credits": {
+    "createdWith": "Creat amb",
+    "by": "per"
+  }
+}

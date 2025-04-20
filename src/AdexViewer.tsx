@@ -38,17 +38,19 @@ interface PDFViewerProps {
     download?: boolean
     info?: boolean
     sidebarButton?: boolean
-    rotation?: boolean // New option for page rotation
-    print?: boolean // New option for print button
-    search?: boolean // New option for search functionality
-    bookmarks?: boolean // New option for bookmarks functionality
-    annotations?: boolean // New option for annotations functionality
+    rotation?: boolean
+    print?: boolean 
+    search?: boolean 
+    bookmarks?: boolean 
+    annotations?: boolean 
+    localization?: boolean
   }
   defaultValues?: {
     zoom?: number
     page?: number
     fullscreen?: boolean
   }
+  localization?: LocalizationOptions[] | null
   responsive?: {
     mobileBreakpoint?: number
     hideSidebarOnMobile?: boolean
@@ -62,6 +64,12 @@ interface PDFViewerProps {
     printBackground?: boolean
     pageRangeEnabled?: boolean
   }
+}
+
+interface LocalizationOptions {
+  locale: string
+  title: string
+  active: boolean
 }
 
 // Define a type for search results
@@ -128,6 +136,45 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
     enableSelection: true,
     enableCopy: true,
   },
+  localization = [
+    { locale: "en", title: "English", active: false },
+    { locale: "ar", title: "العربية", active: false },
+    { locale: "bg", title: "Български", active: false },
+    { locale: "bn", title: "বাংলা", active: false },
+    { locale: "ca", title: "Català", active: false },
+    { locale: "cs", title: "Čeština", active: false },
+    { locale: "de", title: "Deutsch", active: false },
+    { locale: "el", title: "Ελληνικά", active: false },
+    { locale: "es", title: "Español", active: false },
+    { locale: "fi", title: "Suomi", active: false },
+    { locale: "fr", title: "Français", active: false },
+    { locale: "he", title: "עברית", active: false },
+    { locale: "hi", title: "हिन्दी", active: true },
+    { locale: "id", title: "Bahasa Indonesia", active: false },
+    { locale: "it", title: "Italiano", active: false },
+    { locale: "ja", title: "日本語", active: false },
+    { locale: "jp_JP", title: "日本語", active: false },
+    { locale: "ko", title: "한국어", active: false },
+    { locale: "mr", title: "मराठी", active: false },
+    { locale: "ms", title: "Bahasa Melayu", active: false },
+    { locale: "nl", title: "Nederlands", active: false },
+    { locale: "no", title: "Norsk", active: false },
+    { locale: "pa", title: "ਪੰਜਾਬੀ", active: false },
+    { locale: "pl", title: "Polski", active: false },
+    { locale: "pt", title: "Português", active: false },
+    { locale: "ro", title: "Română", active: false },
+    { locale: "ru", title: "Русский", active: false },
+    { locale: "sv", title: "Svenska", active: false },
+    { locale: "sw", title: "Kiswahili", active: false },
+    { locale: "ta", title: "தமிழ்", active: false },
+    { locale: "te", title: "తెలుగు", active: false },
+    { locale: "th", title: "ไทย", active: false },
+    { locale: "tr", title: "Türkçe", active: false },
+    { locale: "uk", title: "Українська", active: false },
+    { locale: "vi", title: "Tiếng Việt", active: false },
+    { locale: "zh-CN", title: "简体中文", active: false },
+    { locale: "zh_TW", title: "繁體中文", active: false }
+   ],
   printOptions = {
     printBackground: true,
     pageRangeEnabled: true,
@@ -150,9 +197,12 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
   const showCredits = credits ?? true
   const [metadata, setMetadata] = useState<any>(null)
   const [showInfo, setShowInfo] = useState<boolean>(false)
+  const [showLocaleOption, setShowLocaleOption] = useState<boolean>(false)
   const [isPrinting, setIsPrinting] = useState<boolean>(false)
   const maxRetries = 5
   const [isMobile, setIsMobile] = useState<boolean>(false)
+  const [locale, setLocale] = useState<string>("en");
+  const [localizationData, setLocalizationData] = useState<any>({})
   // Add a pageRotations state to track rotation for each page
   const [pageRotations, setPageRotations] = useState<{ [key: number]: number }>({})
   // Add a state to track if text layer should be enabled
@@ -202,6 +252,60 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
   const [isDrawing, setIsDrawing] = useState<boolean>(false)
   const [currentDrawingPoints, setCurrentDrawingPoints] = useState<{ x: number; y: number }[]>([])
   const [showAnnotationsSidebar, setShowAnnotationsSidebar] = useState<boolean>(false)
+
+  // useEffect(() => {
+  //   const savedLocale = localStorage.getItem('userLocale') || 'en';
+  //   handleChangeLocale(savedLocale);
+  // }, []);
+
+  useEffect(() => {
+    const savedLocale = localStorage.getItem("userLocale")
+    if (savedLocale) {
+      handleChangeLocale(savedLocale)
+    } else {
+      const activeLocale = localization?.find((item:any) => item.active)
+      const localeToUse = activeLocale ? activeLocale.locale : "en"
+      handleChangeLocale(localeToUse)
+    }
+  }, [])
+
+  async function handleChangeLocale(locale: string ){
+    setLocale(locale);
+    try {
+      const localeData = await import(`./locales/${locale}.json`);
+      setLocalizationData(localeData);
+      localStorage.setItem('userLocale', locale);
+    } catch (error) {
+      console.error(`Failed to load locale: ${locale}`, error);
+      if (locale !== 'en') {
+        console.warn(`Falling back to default locale 'en'`);
+      }
+    }
+  }
+
+  function getLocaleData(key: string, defaultValue: string) {
+    const keys = key.split('.');
+    
+    let data = localizationData;
+    
+    if (!data || !data.default) {
+      return defaultValue;
+    }
+    
+    let current = data.default;
+    
+    for (const k of keys) {
+      if (current && typeof current === 'object' && k in current) {
+        current = current[k];
+      } else {
+        return defaultValue;
+      }
+    }
+    
+    // Return the found value or default if it's undefined
+    return current !== undefined ? current : defaultValue;
+  }
+
 
   // Check if we're on mobile based on the responsive settings
   useEffect(() => {
@@ -662,7 +766,6 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
   // Update the printPdf function to remove dialog handling
   const printPdf = useCallback(() => {
     try {
-      console.log("Printing PDF directly from the viewer")
 
       // Store the current zoom level
       setOriginalZoom(scale)
@@ -989,7 +1092,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
     } catch (error) {
       console.error("Error searching PDF:", error)
       // Show a user-friendly error message
-      alert("There was an error while searching. Please try again after the document is fully loaded.")
+      alert(getLocaleData("search.incompleteDocumentError","There was an error while searching. Please try again after the document is fully loaded."))
     } finally {
       setIsSearching(false)
     }
@@ -1000,7 +1103,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
         if (!pdfDocument || !pdfDocument.numPages) {
-          alert("Please wait for the document to fully load before searching.")
+          alert(getLocaleData("search.waitLoading","Please wait for the document to fully load before searching."))
           return
         }
         performSearch()
@@ -1590,7 +1693,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                 <textarea
                   value={annotation.content || ""}
                   onChange={(e) => updateAnnotation(annotation.id, { content: e.target.value })}
-                  placeholder="Add a note..."
+                  placeholder={getLocaleData("annotations.addNoteHint","Add a note...")}
                   onClick={(e) => e.stopPropagation()}
                 />
               </div>
@@ -1606,7 +1709,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                       e.stopPropagation()
                       updateAnnotation(annotation.id, { color })
                     }}
-                    aria-label={`Set color to ${color}`}
+                    aria-label={`${getLocaleData("annotations.colorSetTo","Set color to")} ${color}`}
+                    title={`${getLocaleData("annotations.colorSetTo","Set color to")} ${color}`}
                   />
                 ))}
               </div>
@@ -1616,7 +1720,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                   e.stopPropagation()
                   deleteAnnotation(annotation.id)
                 }}
-                aria-label="Delete annotation"
+                aria-label={getLocaleData("annotations.delete","Delete annotation")}
+                title={getLocaleData("annotations.delete","Delete annotation")}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                   <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
@@ -1649,7 +1754,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
           {showControls?.navigation && (
             <div className="adex-control-page">
               {showControls?.sidebarButton ? (
-                <button onClick={() => setSidebar(!sidebar)} aria-label="Toggle sidebar">
+                <button onClick={() => setSidebar(!sidebar)} aria-label="Toggle sidebar" title="Toggle sidebar">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
@@ -1665,7 +1770,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
               ) : (
                 <div></div>
               )}
-              <button disabled={pageNumber <= 1} onClick={() => goToPage(pageNumber - 1)} aria-label="Previous page">
+              <button disabled={pageNumber <= 1} onClick={() => goToPage(pageNumber - 1)} aria-label={getLocaleData("navigation.previousPage","Previous page")}title={getLocaleData("navigation.previousPage","Previous page")}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -1686,14 +1791,16 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                   type="number"
                   onChange={updatePDFPage}
                   value={previewNumber}
-                  aria-label="Page number"
+                  aria-label={getLocaleData("search.page","Page")}
+                  title={getLocaleData("search.page","Page")}
                 />{" "}
                 / {numPages || "?"}
               </p>
               <button
                 disabled={numPages === null || pageNumber >= numPages}
                 onClick={() => goToPage(pageNumber + 1)}
-                aria-label="Next page"
+                aria-label={getLocaleData("navigation.nextPage","Next page")}
+                title={getLocaleData("navigation.nextPage","Next page")}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -1717,8 +1824,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
               {showControls?.rotation && (
                 <button
                   onClick={() => rotatePage(pageNumber, false)}
-                  aria-label="Rotate counterclockwise"
-                  title="Rotate counterclockwise"
+                  aria-label={getLocaleData("toolbar.rotateCounterclockwise","Rotate counterclockwise")}
+                  title={getLocaleData("toolbar.rotateCounterclockwise","Rotate counterclockwise")}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -1732,7 +1839,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                   </svg>
                 </button>
               )}
-              <select onChange={(e) => setScale(+e.target.value)} value={scale} aria-label="Zoom level">
+              <select onChange={(e) => setScale(+e.target.value)} value={scale} aria-label={getLocaleData("toolbar.zoomLevel","Zoom level")} title={getLocaleData("toolbar.zoomLevel","Zoom level")}>
                 {scaleSets.map((scaleLevel) => (
                   <option key={scaleLevel} value={scaleLevel}>
                     {(scaleLevel * 100).toFixed(0)}%
@@ -1742,8 +1849,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
               {showControls?.rotation && (
                 <button
                   onClick={() => rotatePage(pageNumber, true)}
-                  aria-label="Rotate clockwise"
-                  title="Rotate clockwise"
+                  aria-label={getLocaleData("toolbar.rotateClockwise","Rotate clockwise")}
+                  title={getLocaleData("toolbar.rotateClockwise","Rotate clockwise")}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -1762,7 +1869,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
 
           <div className="adex-control-options">
             {showControls?.print && (
-              <button onClick={handlePrint} aria-label="Print document" title="Print document">
+              <button onClick={handlePrint} aria-label={getLocaleData("toolbar.print","Print document")} title={getLocaleData("toolbar.print","Print document")}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                   <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z" />
                   <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z" />
@@ -1770,7 +1877,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
               </button>
             )}
             {showControls?.fullscreen && (
-              <button onClick={toggleFullscreen} aria-label={fullScreenView ? "Exit fullscreen" : "Enter fullscreen"}>
+              <button onClick={toggleFullscreen} aria-label={fullScreenView ? getLocaleData("toolbar.exitFullscreen","Exit fullscreen") : getLocaleData("toolbar.fullscreen","Enter fullscreen")} title={fullScreenView ? getLocaleData("toolbar.exitFullscreen","Exit fullscreen") : getLocaleData("toolbar.fullscreen","Enter fullscreen")}>
                 {!fullScreenView ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -1807,7 +1914,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                 className="open-link-btn"
                 target="_blank"
                 rel="noreferrer"
-                aria-label="Download PDF"
+                aria-label={getLocaleData("toolbar.download","Download PDF")}
+                title={getLocaleData("toolbar.download","Download PDF")}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -1838,8 +1946,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
             onClick={() => {
               setLeftPanel(0), setSidebar(true)
             }}
-            aria-label="Pages Previews"
-            title="Pages Previews"
+            aria-label={getLocaleData("leftPanel.previews","Page Previews")}
+            title={getLocaleData("leftPanel.previews","Page Previews")}
             className={leftPanel == 0 ? "active" : ""}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -1851,8 +1959,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
           {showControls?.search && (
             <button
               onClick={toggleSearch}
-              aria-label="Search document"
-              title="Search document"
+              aria-label={getLocaleData("leftPanel.search","Search document")}
+              title={getLocaleData("leftPanel.search","Search document")}
               className={leftPanel == 1 ? "active" : ""}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -1864,8 +1972,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
           {showControls?.bookmarks && (
             <button
               onClick={toggleBookmarksSidebar}
-              aria-label="Bookmarks and outline"
-              title="Bookmarks and outline"
+              aria-label={getLocaleData("leftPanel.bookmarks","Bookmarks and outline")}
+              title={getLocaleData("leftPanel.bookmarks","Bookmarks and outline")}
               className={leftPanel == 2 ? "active" : ""}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -1877,12 +1985,27 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
           {showControls?.annotations && (
             <button
               onClick={() => toggleAnnotationsSidebar()}
-              aria-label="Annotations"
-              title="Annotations"
+              aria-label={getLocaleData("leftPanel.annotations","Annotations")}
+              title={getLocaleData("leftPanel.annotations","Annotations")}
               className={leftPanel == 3 ? "active" : ""}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M2.5 1A1.5 1.5 0 0 0 1 2.5v11A1.5 1.5 0 0 0 2.5 15h6.086a1.5 1.5 0 0 0 1.06-.44l4.915-4.914A1.5 1.5 0 0 0 15 8.586V2.5A1.5 1.5 0 0 0 13.5 1zM2 2.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 .5.5V8H9.5A1.5 1.5 0 0 0 8 9.5V14H2.5a.5.5 0 0 1-.5-.5zm7 11.293V9.5a.5.5 0 0 1 .5-.5h4.293z"/>
+              </svg>
+            </button>
+          )}
+
+          {showControls?.localization && (
+            <button
+              onClick={() => {
+                setShowLocaleOption(!showLocaleOption)
+                setShowInfo(false)
+              }}
+              aria-label={getLocaleData("locale.selectLanguage","Select Language")} title={getLocaleData("locale.selectLanguage","Select Language")}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M4.545 6.714 4.11 8H3l1.862-5h1.284L8 8H6.833l-.435-1.286zm1.634-.736L5.5 3.956h-.049l-.679 2.022z"/>
+                <path d="M0 2a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v3h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-3H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zm7.138 9.995q.289.451.63.846c-.748.575-1.673 1.001-2.768 1.292.178.217.451.635.555.867 1.125-.359 2.08-.844 2.886-1.494.777.665 1.739 1.165 2.93 1.472.133-.254.414-.673.629-.89-1.125-.253-2.057-.694-2.82-1.284.681-.747 1.222-1.651 1.621-2.757H14V8h-3v1.047h.765c-.318.844-.74 1.546-1.272 2.13a6 6 0 0 1-.415-.492 2 2 0 0 1-.94.31"/>
               </svg>
             </button>
           )}
@@ -1926,7 +2049,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                         key={`thumb-${index}`}
                         className={`adex-page-thumb ${pageNumber === index + 1 ? "active" : ""}`}
                         onClick={() => goToPage(index + 1)}
-                        aria-label={`Page ${index + 1}`}
+                        aria-label={`${getLocaleData("search.page","Page")} ${index + 1}`}
+                        title={`${getLocaleData("search.page","Page")} ${index + 1}`}
                         aria-current={pageNumber === index + 1 ? "page" : undefined}
                       >
                         <Page
@@ -1954,8 +2078,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
               <div className="adex-search-bar">
                 <div className="adex-search-results-header">
                   <div>
-                  <h3>Search</h3>
-                  <span className="adex-search-results-count">{searchResults.length} matches</span>
+                  <h3>{getLocaleData("search.title","Search")}</h3>
+                  <span className="adex-search-results-count">{searchResults.length} {getLocaleData("search.matches","matches")}</span>
                   </div>
                   <div className="adex-search-controls">
                   { searchResults.length > 0 && <div className="adex-search-navigation">
@@ -1963,7 +2087,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                       className="adex-search-prev"
                       onClick={prevSearchResult}
                       disabled={searchResults.length <= 1}
-                      aria-label="Previous result"
+                      aria-label={getLocaleData("search.previousResult","Previous result")}
+                      title={getLocaleData("search.previousResult","Previous result")}
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708z"/>
@@ -1973,7 +2098,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                       className="adex-search-next"
                       onClick={nextSearchResult}
                       disabled={searchResults.length <= 1}
-                      aria-label="Next result"
+                      aria-label={getLocaleData("search.nextResult","Next result")}
+                      title={getLocaleData("search.nextResult","Next result")}
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
@@ -1987,17 +2113,19 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                     ref={searchInputRef}
                     type="text"
                     className="adex-search-input"
-                    placeholder="Search in document..."
+                    placeholder={getLocaleData("search.placeholder","Search in document...")}
                     value={searchQuery}
                     onChange={handleSearchChange}
                     onKeyDown={handleSearchKeyDown}
-                    aria-label="Search in document"
+                    aria-label={getLocaleData("search.placeholder","Search in document...")}
+                    title={getLocaleData("search.placeholder","Search in document...")}
                   />
                   <button
                     className="adex-search-button"
                     onClick={performSearch}
                     disabled={isSearching || !searchQuery.trim() || !pdfDocument || !pdfDocument.numPages}
-                    aria-label="Search"
+                    aria-label={getLocaleData("search.title","Search")}
+                    title={getLocaleData("search.title","Search")}
                   >
                     {isSearching ? (
                       <span className="adex-search-loading"></span>
@@ -2014,51 +2142,6 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                     )}
                   </button>
                 </div>
-                {/* {searchResults.length > 0 && (
-            <div className="adex-search-results">
-              
-                  <div className="adex-search-navigation">
-                    <button
-                      className="adex-search-prev"
-                      onClick={prevSearchResult}
-                      disabled={searchResults.length <= 1}
-                      aria-label="Previous result"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        viewBox="0 0 16 16"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"
-                        />
-                      </svg>
-                    </button>
-                    <button
-                      className="adex-search-next"
-                      onClick={nextSearchResult}
-                      disabled={searchResults.length <= 1}
-                      aria-label="Next result"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        viewBox="0 0 16 16"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              )} */}
               </div>
               
               <div className="adex-search-results-list">
@@ -2073,7 +2156,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                         navigateToSearchResult(result)
                       }}
                     >
-                      <div className="adex-search-result-page">Page {result.pageIndex + 1}</div>
+                      <div className="adex-search-result-page">{getLocaleData("search.page","Page")} {result.pageIndex + 1}</div>
                       <div className="adex-search-result-context">
                         {result.context.split(new RegExp(`(${searchQuery})`, "i")).map((part, i) =>
                           part.toLowerCase() === searchQuery.toLowerCase() ? (
@@ -2088,7 +2171,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                     </div>
                   ))
                 ) : (
-                  <div className="adex-search-no-results">{isSearching ? "Searching..." : "No results found"}</div>
+                  <div className="adex-search-no-results">{isSearching ? getLocaleData("search.searching","Searching...") : getLocaleData("search.noResults","No results found")}</div>
                 )}
               </div>
             </div>
@@ -2106,7 +2189,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                       <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5"/>
                       <path d="M1.713 11.865v-.474H2c.217 0 .363-.137.363-.317 0-.185-.158-.31-.361-.31-.223 0-.367.152-.373.31h-.59c.016-.467.373-.787.986-.787.588-.002.954.291.957.703a.595.595 0 0 1-.492.594v.033a.615.615 0 0 1 .569.631c.003.533-.502.8-1.051.8-.656 0-1-.37-1.008-.794h.582c.008.178.186.306.422.309.254 0 .424-.145.422-.35-.002-.195-.155-.348-.414-.348h-.3zm-.004-4.699h-.604v-.035c0-.408.295-.844.958-.844.583 0 .96.326.96.756 0 .389-.257.617-.476.848l-.537.572v.03h1.054V9H1.143v-.395l.957-.99c.138-.142.293-.304.293-.508 0-.18-.147-.32-.342-.32a.33.33 0 0 0-.342.338zM2.564 5h-.635V2.924h-.031l-.598.42v-.567l.629-.443h.635z"/>
-                    </svg> <span>Outline</span>
+                    </svg> <span>{getLocaleData("bookmarks.outline","Outline")}</span>
                   </button>
                   <button
                     className={`adex-bookmarks-tab ${activeTab === "bookmarks" ? "active" : ""}`}
@@ -2117,7 +2200,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                       <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2"/>
                       <path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1z"/>
                     </svg>
-                    <span>Bookmarks</span>
+                    <span>{getLocaleData("bookmarks.bookmarks","Bookmarks")}</span>
                   </button>
                 </div>
               </div>
@@ -2128,7 +2211,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                     {documentOutline.length > 0 ? (
                       <div className="adex-outline-list">{renderOutlineItems(documentOutline)}</div>
                     ) : (
-                      <div className="adex-no-outline">No outline available in this document</div>
+                      <div className="adex-no-outline">{getLocaleData("bookmarks.noBookmarks","No bookmarks added yet")}</div>
                     )}
                   </div>
                 ) : (
@@ -2139,7 +2222,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                           <input
                             type="text"
                             className="adex-bookmark-title-input"
-                            placeholder="Bookmark title"
+                            placeholder={getLocaleData("bookmarks.bookmarkTitle","Bookmark title")}
                             value={newBookmarkTitle}
                             onChange={(e) => setNewBookmarkTitle(e.target.value)}
                             autoFocus
@@ -2152,22 +2235,30 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                             <button
                               className="adex-bookmark-save"
                               onClick={addBookmark}
+                              aria-label={getLocaleData("bookmarks.save","Save bookmark")}
+                              title={getLocaleData("bookmarks.save","Save bookmark")}
                               disabled={!newBookmarkTitle.trim()}
                             >
-                              Save
+                              {getLocaleData("bookmarks.save","Save")}
                             </button>
-                            <button className="adex-bookmark-cancel" onClick={() => setIsAddingBookmark(false)}>
-                              Cancel
+                            <button className="adex-bookmark-cancel"
+                            aria-label={getLocaleData("bookmarks.cancel","Cancel")}
+                            title={getLocaleData("bookmarks.cancel","Cancel")}
+                             onClick={() => setIsAddingBookmark(false)}>
+                              {getLocaleData("bookmarks.cancel","Cancel")}
                             </button>
                           </div>
                         </div>
                       ) : (
-                        <button className="adex-add-bookmark-btn" onClick={() => setIsAddingBookmark(true)}>
+                        <button className="adex-add-bookmark-btn"
+                        aria-label={getLocaleData("bookmarks.addBookmark","Add Bookmark")}
+                        title={getLocaleData("bookmarks.addBookmark","Add Bookmark")}
+                         onClick={() => setIsAddingBookmark(true)}>
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                             <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z"/>
                             <path d="M8 4a.5.5 0 0 1 .5.5V6H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V7H6a.5.5 0 0 1 0-1h1.5V4.5A.5.5 0 0 1 8 4"/>
                           </svg>
-                          Add Bookmark
+                          {getLocaleData("bookmarks.addBookmark","Add Bookmark")}
                         </button>
                       )}
                     </div>
@@ -2194,7 +2285,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                               <button
                                 className="adex-bookmark-delete"
                                 onClick={() => deleteBookmark(bookmark.id)}
-                                aria-label={`Delete bookmark: ${bookmark.title}`}
+                                aria-label={`${getLocaleData("bookmarks.deleteBookmark","Delete bookmark:")} ${bookmark.title}`}
+                                title={`${getLocaleData("bookmarks.deleteBookmark","Delete bookmark:")} ${bookmark.title}`}
                               >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
@@ -2213,7 +2305,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                             </div>
                           ))
                       ) : (
-                        <div className="adex-no-bookmarks">No bookmarks added yet</div>
+                        <div className="adex-no-bookmarks">{getLocaleData("bookmarks.noBookmarks","No bookmarks added yet")}</div>
                       )}
                     </div>
                   </div>
@@ -2225,7 +2317,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
           {leftPanel == 3 && (
             <div className="adex-preview-annotations">
               <div className="adex-annotations-header">
-                <h3>Annotations</h3>
+                <h3>{getLocaleData("annotations.title","Annotations")}</h3>
                 <div className="adex-annotations-tools">
                   <button
                     className={`adex-annotation-tool ${isAddingAnnotation && annotationType === "note" ? "active" : ""}`}
@@ -2234,8 +2326,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                         ? cancelAddingAnnotation()
                         : startAddingAnnotation("note")
                     }
-                    aria-label="Add note"
-                    title="Add note"
+                    aria-label={getLocaleData("annotations.addNote","Add note")}
+                    title={getLocaleData("annotations.addNote","Add note")}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                       <path d="M2.5 1A1.5 1.5 0 0 0 1 2.5v11A1.5 1.5 0 0 0 2.5 15h6.086a1.5 1.5 0 0 0 1.06-.44l4.915-4.914A1.5 1.5 0 0 0 15 8.586V2.5A1.5 1.5 0 0 0 13.5 1zM2 2.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 .5.5V8H9.5A1.5 1.5 0 0 0 8 9.5V14H2.5a.5.5 0 0 1-.5-.5zm7 11.293V9.5a.5.5 0 0 1 .5-.5h4.293z"/>
@@ -2248,8 +2340,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                         ? cancelAddingAnnotation()
                         : startAddingAnnotation("highlight")
                     }
-                    aria-label="Add highlight"
-                    title="Add highlight"
+                    aria-label={getLocaleData("annotations.addHighlight","Add highlight")}
+                    title={getLocaleData("annotations.addHighlight","Add highlight")}
                     disabled={!textOptions.enableSelection}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -2263,8 +2355,8 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                         ? cancelAddingAnnotation()
                         : startAddingAnnotation("drawing")
                     }
-                    aria-label="Add drawing"
-                    title="Add drawing"
+                    aria-label={getLocaleData("annotations.addDrawing","Add drawing")}
+                    title={getLocaleData("annotations.addDrawing","Add drawing")}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -2286,12 +2378,13 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                           className={`adex-color-option ${annotationColor === color ? "active" : ""}`}
                           style={{ backgroundColor: color }}
                           onClick={() => setAnnotationColor(color)}
-                          aria-label={`Set color to ${color}`}
+                          aria-label={`${getLocaleData("annotations.colorSetTo", "Set color to")} ${color}`}
+                          title={`${getLocaleData("annotations.colorSetTo", "Set color to")} ${color}`}
                         />
                       ))}
                     </div>
-                    <button className="adex-cancel-annotation" onClick={cancelAddingAnnotation} aria-label="Cancel">
-                      Cancel
+                    <button className="adex-cancel-annotation" onClick={cancelAddingAnnotation} aria-label={getLocaleData("annotations.cancel","Cancel")}>
+                      {getLocaleData("annotations.cancel","Cancel")}
                     </button>
                   </div>
                 )}
@@ -2352,12 +2445,12 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                         <div className="adex-annotation-content">
                           <div className="adex-annotation-title">
                             {annotation.type.charAt(0).toUpperCase() + annotation.type.slice(1)}
-                            <span className="adex-annotation-page">Page {annotation.pageNumber}</span>
+                            <span className="adex-annotation-page">{getLocaleData("annotations.page","Page")} {annotation.pageNumber}</span>
                           </div>
                           <div className="adex-annotation-preview">
                             {annotation.content
                               ? annotation.content.substring(0, 50) + (annotation.content.length > 50 ? "..." : "")
-                              : "No content"}
+                              : getLocaleData("annotations.noContent","No content")}
                           </div>
                         </div>
                         </div>
@@ -2366,7 +2459,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                     ))
                 ) : (
                   <div className="adex-no-annotations">
-                    No annotations added yet. Use the tools above to add annotations to your document.
+                    {getLocaleData("annotations.noAnnotations","No annotations added yet. Use the tools above to add annotations to your document.")}
                   </div>
                 )}
               </div>
@@ -2427,6 +2520,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                     ref={(el) => (pageRefs.current[index + 1] = el)}
                     className="adex-page"
                     aria-label={`Page ${index + 1} content`}
+                    title={`Page ${index + 1} content`}
                     onClick={(e) => handlePageClick(e, index + 1)}
                     onMouseDown={(e) => handleDrawingMouseDown(e, index + 1)}
                     onMouseMove={handleDrawingMouseMove}
@@ -2474,13 +2568,14 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
                     <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
                     <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
                   </svg>{" "}
-                  Info: {metadata?.Title || "N/A"}
+                  {getLocaleData("info.title","Info")}: {metadata?.Title || "N/A"}
                 </strong>
                 <button
                   onClick={() => {
                     setShowInfo(false)
                   }}
-                  aria-label="Close info panel"
+                  aria-label={getLocaleData("info.close","Close Info Panel")}
+                  title={getLocaleData("info.close","Close Info Panel")}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -2508,13 +2603,60 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
             </div>
           </div>
         )}
+        {showLocaleOption && (
+          <div className="adex-pdf-meta-info adex-locales-panel">
+            <div className="adex-meta-panel">
+              <div className="adex-pdf-meta-info-header">
+                <strong>
+                  {" "}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M4.545 6.714 4.11 8H3l1.862-5h1.284L8 8H6.833l-.435-1.286zm1.634-.736L5.5 3.956h-.049l-.679 2.022z"/>
+                    <path d="M0 2a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v3h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-3H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zm7.138 9.995q.289.451.63.846c-.748.575-1.673 1.001-2.768 1.292.178.217.451.635.555.867 1.125-.359 2.08-.844 2.886-1.494.777.665 1.739 1.165 2.93 1.472.133-.254.414-.673.629-.89-1.125-.253-2.057-.694-2.82-1.284.681-.747 1.222-1.651 1.621-2.757H14V8h-3v1.047h.765c-.318.844-.74 1.546-1.272 2.13a6 6 0 0 1-.415-.492 2 2 0 0 1-.94.31"/>
+                  </svg>  {" "}
+                  {getLocaleData("locale.selectLanguage","Select Language")}
+                </strong>
+                <button
+                  onClick={() => {
+                    setShowLocaleOption(false)
+                  }}
+                  aria-label={getLocaleData("annotations.cancel","Cancel")}
+                  title={getLocaleData("annotations.cancel","Cancel")}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-x-square"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
+                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                  </svg>
+                </button>
+              </div>
+              <div className="adex-pdf-meta-info-content">
+                <ul className="adex-language-list"  aria-label={getLocaleData("locale.selectLanguage","Select Language")} >
+                  {
+                    localization?.map((language) => (
+                      <li className={`adex-language-option ${language.locale == locale ? "active-lang" : ""}`} key={language?.title} onClick={(e) => handleChangeLocale(language.locale)} aria-label={`${getLocaleData("locale.changeTo","Change language to")} ${language?.title}`} title={`${getLocaleData("locale.changeTo","Change language to")} ${language?.title}`} >
+                        {language.title}
+                      </li>
+                    ))
+                  }
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       <div className="adex-power-row">
         <div className="adex-left-option">
           {showControls?.info && (
             <button
               onClick={() => {
-                setShowInfo(true)
+                setShowInfo(!showInfo)
+                setShowLocaleOption(false)
               }}
               aria-label="Show document information"
             >
@@ -2531,10 +2673,27 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
               </svg>
             </button>
           )}
+          
+          {/* {
+          showControls?.localization && (
+            <div className="adex-localization">
+              <select onChange={(e) => handleChangeLocale(e.target.value)} aria-label={getLocaleData("locale.selectLanguage","Select Language")} title={getLocaleData("locale.selectLanguage","Select Language")}>
+                {
+                  localization?.map((language) => (
+                    <option key={language?.title} aria-label={`${getLocaleData("locale.changeTo","Change language to")} ${language?.title}`} value={language.locale}>
+                      {language.title}
+                    </option>
+                  ))
+                }
+              </select>
+            </div>
+          )
+        } */}
         </div>
+        
         {showCredits && (
           <p>
-            Created with <span>♥</span> by{" "}
+            {getLocaleData("credits.createdWith","Created with")} <span>♥</span> {getLocaleData("credits.by","by")}{" "}
             <a href="https://github.com/abhibagul/" target="_blank" rel="noreferrer">
               Abhishek
             </a>

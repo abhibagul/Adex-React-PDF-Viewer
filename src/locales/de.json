@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "Vorherige Seite",
+    "nextPage": "Nächste Seite",
+    "pageOf": "von"
+  },
+  "leftPanel": {
+    "previews": "Seitenvorschau",
+    "search": "Dokument durchsuchen",
+    "bookmarks": "Lesezeichen und Gliederung",
+    "annotations": "Anmerkungen"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "Gegen den Uhrzeigersinn drehen",
+    "rotateClockwise": "Im Uhrzeigersinn drehen",
+    "zoomLevel": "Zoomstufe",
+    "print": "Dokument drucken",
+    "fullscreen": "Vollbildmodus",
+    "exitFullscreen": "Vollbildmodus beenden",
+    "download": "PDF herunterladen"
+  },
+  "search": {
+    "title": "Suchen",
+    "placeholder": "Im Dokument suchen...",
+    "matches": "Treffer",
+    "noResults": "Keine Ergebnisse gefunden",
+    "searching": "Suche läuft...",
+    "previousResult": "Vorheriges Ergebnis",
+    "nextResult": "Nächstes Ergebnis",
+    "page": "Seite",
+    "incompleteDocumentError": "Bei der Suche ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut, nachdem das Dokument vollständig geladen wurde.",
+    "waitLoading": "Bitte warten Sie, bis das Dokument vollständig geladen ist, bevor Sie suchen."
+  },
+  "bookmarks": {
+    "outline": "Gliederung",
+    "bookmarks": "Lesezeichen",
+    "noOutline": "Keine Gliederung in diesem Dokument verfügbar",
+    "addBookmark": "Lesezeichen hinzufügen",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "noBookmarks": "Noch keine Lesezeichen hinzugefügt",
+    "bookmarkTitle": "Lesezeichentitel",
+    "deleteBookmark": "Lesezeichen löschen:"
+  },
+  "annotations": {
+    "title": "Anmerkungen",
+    "addNote": "Notiz hinzufügen",
+    "addHighlight": "Hervorhebung hinzufügen",
+    "addDrawing": "Zeichnung hinzufügen",
+    "note": "Notiz",
+    "highlight": "Hervorhebung",
+    "drawing": "Zeichnung",
+    "noAnnotations": "Noch keine Anmerkungen hinzugefügt. Verwenden Sie die obigen Werkzeuge, um Anmerkungen zu Ihrem Dokument hinzuzufügen.",
+    "addNoteHint": "Eine Notiz hinzufügen...",
+    "page": "Seite",
+    "cancel": "Abbrechen",
+    "colorSetTo": "Farbe festlegen auf",
+    "noContent": "Kein Inhalt",
+    "delete": "Anmerkung löschen"
+  },
+  "info": {
+    "title": "Info",
+    "close": "Info-Panel schließen"
+  },
+  "locale": {
+    "selectLanguage": "Sprache auswählen",
+    "changeTo": "Sprache ändern zu"
+  },
+  "credits": {
+    "createdWith": "Erstellt mit",
+    "by": "von"
+  }
+}

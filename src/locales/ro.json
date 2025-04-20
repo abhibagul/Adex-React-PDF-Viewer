@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "Pagina anterioară",
+    "nextPage": "Pagina următoare",
+    "pageOf": "din"
+  },
+  "leftPanel": {
+    "previews": "Previzualizări pagini",
+    "search": "Caută în document",
+    "bookmarks": "Semne de carte și structură",
+    "annotations": "Adnotări"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "Rotire în sens invers acelor de ceasornic",
+    "rotateClockwise": "Rotire în sensul acelor de ceasornic",
+    "zoomLevel": "Nivel de zoom",
+    "print": "Imprimă documentul",
+    "fullscreen": "Ecran complet",
+    "exitFullscreen": "Ieșire din ecran complet",
+    "download": "Descarcă PDF"
+  },
+  "search": {
+    "title": "Caută",
+    "placeholder": "Caută în document...",
+    "matches": "potriviri",
+    "noResults": "Nu s-au găsit rezultate",
+    "searching": "Se caută...",
+    "previousResult": "Rezultatul anterior",
+    "nextResult": "Rezultatul următor",
+    "page": "Pagina",
+    "incompleteDocumentError": "A apărut o eroare în timpul căutării. Vă rugăm să încercați din nou după ce documentul este complet încărcat.",
+    "waitLoading": "Vă rugăm să așteptați încărcarea completă a documentului înainte de a căuta."
+  },
+  "bookmarks": {
+    "outline": "Structură",
+    "bookmarks": "Semne de carte",
+    "noOutline": "Nu există structură disponibilă în acest document",
+    "addBookmark": "Adaugă semn de carte",
+    "save": "Salvează",
+    "cancel": "Anulează",
+    "noBookmarks": "Nu au fost adăugate încă semne de carte",
+    "bookmarkTitle": "Titlu semn de carte",
+    "deleteBookmark": "Șterge semn de carte:"
+  },
+  "annotations": {
+    "title": "Adnotări",
+    "addNote": "Adaugă notă",
+    "addHighlight": "Adaugă evidențiere",
+    "addDrawing": "Adaugă desen",
+    "note": "Notă",
+    "highlight": "Evidențiere",
+    "drawing": "Desen",
+    "noAnnotations": "Nu au fost adăugate încă adnotări. Utilizați instrumentele de mai sus pentru a adăuga adnotări la documentul dvs.",
+    "addNoteHint": "Adaugă o notă...",
+    "page": "Pagina",
+    "cancel": "Anulează",
+    "colorSetTo": "Setează culoarea la",
+    "noContent": "Fără conținut",
+    "delete": "Șterge adnotarea"
+  },
+  "info": {
+    "title": "Informații",
+    "close": "Închide panoul de informații"
+  },
+  "locale": {
+    "selectLanguage": "Selectează limba",
+    "changeTo": "Schimbă limba în"
+  },
+  "credits": {
+    "createdWith": "Creat cu",
+    "by": "de"
+  }
+}

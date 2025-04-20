@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "Pagina precedente",
+    "nextPage": "Pagina successiva",
+    "pageOf": "di"
+  },
+  "leftPanel": {
+    "previews": "Anteprime pagine",
+    "search": "Cerca nel documento",
+    "bookmarks": "Segnalibri e struttura",
+    "annotations": "Annotazioni"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "Ruota in senso antiorario",
+    "rotateClockwise": "Ruota in senso orario",
+    "zoomLevel": "Livello di zoom",
+    "print": "Stampa documento",
+    "fullscreen": "Schermo intero",
+    "exitFullscreen": "Esci da schermo intero",
+    "download": "Scarica PDF"
+  },
+  "search": {
+    "title": "Cerca",
+    "placeholder": "Cerca nel documento...",
+    "matches": "corrispondenze",
+    "noResults": "Nessun risultato trovato",
+    "searching": "Ricerca in corso...",
+    "previousResult": "Risultato precedente",
+    "nextResult": "Risultato successivo",
+    "page": "Pagina",
+    "incompleteDocumentError": "Si è verificato un errore durante la ricerca. Riprova dopo che il documento è stato completamente caricato.",
+    "waitLoading": "Attendi il caricamento completo del documento prima di effettuare la ricerca."
+  },
+  "bookmarks": {
+    "outline": "Struttura",
+    "bookmarks": "Segnalibri",
+    "noOutline": "Nessuna struttura disponibile in questo documento",
+    "addBookmark": "Aggiungi segnalibro",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "noBookmarks": "Nessun segnalibro aggiunto finora",
+    "bookmarkTitle": "Titolo del segnalibro",
+    "deleteBookmark": "Elimina segnalibro:"
+  },
+  "annotations": {
+    "title": "Annotazioni",
+    "addNote": "Aggiungi nota",
+    "addHighlight": "Aggiungi evidenziazione",
+    "addDrawing": "Aggiungi disegno",
+    "note": "Nota",
+    "highlight": "Evidenziazione",
+    "drawing": "Disegno",
+    "noAnnotations": "Nessuna annotazione aggiunta finora. Usa gli strumenti sopra per aggiungere annotazioni al tuo documento.",
+    "addNoteHint": "Aggiungi una nota...",
+    "page": "Pagina",
+    "cancel": "Annulla",
+    "colorSetTo": "Imposta colore a",
+    "noContent": "Nessun contenuto",
+    "delete": "Elimina annotazione"
+  },
+  "info": {
+    "title": "Informazioni",
+    "close": "Chiudi pannello informazioni"
+  },
+  "locale": {
+    "selectLanguage": "Seleziona lingua",
+    "changeTo": "Cambia lingua in"
+  },
+  "credits": {
+    "createdWith": "Creato con",
+    "by": "da"
+  }
+}

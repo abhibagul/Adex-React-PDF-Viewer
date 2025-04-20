@@ -1,4 +1,4 @@
-# Adex React PDF Viewer
+# Adex React PDF Viewer v1.0.7
 
 A powerful, feature-rich PDF viewer component for React applications. Built on top of `react-pdf`, AdexViewer provides a complete solution for viewing, annotating, and interacting with PDF documents in your web applications.
 
@@ -21,6 +21,7 @@ A powerful, feature-rich PDF viewer component for React applications. Built on t
 - 🔗 **Download**: Direct download option for PDF files
 - 🖼️ **Fullscreen Mode**: Immersive viewing experience
 - 📊 **Document Info**: View and display PDF metadata
+- 🌍 **Internationalization**: Support for multiple languages with easy switching
 
 ## 🚀 Installation
 
@@ -32,7 +33,7 @@ npm install adex-react-pdf-viewer
 
 For yarn:
 
-```
+```plaintext
 yarn add adex-react-pdf-viewer
 ```
 
@@ -69,6 +70,7 @@ export default App;
 | `responsive`    | object  | Configure responsive behavior                      | See below  |
 | `textOptions`   | object  | Configure text selection and copying               | See below  |
 | `printOptions`  | object  | Configure print behavior                           | See below  |
+| `localization`  | array   | Configure language options (see below)             | See below  |
 
 ### `showControls` Object
 
@@ -84,7 +86,8 @@ showControls: {
   print: true,           // Print button
   search: true,          // Search functionality
   bookmarks: true,       // Bookmarks functionality
-  annotations: true      // Annotations functionality
+  annotations: true,     // Annotations functionality
+  localization: true     // Language selection button
 }
 ```
 
@@ -115,6 +118,76 @@ printOptions: {
   pageRangeEnabled: true     // Enable page range selection
 }
 ```
+
+### `localization` Array
+
+The `localization` prop accepts an array of `LocalizationOptions` objects that define the available languages for the viewer interface. Each object has the following properties:
+
+```javascriptreact
+localization: [
+  { locale: "en", title: "English", active: true },
+  { locale: "es", title: "Español", active: false },
+  { locale: "fr", title: "Français", active: false },
+  // ... more languages
+]
+```
+
+Each language object contains:
+
+- `locale`: The language code (used for loading translation files)
+- `title`: The display name of the language
+- `active`: Whether this language is active by default
+
+## 🌍 Internationalization
+
+AdexViewer supports multiple languages through its localization system. The component will:
+
+1. Load language files from the `/locales/{locale}.json` directory
+2. Allow users to switch languages via the language selector
+3. Remember the user's language preference in localStorage
+
+### Supported Languages
+
+The viewer comes with support for 35+ languages including:
+
+| Language Code | Language Name                  |
+| ------------- | ------------------------------ |
+| en            | English                        |
+| ar            | العربية (Arabic)               |
+| bg            | Български (Bulgarian)          |
+| bn            | বাংলা (Bengali)                |
+| ca            | Català (Catalan)               |
+| cs            | Čeština (Czech)                |
+| de            | Deutsch (German)               |
+| el            | Ελληνικά (Greek)               |
+| es            | Español (Spanish)              |
+| fi            | Suomi (Finnish)                |
+| fr            | Français (French)              |
+| he            | עברית (Hebrew)                 |
+| hi            | हिन्दी (Hindi)                 |
+| id            | Bahasa Indonesia               |
+| it            | Italiano (Italian)             |
+| ja            | 日本語 (Japanese)              |
+| ko            | 한국어 (Korean)                |
+| mr            | मराठी (Marathi)                |
+| ms            | Bahasa Melayu                  |
+| nl            | Nederlands (Dutch)             |
+| no            | Norsk (Norwegian)              |
+| pa            | ਪੰਜਾਬੀ (Punjabi)               |
+| pl            | Polski (Polish)                |
+| pt            | Português                      |
+| ro            | Română (Romanian)              |
+| ru            | Русский (Russian)              |
+| sv            | Svenska (Swedish)              |
+| sw            | Kiswahili (Swahili)            |
+| ta            | தமிழ் (Tamil)                  |
+| te            | తెలుగు (Telugu)                |
+| th            | ไทย (Thai)                     |
+| tr            | Türkçe (Turkish)               |
+| uk            | Українська (Ukrainian)         |
+| vi            | Tiếng Việt (Vietnamese)        |
+| zh-CN         | 简体中文 (Simplified Chinese)  |
+| zh_TW         | 繁體中文 (Traditional Chinese) |
 
 ## 🎨 Annotations
 
@@ -164,7 +237,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 Clone the repository:
 
-```sh
+```shellscript
 git clone https://github.com/abhibagul/Adex-React-PDF-Viewer.git
 cd Adex-React-PDF-Viewer
 npm install
@@ -172,14 +245,20 @@ npm install
 
 Build the package:
 
-```sh
+```shellscript
 npm run build
 ```
 
 to link and use in the project:
 
-```sh
+```shellscript
 npm link
+```
+
+setup the react project and link package using:
+
+```shellscript
+npm link adex-react-pdf-viewer
 ```
 
 ## 📄 License

@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "Halaman sebelumnya",
+    "nextPage": "Halaman berikutnya",
+    "pageOf": "dari"
+  },
+  "leftPanel": {
+    "previews": "Pratinjau Halaman",
+    "search": "Cari dokumen",
+    "bookmarks": "Bookmark dan kerangka",
+    "annotations": "Anotasi"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "Putar berlawanan arah jarum jam",
+    "rotateClockwise": "Putar searah jarum jam",
+    "zoomLevel": "Tingkat zoom",
+    "print": "Cetak dokumen",
+    "fullscreen": "Layar penuh",
+    "exitFullscreen": "Keluar dari layar penuh",
+    "download": "Unduh PDF"
+  },
+  "search": {
+    "title": "Cari",
+    "placeholder": "Cari dalam dokumen...",
+    "matches": "hasil",
+    "noResults": "Tidak ditemukan hasil",
+    "searching": "Mencari...",
+    "previousResult": "Hasil sebelumnya",
+    "nextResult": "Hasil berikutnya",
+    "page": "Halaman",
+    "incompleteDocumentError": "Terjadi kesalahan saat mencari. Silakan coba lagi setelah dokumen dimuat sepenuhnya.",
+    "waitLoading": "Harap tunggu dokumen dimuat sepenuhnya sebelum mencari."
+  },
+  "bookmarks": {
+    "outline": "Kerangka",
+    "bookmarks": "Bookmark",
+    "noOutline": "Tidak ada kerangka yang tersedia dalam dokumen ini",
+    "addBookmark": "Tambah bookmark",
+    "save": "Simpan",
+    "cancel": "Batal",
+    "noBookmarks": "Belum ada bookmark yang ditambahkan",
+    "bookmarkTitle": "Judul bookmark",
+    "deleteBookmark": "Hapus bookmark:"
+  },
+  "annotations": {
+    "title": "Anotasi",
+    "addNote": "Tambah catatan",
+    "addHighlight": "Tambah sorotan",
+    "addDrawing": "Tambah gambar",
+    "note": "Catatan",
+    "highlight": "Sorotan",
+    "drawing": "Gambar",
+    "noAnnotations": "Belum ada anotasi yang ditambahkan. Gunakan alat di atas untuk menambahkan anotasi ke dokumen Anda.",
+    "addNoteHint": "Tambahkan catatan...",
+    "page": "Halaman",
+    "cancel": "Batal",
+    "colorSetTo": "Atur warna menjadi",
+    "noContent": "Tidak ada konten",
+    "delete": "Hapus anotasi"
+  },
+  "info": {
+    "title": "Info",
+    "close": "Tutup Panel Info"
+  },
+  "locale": {
+    "selectLanguage": "Pilih Bahasa",
+    "changeTo": "Ubah bahasa ke"
+  },
+  "credits": {
+    "createdWith": "Dibuat dengan",
+    "by": "oleh"
+  }
+}

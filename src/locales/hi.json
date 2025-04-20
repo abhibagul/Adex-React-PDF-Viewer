@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "पिछला पृष्ठ",
+    "nextPage": "अगला पृष्ठ",
+    "pageOf": "का"
+  },
+  "leftPanel": {
+    "previews": "पृष्ठ पूर्वावलोकन",
+    "search": "दस्तावेज़ खोजें",
+    "bookmarks": "बुकमार्क और रूपरेखा",
+    "annotations": "टिप्पणियाँ"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "घड़ी की विपरीत दिशा में घुमाएँ",
+    "rotateClockwise": "घड़ी की दिशा में घुमाएँ",
+    "zoomLevel": "ज़ूम स्तर",
+    "print": "दस्तावेज़ प्रिंट करें",
+    "fullscreen": "पूर्ण स्क्रीन",
+    "exitFullscreen": "पूर्ण स्क्रीन से बाहर निकलें",
+    "download": "PDF डाउनलोड करें"
+  },
+  "search": {
+    "title": "खोज",
+    "placeholder": "दस्तावेज़ में खोजें...",
+    "matches": "मिलान",
+    "noResults": "कोई परिणाम नहीं मिला",
+    "searching": "खोज रहा है...",
+    "previousResult": "पिछला परिणाम",
+    "nextResult": "अगला परिणाम",
+    "page": "पृष्ठ",
+    "incompleteDocumentError": "खोज के दौरान एक त्रुटि हुई। कृपया दस्तावेज़ पूरी तरह से लोड होने के बाद पुनः प्रयास करें।",
+    "waitLoading": "खोज करने से पहले कृपया दस्तावेज़ के पूरी तरह से लोड होने की प्रतीक्षा करें।"
+  },
+  "bookmarks": {
+    "outline": "रूपरेखा",
+    "bookmarks": "बुकमार्क",
+    "noOutline": "इस दस्तावेज़ में कोई रूपरेखा उपलब्ध नहीं है",
+    "addBookmark": "बुकमार्क जोड़ें",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "noBookmarks": "अभी तक कोई बुकमार्क नहीं जोड़ा गया",
+    "bookmarkTitle": "बुकमार्क शीर्षक",
+    "deleteBookmark": "बुकमार्क हटाएँ:"
+  },
+  "annotations": {
+    "title": "टिप्पणियाँ",
+    "addNote": "नोट जोड़ें",
+    "addHighlight": "हाइलाइट जोड़ें",
+    "addDrawing": "ड्रॉइंग जोड़ें",
+    "note": "नोट",
+    "highlight": "हाइलाइट",
+    "drawing": "ड्रॉइंग",
+    "noAnnotations": "अभी तक कोई टिप्पणी नहीं जोड़ी गई है। अपने दस्तावेज़ में टिप्पणियाँ जोड़ने के लिए ऊपर दिए गए टूल का उपयोग करें।",
+    "addNoteHint": "एक नोट जोड़ें...",
+    "page": "पृष्ठ",
+    "cancel": "रद्द करें",
+    "colorSetTo": "रंग सेट करें",
+    "noContent": "कोई सामग्री नहीं",
+    "delete": "टिप्पणी हटाएँ"
+  },
+  "info": {
+    "title": "जानकारी",
+    "close": "जानकारी पैनल बंद करें"
+  },
+  "locale": {
+    "selectLanguage": "भाषा चुनें",
+    "changeTo": "भाषा बदलें"
+  },
+  "credits": {
+    "createdWith": "के साथ बनाया गया",
+    "by": "द्वारा"
+  }
+}

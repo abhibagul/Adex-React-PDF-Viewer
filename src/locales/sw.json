@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "Ukurasa uliopita",
+    "nextPage": "Ukurasa unaofuata",
+    "pageOf": "kati ya"
+  },
+  "leftPanel": {
+    "previews": "Hakikisho za Kurasa",
+    "search": "Tafuta hati",
+    "bookmarks": "Alamisho na muhtasari",
+    "annotations": "Maelezo"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "Zungusha kinyume cha saa",
+    "rotateClockwise": "Zungusha kulingana na saa",
+    "zoomLevel": "Kiwango cha ukuza",
+    "print": "Chapisha hati",
+    "fullscreen": "Skrini kamili",
+    "exitFullscreen": "Toka skrini kamili",
+    "download": "Pakua PDF"
+  },
+  "search": {
+    "title": "Tafuta",
+    "placeholder": "Tafuta katika hati...",
+    "matches": "matokeo",
+    "noResults": "Hakuna matokeo yaliyopatikana",
+    "searching": "Inatafuta...",
+    "previousResult": "Tokeo lililopita",
+    "nextResult": "Tokeo linalofuata",
+    "page": "Ukurasa",
+    "incompleteDocumentError": "Kulikuwa na hitilafu wakati wa kutafuta. Tafadhali jaribu tena baada ya hati kupakiwa kikamilifu.",
+    "waitLoading": "Tafadhali subiri hati ipakiwe kikamilifu kabla ya kutafuta."
+  },
+  "bookmarks": {
+    "outline": "Muhtasari",
+    "bookmarks": "Alamisho",
+    "noOutline": "Hakuna muhtasari unapatikana katika hati hii",
+    "addBookmark": "Ongeza alamisho",
+    "save": "Hifadhi",
+    "cancel": "Ghairi",
+    "noBookmarks": "Bado hakuna alamisho zilizoongezwa",
+    "bookmarkTitle": "Kichwa cha alamisho",
+    "deleteBookmark": "Futa alamisho:"
+  },
+  "annotations": {
+    "title": "Maelezo",
+    "addNote": "Ongeza dokezo",
+    "addHighlight": "Ongeza mwangaza",
+    "addDrawing": "Ongeza mchoro",
+    "note": "Dokezo",
+    "highlight": "Mwangaza",
+    "drawing": "Mchoro",
+    "noAnnotations": "Bado hakuna maelezo yaliyoongezwa. Tumia zana hapo juu kuongeza maelezo kwenye hati yako.",
+    "addNoteHint": "Ongeza dokezo...",
+    "page": "Ukurasa",
+    "cancel": "Ghairi",
+    "colorSetTo": "Weka rangi kuwa",
+    "noContent": "Hakuna maudhui",
+    "delete": "Futa maelezo"
+  },
+  "info": {
+    "title": "Maelezo",
+    "close": "Funga Paneli ya Maelezo"
+  },
+  "locale": {
+    "selectLanguage": "Chagua Lugha",
+    "changeTo": "Badilisha lugha kuwa"
+  },
+  "credits": {
+    "createdWith": "Imeundwa na",
+    "by": "na"
+  }
+}

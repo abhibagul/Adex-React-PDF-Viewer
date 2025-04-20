@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "ਪਿਛਲਾ ਪੰਨਾ",
+    "nextPage": "ਅਗਲਾ ਪੰਨਾ",
+    "pageOf": "ਦਾ"
+  },
+  "leftPanel": {
+    "previews": "ਪੰਨਾ ਝਲਕ",
+    "search": "ਦਸਤਾਵੇਜ਼ ਖੋਜੋ",
+    "bookmarks": "ਬੁੱਕਮਾਰਕ ਅਤੇ ਰੂਪ-ਰੇਖਾ",
+    "annotations": "ਟਿੱਪਣੀਆਂ"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "ਘੜੀ ਦੀ ਉਲਟ ਦਿਸ਼ਾ ਵਿੱਚ ਘੁਮਾਓ",
+    "rotateClockwise": "ਘੜੀ ਦੀ ਦਿਸ਼ਾ ਵਿੱਚ ਘੁਮਾਓ",
+    "zoomLevel": "ਜ਼ੂਮ ਪੱਧਰ",
+    "print": "ਦਸਤਾਵੇਜ਼ ਪ੍ਰਿੰਟ ਕਰੋ",
+    "fullscreen": "ਪੂਰੀ ਸਕਰੀਨ",
+    "exitFullscreen": "ਪੂਰੀ ਸਕਰੀਨ ਤੋਂ ਬਾਹਰ ਨਿਕਲੋ",
+    "download": "PDF ਡਾਊਨਲੋਡ ਕਰੋ"
+  },
+  "search": {
+    "title": "ਖੋਜ",
+    "placeholder": "ਦਸਤਾਵੇਜ਼ ਵਿੱਚ ਖੋਜੋ...",
+    "matches": "ਮੇਲ",
+    "noResults": "ਕੋਈ ਨਤੀਜੇ ਨਹੀਂ ਮਿਲੇ",
+    "searching": "ਖੋਜ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...",
+    "previousResult": "ਪਿਛਲਾ ਨਤੀਜਾ",
+    "nextResult": "ਅਗਲਾ ਨਤੀਜਾ",
+    "page": "ਪੰਨਾ",
+    "incompleteDocumentError": "ਖੋਜ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਗਲਤੀ ਹੋਈ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ ਦਸਤਾਵੇਜ਼ ਦੇ ਪੂਰੀ ਤਰ੍ਹਾਂ ਲੋਡ ਹੋਣ ਤੋਂ ਬਾਅਦ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+    "waitLoading": "ਖੋਜ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਕਿਰਪਾ ਕਰਕੇ ਦਸਤਾਵੇਜ਼ ਦੇ ਪੂਰੀ ਤਰ੍ਹਾਂ ਲੋਡ ਹੋਣ ਦੀ ਉਡੀਕ ਕਰੋ।"
+  },
+  "bookmarks": {
+    "outline": "ਰੂਪ-ਰੇਖਾ",
+    "bookmarks": "ਬੁੱਕਮਾਰਕ",
+    "noOutline": "ਇਸ ਦਸਤਾਵੇਜ਼ ਵਿੱਚ ਕੋਈ ਰੂਪ-ਰੇਖਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ",
+    "addBookmark": "ਬੁੱਕਮਾਰਕ ਸ਼ਾਮਲ ਕਰੋ",
+    "save": "ਸੁਰੱਖਿਅਤ ਕਰੋ",
+    "cancel": "ਰੱਦ ਕਰੋ",
+    "noBookmarks": "ਅਜੇ ਤੱਕ ਕੋਈ ਬੁੱਕਮਾਰਕ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤੇ ਗਏ",
+    "bookmarkTitle": "ਬੁੱਕਮਾਰਕ ਦਾ ਸਿਰਲੇਖ",
+    "deleteBookmark": "ਬੁੱਕਮਾਰਕ ਮਿਟਾਓ:"
+  },
+  "annotations": {
+    "title": "ਟਿੱਪਣੀਆਂ",
+    "addNote": "ਨੋਟ ਸ਼ਾਮਲ ਕਰੋ",
+    "addHighlight": "ਹਾਈਲਾਈਟ ਸ਼ਾਮਲ ਕਰੋ",
+    "addDrawing": "ਡਰਾਇੰਗ ਸ਼ਾਮਲ ਕਰੋ",
+    "note": "ਨੋਟ",
+    "highlight": "ਹਾਈਲਾਈਟ",
+    "drawing": "ਡਰਾਇੰਗ",
+    "noAnnotations": "ਅਜੇ ਤੱਕ ਕੋਈ ਟਿੱਪਣੀਆਂ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤੀਆਂ ਗਈਆਂ। ਆਪਣੇ ਦਸਤਾਵੇਜ਼ ਵਿੱਚ ਟਿੱਪਣੀਆਂ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਉੱਪਰ ਦਿੱਤੇ ਟੂਲ ਦੀ ਵਰਤੋਂ ਕਰੋ।",
+    "addNoteHint": "ਇੱਕ ਨੋਟ ਸ਼ਾਮਲ ਕਰੋ...",
+    "page": "ਪੰਨਾ",
+    "cancel": "ਰੱਦ ਕਰੋ",
+    "colorSetTo": "ਰੰਗ ਸੈੱਟ ਕਰੋ",
+    "noContent": "ਕੋਈ ਸਮੱਗਰੀ ਨਹੀਂ",
+    "delete": "ਟਿੱਪਣੀ ਮਿਟਾਓ"
+  },
+  "info": {
+    "title": "ਜਾਣਕਾਰੀ",
+    "close": "ਜਾਣਕਾਰੀ ਪੈਨਲ ਬੰਦ ਕਰੋ"
+  },
+  "locale": {
+    "selectLanguage": "ਭਾਸ਼ਾ ਚੁਣੋ",
+    "changeTo": "ਭਾਸ਼ਾ ਬਦਲੋ"
+  },
+  "credits": {
+    "createdWith": "ਨਾਲ ਬਣਾਇਆ ਗਿਆ",
+    "by": "ਦੁਆਰਾ"
+  }
+}

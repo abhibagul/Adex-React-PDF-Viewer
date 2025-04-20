@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "上一页",
+    "nextPage": "下一页",
+    "pageOf": "/"
+  },
+  "leftPanel": {
+    "previews": "页面预览",
+    "search": "搜索文档",
+    "bookmarks": "书签和大纲",
+    "annotations": "注释"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "逆时针旋转",
+    "rotateClockwise": "顺时针旋转",
+    "zoomLevel": "缩放级别",
+    "print": "打印文档",
+    "fullscreen": "进入全屏",
+    "exitFullscreen": "退出全屏",
+    "download": "下载PDF"
+  },
+  "search": {
+    "title": "搜索",
+    "placeholder": "在文档中搜索...",
+    "matches": "匹配项",
+    "noResults": "未找到结果",
+    "searching": "搜索中...",
+    "previousResult": "上一个结果",
+    "nextResult": "下一个结果",
+    "page": "页面",
+    "incompleteDocumentError": "搜索时出错。请在文档完全加载后重试。",
+    "waitLoading": "请等待文档完全加载后再搜索。"
+  },
+  "bookmarks": {
+    "outline": "大纲",
+    "bookmarks": "书签",
+    "noOutline": "此文档中没有可用的大纲",
+    "addBookmark": "添加书签",
+    "save": "保存",
+    "cancel": "取消",
+    "noBookmarks": "尚未添加书签",
+    "bookmarkTitle": "书签标题",
+    "deleteBookmark": "删除书签:"
+  },
+  "annotations": {
+    "title": "注释",
+    "addNote": "添加笔记",
+    "addHighlight": "添加高亮",
+    "addDrawing": "添加绘图",
+    "note": "笔记",
+    "highlight": "高亮",
+    "drawing": "绘图",
+    "noAnnotations": "尚未添加注释。使用上面的工具向文档添加注释。",
+    "addNoteHint": "添加笔记...",
+    "page": "页面",
+    "cancel": "取消",
+    "colorSetTo": "设置颜色为",
+    "noContent": "无内容",
+    "delete": "删除注释"
+  },
+  "info": {
+    "title": "信息",
+    "close": "关闭信息面板"
+  },
+  "locale": {
+    "selectLanguage": "选择语言",
+    "changeTo": "更改语言为"
+  },
+  "credits": {
+    "createdWith": "创建工具",
+    "by": "作者"
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "Föregående sida",
+    "nextPage": "Nästa sida",
+    "pageOf": "av"
+  },
+  "leftPanel": {
+    "previews": "Sidförhandsvisningar",
+    "search": "Sök i dokument",
+    "bookmarks": "Bokmärken och disposition",
+    "annotations": "Anteckningar"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "Rotera moturs",
+    "rotateClockwise": "Rotera medurs",
+    "zoomLevel": "Zoomnivå",
+    "print": "Skriv ut dokument",
+    "fullscreen": "Fullskärm",
+    "exitFullscreen": "Avsluta fullskärm",
+    "download": "Ladda ner PDF"
+  },
+  "search": {
+    "title": "Sök",
+    "placeholder": "Sök i dokumentet...",
+    "matches": "träffar",
+    "noResults": "Inga resultat hittades",
+    "searching": "Söker...",
+    "previousResult": "Föregående resultat",
+    "nextResult": "Nästa resultat",
+    "page": "Sida",
+    "incompleteDocumentError": "Ett fel uppstod vid sökning. Försök igen efter att dokumentet har laddats helt.",
+    "waitLoading": "Vänta tills dokumentet har laddats helt innan du söker."
+  },
+  "bookmarks": {
+    "outline": "Disposition",
+    "bookmarks": "Bokmärken",
+    "noOutline": "Ingen disposition tillgänglig i detta dokument",
+    "addBookmark": "Lägg till bokmärke",
+    "save": "Spara",
+    "cancel": "Avbryt",
+    "noBookmarks": "Inga bokmärken har lagts till än",
+    "bookmarkTitle": "Bokmärkestitel",
+    "deleteBookmark": "Ta bort bokmärke:"
+  },
+  "annotations": {
+    "title": "Anteckningar",
+    "addNote": "Lägg till anteckning",
+    "addHighlight": "Lägg till markering",
+    "addDrawing": "Lägg till ritning",
+    "note": "Anteckning",
+    "highlight": "Markering",
+    "drawing": "Ritning",
+    "noAnnotations": "Inga anteckningar har lagts till än. Använd verktygen ovan för att lägga till anteckningar i ditt dokument.",
+    "addNoteHint": "Lägg till en anteckning...",
+    "page": "Sida",
+    "cancel": "Avbryt",
+    "colorSetTo": "Ställ in färg till",
+    "noContent": "Inget innehåll",
+    "delete": "Ta bort anteckning"
+  },
+  "info": {
+    "title": "Information",
+    "close": "Stäng informationspanel"
+  },
+  "locale": {
+    "selectLanguage": "Välj språk",
+    "changeTo": "Ändra språk till"
+  },
+  "credits": {
+    "createdWith": "Skapad med",
+    "by": "av"
+  }
+}

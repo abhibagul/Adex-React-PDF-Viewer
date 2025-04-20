@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "Página anterior",
+    "nextPage": "Página siguiente",
+    "pageOf": "de"
+  },
+  "leftPanel": {
+    "previews": "Vista previa de páginas",
+    "search": "Buscar documento",
+    "bookmarks": "Marcadores y esquema",
+    "annotations": "Anotaciones"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "Rotar en sentido antihorario",
+    "rotateClockwise": "Rotar en sentido horario",
+    "zoomLevel": "Nivel de zoom",
+    "print": "Imprimir documento",
+    "fullscreen": "Pantalla completa",
+    "exitFullscreen": "Salir de pantalla completa",
+    "download": "Descargar PDF"
+  },
+  "search": {
+    "title": "Buscar",
+    "placeholder": "Buscar en el documento...",
+    "matches": "coincidencias",
+    "noResults": "No se encontraron resultados",
+    "searching": "Buscando...",
+    "previousResult": "Resultado anterior",
+    "nextResult": "Siguiente resultado",
+    "page": "Página",
+    "incompleteDocumentError": "Hubo un error durante la búsqueda. Inténtelo de nuevo después de que el documento esté completamente cargado.",
+    "waitLoading": "Espere a que el documento se cargue completamente antes de buscar."
+  },
+  "bookmarks": {
+    "outline": "Esquema",
+    "bookmarks": "Marcadores",
+    "noOutline": "No hay esquema disponible en este documento",
+    "addBookmark": "Añadir marcador",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "noBookmarks": "Aún no se han añadido marcadores",
+    "bookmarkTitle": "Título del marcador",
+    "deleteBookmark": "Eliminar marcador:"
+  },
+  "annotations": {
+    "title": "Anotaciones",
+    "addNote": "Añadir nota",
+    "addHighlight": "Añadir resaltado",
+    "addDrawing": "Añadir dibujo",
+    "note": "Nota",
+    "highlight": "Resaltado",
+    "drawing": "Dibujo",
+    "noAnnotations": "Aún no se han añadido anotaciones. Utilice las herramientas anteriores para añadir anotaciones a su documento.",
+    "addNoteHint": "Añadir una nota...",
+    "page": "Página",
+    "cancel": "Cancelar",
+    "colorSetTo": "Establecer color a",
+    "noContent": "Sin contenido",
+    "delete": "Eliminar anotación"
+  },
+  "info": {
+    "title": "Información",
+    "close": "Cerrar panel de información"
+  },
+  "locale": {
+    "selectLanguage": "Seleccionar idioma",
+    "changeTo": "Cambiar idioma a"
+  },
+  "credits": {
+    "createdWith": "Creado con",
+    "by": "por"
+  }
+}

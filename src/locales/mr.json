@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "मागील पृष्ठ",
+    "nextPage": "पुढील पृष्ठ",
+    "pageOf": "पैकी"
+  },
+  "leftPanel": {
+    "previews": "पृष्ठ पूर्वावलोकने",
+    "search": "दस्तऐवज शोधा",
+    "bookmarks": "बुकमार्क आणि रूपरेषा",
+    "annotations": "टिप्पण्या"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "घड्याळाच्या विरुद्ध दिशेने फिरवा",
+    "rotateClockwise": "घड्याळाच्या दिशेने फिरवा",
+    "zoomLevel": "झूम स्तर",
+    "print": "दस्तऐवज प्रिंट करा",
+    "fullscreen": "पूर्ण स्क्रीन",
+    "exitFullscreen": "पूर्ण स्क्रीनमधून बाहेर पडा",
+    "download": "PDF डाउनलोड करा"
+  },
+  "search": {
+    "title": "शोध",
+    "placeholder": "दस्तऐवजात शोधा...",
+    "matches": "जुळण्या",
+    "noResults": "कोणतेही परिणाम सापडले नाहीत",
+    "searching": "शोधत आहे...",
+    "previousResult": "मागील परिणाम",
+    "nextResult": "पुढील परिणाम",
+    "page": "पृष्ठ",
+    "incompleteDocumentError": "शोध करताना एक त्रुटी आली. कृपया दस्तऐवज पूर्णपणे लोड झाल्यानंतर पुन्हा प्रयत्न करा.",
+    "waitLoading": "शोधण्यापूर्वी कृपया दस्तऐवज पूर्णपणे लोड होण्याची प्रतीक्षा करा."
+  },
+  "bookmarks": {
+    "outline": "रूपरेषा",
+    "bookmarks": "बुकमार्क",
+    "noOutline": "या दस्तऐवजात कोणतीही रूपरेषा उपलब्ध नाही",
+    "addBookmark": "बुकमार्क जोडा",
+    "save": "जतन करा",
+    "cancel": "रद्द करा",
+    "noBookmarks": "अद्याप कोणतेही बुकमार्क जोडलेले नाहीत",
+    "bookmarkTitle": "बुकमार्क शीर्षक",
+    "deleteBookmark": "बुकमार्क हटवा:"
+  },
+  "annotations": {
+    "title": "टिप्पण्या",
+    "addNote": "टीप जोडा",
+    "addHighlight": "हायलाइट जोडा",
+    "addDrawing": "रेखाचित्र जोडा",
+    "note": "टीप",
+    "highlight": "हायलाइट",
+    "drawing": "रेखाचित्र",
+    "noAnnotations": "अद्याप कोणत्याही टिप्पण्या जोडल्या नाहीत. तुमच्या दस्तऐवजात टिप्पण्या जोडण्यासाठी वरील साधने वापरा.",
+    "addNoteHint": "टीप जोडा...",
+    "page": "पृष्ठ",
+    "cancel": "रद्द करा",
+    "colorSetTo": "रंग सेट करा",
+    "noContent": "कोणताही मजकूर नाही",
+    "delete": "टिप्पणी हटवा"
+  },
+  "info": {
+    "title": "माहिती",
+    "close": "माहिती पॅनेल बंद करा"
+  },
+  "locale": {
+    "selectLanguage": "भाषा निवडा",
+    "changeTo": "भाषा बदला"
+  },
+  "credits": {
+    "createdWith": "सह तयार केले",
+    "by": "द्वारे"
+  }
+}

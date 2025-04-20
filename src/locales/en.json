@@ -1,0 +1,74 @@
+{
+    "navigation": {
+      "previousPage": "Previous page",
+      "nextPage": "Next page",
+      "pageOf": "of"
+    },
+    "leftPanel":{
+        "previews": "Page Previews",
+        "search": "Search document",
+        "bookmarks": "Bookmarks and outline",
+        "annotations": "Annotations"
+    },
+    "toolbar": {
+      "rotateCounterclockwise": "Rotate counterclockwise",
+      "rotateClockwise": "Rotate clockwise",
+      "zoomLevel": "Zoom level",
+      "print": "Print document",
+      "fullscreen": "Enter fullscreen",
+      "exitFullscreen": "Exit fullscreen",
+      "download": "Download PDF"
+    },
+    "search": {
+      "title": "Search",
+      "placeholder": "Search in document...",
+      "matches": "matches",
+      "noResults": "No results found",
+      "searching": "Searching...",
+      "previousResult": "Previous result",
+      "nextResult": "Next result",
+      "page": "Page",
+      "incompleteDocumentError": "There was an error while searching. Please try again after the document is fully loaded.",
+      "waitLoading": "Please wait for the document to fully load before searching."
+    },
+    "bookmarks": {
+      "outline": "Outline",
+      "bookmarks": "Bookmarks",
+      "noOutline": "No outline available in this document",
+      "addBookmark": "Add Bookmark",
+      "save": "Save",
+      "cancel": "Cancel",
+      "noBookmarks": "No bookmarks added yet",
+      "bookmarkTitle": "Bookmark title",
+      "deleteBookmark": "Delete bookmark:"
+    },
+    "annotations": {
+      "title": "Annotations",
+      "addNote": "Add note",
+      "addHighlight": "Add highlight",
+      "addDrawing": "Add drawing",
+      "note": "Note",
+      "highlight": "Highlight",
+      "drawing": "Drawing",
+      "noAnnotations": "No annotations added yet. Use the tools above to add annotations to your document.",
+      "addNoteHint": "Add a note...",
+      "page": "Page",
+      "cancel": "Cancel",
+      "colorSetTo": "Set color to",
+      "noContent": "No content",
+      "delete": "Delete annotation"
+    },
+    "info": {
+      "title": "Info",
+      "close": "Close Info Panel"
+    },
+    "locale":{
+      "selectLanguage": "Select Language",  
+      "changeTo": "Change language to"
+    },
+    "credits": {
+      "createdWith": "Created with",
+      "by": "by"
+    }
+  }
+  

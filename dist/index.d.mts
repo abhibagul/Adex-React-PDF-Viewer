@@ -19,12 +19,14 @@ interface PDFViewerProps {
         search?: boolean;
         bookmarks?: boolean;
         annotations?: boolean;
+        localization?: boolean;
     };
     defaultValues?: {
         zoom?: number;
         page?: number;
         fullscreen?: boolean;
     };
+    localization?: LocalizationOptions[] | null;
     responsive?: {
         mobileBreakpoint?: number;
         hideSidebarOnMobile?: boolean;
@@ -38,6 +40,11 @@ interface PDFViewerProps {
         printBackground?: boolean;
         pageRangeEnabled?: boolean;
     };
+}
+interface LocalizationOptions {
+    locale: string;
+    title: string;
+    active: boolean;
 }
 declare const AdexViewer: React.FC<PDFViewerProps>;
 

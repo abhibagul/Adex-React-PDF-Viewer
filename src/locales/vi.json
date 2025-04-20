@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "Trang trước",
+    "nextPage": "Trang sau",
+    "pageOf": "/"
+  },
+  "leftPanel": {
+    "previews": "Xem trước trang",
+    "search": "Tìm kiếm tài liệu",
+    "bookmarks": "Dấu trang và đề cương",
+    "annotations": "Chú thích"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "Xoay ngược chiều kim đồng hồ",
+    "rotateClockwise": "Xoay theo chiều kim đồng hồ",
+    "zoomLevel": "Mức độ phóng to",
+    "print": "In tài liệu",
+    "fullscreen": "Toàn màn hình",
+    "exitFullscreen": "Thoát toàn màn hình",
+    "download": "Tải xuống PDF"
+  },
+  "search": {
+    "title": "Tìm kiếm",
+    "placeholder": "Tìm kiếm trong tài liệu...",
+    "matches": "kết quả",
+    "noResults": "Không tìm thấy kết quả",
+    "searching": "Đang tìm kiếm...",
+    "previousResult": "Kết quả trước",
+    "nextResult": "Kết quả tiếp theo",
+    "page": "Trang",
+    "incompleteDocumentError": "Đã xảy ra lỗi khi tìm kiếm. Vui lòng thử lại sau khi tài liệu được tải hoàn toàn.",
+    "waitLoading": "Vui lòng đợi tài liệu tải hoàn toàn trước khi tìm kiếm."
+  },
+  "bookmarks": {
+    "outline": "Đề cương",
+    "bookmarks": "Dấu trang",
+    "noOutline": "Không có đề cương trong tài liệu này",
+    "addBookmark": "Thêm dấu trang",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "noBookmarks": "Chưa có dấu trang nào được thêm",
+    "bookmarkTitle": "Tiêu đề dấu trang",
+    "deleteBookmark": "Xóa dấu trang:"
+  },
+  "annotations": {
+    "title": "Chú thích",
+    "addNote": "Thêm ghi chú",
+    "addHighlight": "Thêm đánh dấu",
+    "addDrawing": "Thêm bản vẽ",
+    "note": "Ghi chú",
+    "highlight": "Đánh dấu",
+    "drawing": "Bản vẽ",
+    "noAnnotations": "Chưa có chú thích nào được thêm. Sử dụng các công cụ ở trên để thêm chú thích vào tài liệu của bạn.",
+    "addNoteHint": "Thêm ghi chú...",
+    "page": "Trang",
+    "cancel": "Hủy",
+    "colorSetTo": "Đặt màu thành",
+    "noContent": "Không có nội dung",
+    "delete": "Xóa chú thích"
+  },
+  "info": {
+    "title": "Thông tin",
+    "close": "Đóng bảng thông tin"
+  },
+  "locale": {
+    "selectLanguage": "Chọn ngôn ngữ",
+    "changeTo": "Thay đổi ngôn ngữ thành"
+  },
+  "credits": {
+    "createdWith": "Được tạo bởi",
+    "by": "bởi"
+  }
+}
