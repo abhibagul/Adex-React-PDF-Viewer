@@ -3071,6 +3071,7 @@ var AdexViewer = ({
     enableSelection: true,
     enableCopy: true
   },
+  theme = "",
   localization = [
     { locale: "en", title: "English", active: false },
     { locale: "ar", title: "\u0627\u0644\u0639\u0631\u0628\u064A\u0629", active: false },
@@ -4334,7 +4335,7 @@ var AdexViewer = ({
     "div",
     {
       ref: viewerRef,
-      className: `PDFViewer adex-viewer ${fullScreenView ? "fullScreenView" : ""} ${sidebar ? "thumbs-slide-in" : "thumbs-slide-out"} dev-abhishekbagul ${isMobile ? "adex-mobile" : ""} ${!textOptions.enableSelection ? "disable-text-selection" : ""} ${isPrinting ? "adex-printing" : ""}`,
+      className: `PDFViewer adex-viewer ${fullScreenView ? "fullScreenView" : ""} ${sidebar ? "thumbs-slide-in" : "thumbs-slide-out"} dev-abhishekbagul ${isMobile ? "adex-mobile" : ""} ${!textOptions.enableSelection ? "disable-text-selection" : ""} ${isPrinting ? "adex-printing" : ""} ${theme ? theme : ""}`,
       children: [
         showToolbar && /* @__PURE__ */ jsxs("div", { className: "adex-topbar", children: [
           (showControls == null ? void 0 : showControls.navigation) && /* @__PURE__ */ jsxs("div", { className: "adex-control-page", children: [

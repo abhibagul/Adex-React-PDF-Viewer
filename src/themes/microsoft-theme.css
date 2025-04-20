@@ -1,0 +1,226 @@
+/* Microsoft Fluent Design Theme for PDF Viewer */
+@import url("https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;500;600&display=swap");
+
+.adex-viewer.microsoft-theme {
+  border: 1px solid #e0e0e0;
+  background-color: #fafafa;
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.adex-viewer.microsoft-theme * {
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.adex-viewer.microsoft-theme .adex-topbar {
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #0078d4;
+  /* Microsoft blue */
+  color: white;
+  padding: 8px 16px;
+}
+
+.adex-viewer.microsoft-theme .adex-topbar .adex-control-page input {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  border-radius: 2px;
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+.adex-viewer.microsoft-theme .adex-topbar .adex-control-page p {
+  color: white;
+  font-weight: 400;
+}
+
+.adex-viewer.microsoft-theme .adex-topbar button,
+.adex-viewer.microsoft-theme .adex-topbar .open-link-btn {
+  color: white;
+  border-radius: 2px;
+  transition: background-color 0.1s ease;
+}
+
+.adex-viewer.microsoft-theme .adex-topbar button:hover,
+.adex-viewer.microsoft-theme .adex-topbar .open-link-btn:hover,
+.adex-viewer.microsoft-theme .adex-topbar button.active {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.adex-viewer.microsoft-theme .adex-left-col {
+  border-right: 1px solid #e0e0e0;
+  background-color: #f3f3f3;
+}
+
+.adex-viewer.microsoft-theme .adex-left-col button {
+  color: #505050;
+  border-radius: 2px;
+  transition: all 0.1s ease;
+  margin: 4px 0;
+}
+
+.adex-viewer.microsoft-theme .adex-left-col button:hover {
+  background-color: #e5e5e5;
+}
+
+.adex-viewer.microsoft-theme .adex-left-col button.active {
+  background-color: #e1e1e1;
+  color: #0078d4;
+  font-weight: 500;
+}
+
+.adex-viewer.microsoft-theme .adex-preview-panel .adex-preview-thumbs,
+.adex-viewer.microsoft-theme .adex-preview-panel .adex-preview-search,
+.adex-viewer.microsoft-theme .adex-preview-panel .adex-preview-bookmarks,
+.adex-viewer.microsoft-theme .adex-preview-panel .adex-preview-annotations {
+  background-color: #f3f3f3;
+  border-right: 1px solid #e0e0e0;
+}
+
+.adex-viewer.microsoft-theme .adex-preview-panel .adex-preview {
+  background-color: #fafafa;
+  padding: 16px;
+}
+
+.adex-viewer.microsoft-theme .adex-preview-panel .adex-preview .adex-page {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  border-radius: 2px;
+}
+
+.adex-viewer.microsoft-theme .adex-preview-panel .adex-preview-thumbs .adex-page-thumb {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
+  border-radius: 2px;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.adex-viewer.microsoft-theme .adex-preview-panel .adex-preview-thumbs .adex-page-thumb:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
+}
+
+.adex-viewer.microsoft-theme .adex-preview-panel .adex-preview-thumbs .adex-page-thumb.active:before {
+  border: 2px solid #0078d4;
+  background-color: rgba(0, 120, 212, 0.05);
+  border-radius: 2px;
+}
+
+.adex-viewer.microsoft-theme .adex-search-bar {
+  background-color: #f3f3f3;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 10px 16px;
+}
+
+.adex-viewer.microsoft-theme .adex-search-input {
+  background-color: white;
+  border: 1px solid #d0d0d0 !important;
+  border-radius: 2px 0 0 2px !important;
+  padding: 6px 12px;
+  font-size: 14px;
+  color: #333;
+}
+
+.adex-viewer.microsoft-theme .adex-search-input:focus {
+  border-color: #0078d4 !important;
+  outline: none;
+}
+
+.adex-viewer.microsoft-theme .adex-search-button {
+  background-color: #0078d4;
+  color: white;
+  border-radius: 0 2px 2px 0 !important;
+  padding: 6px 12px;
+  font-size: 14px;
+  transition: background-color 0.1s ease;
+}
+
+.adex-viewer.microsoft-theme .adex-search-button:hover {
+  background-color: #006cc1;
+}
+
+.adex-viewer.microsoft-theme .adex-power-row {
+  border-top: 1px solid #e0e0e0;
+  background-color: #f3f3f3;
+  color: #505050;
+  padding: 8px 16px;
+  font-size: 12px;
+}
+
+/* Annotations in Microsoft theme */
+.adex-viewer.microsoft-theme .adex-annotations-header {
+  background: #f3f3f3;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 10px 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+.adex-viewer.microsoft-theme .adex-annotation-item .adex-annotation-list-item {
+  background: white;
+  border-radius: 2px;
+  margin: 6px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+}
+
+.adex-viewer.microsoft-theme .adex-annotation-item:hover .adex-annotation-list-item {
+  background-color: #f9f9f9;
+}
+
+.adex-viewer.microsoft-theme .adex-annotation-item.active .adex-annotation-list-item {
+  background-color: rgba(0, 120, 212, 0.05);
+  border-left: 3px solid #0078d4;
+}
+
+.adex-viewer.microsoft-theme .adex-annotation-goto {
+  background: #0078d4;
+  color: white;
+  border-radius: 2px;
+}
+
+.adex-viewer.microsoft-theme .adex-annotation-goto:hover {
+  background-color: #006cc1;
+}
+
+/* Search highlights */
+.adex-viewer.microsoft-theme .adex-search-highlight {
+  background-color: rgba(255, 185, 0, 0.3);
+  /* Microsoft yellow */
+  border-radius: 2px;
+}
+
+.adex-viewer.microsoft-theme .adex-search-highlight.current {
+  background-color: rgba(255, 185, 0, 0.5);
+  border-radius: 2px;
+}
+
+/*custom*/
+.adex-viewer.microsoft-theme .adex-pdf-meta-info-header {
+  border-bottom: 1px solid #d1d5db;
+  background-color: #0078d4;
+  color: #fff;
+  padding: 10px 16px;
+}
+
+.adex-viewer.microsoft-theme .adex-pdf-meta-info-header button,
+.adex-viewer.microsoft-theme .adex-pdf-meta-info-header button:hover {
+  color: #fff;
+}
+
+.adex-viewer.microsoft-theme.fullScreenView .adex-preview-panel .adex-preview-annotations,
+.adex-viewer.microsoft-theme.fullScreenView .adex-preview-panel .adex-preview-bookmarks,
+.adex-viewer.microsoft-theme.fullScreenView .adex-preview-panel .adex-preview-thumbs,
+.adex-viewer.microsoft-theme.fullScreenView .adex-preview-panel .adex-preview-search,
+.adex-viewer.microsoft-theme.fullScreenView .adex-preview-panel .adex-preview {
+  max-height: calc(100vh - 95px);
+  min-height: calc(100vh - 95px);
+}
+
+.adex-viewer.microsoft-theme .adex-topbar .adex-control-zoom select {
+  background: #0078d4 !important;
+  color: #fff;
+}

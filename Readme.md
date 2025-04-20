@@ -1,4 +1,4 @@
-# Adex React PDF Viewer v1.0.7
+# Adex React PDF Viewer v1.0.8
 
 A powerful, feature-rich PDF viewer component for React applications. Built on top of `react-pdf`, AdexViewer provides a complete solution for viewing, annotating, and interacting with PDF documents in your web applications.
 
@@ -22,6 +22,7 @@ A powerful, feature-rich PDF viewer component for React applications. Built on t
 - 🖼️ **Fullscreen Mode**: Immersive viewing experience
 - 📊 **Document Info**: View and display PDF metadata
 - 🌍 **Internationalization**: Support for multiple languages with easy switching
+- 🎨 Themes: Multiple built-in themes to customize the appearance
 
 ## 🚀 Installation
 
@@ -71,6 +72,7 @@ export default App;
 | `textOptions`   | object  | Configure text selection and copying               | See below  |
 | `printOptions`  | object  | Configure print behavior                           | See below  |
 | `localization`  | array   | Configure language options (see below)             | See below  |
+| `theme`         | string  | Set the theme for the viewer (see themes section)  | See below  |
 
 ### `showControls` Object
 
@@ -138,6 +140,51 @@ Each language object contains:
 - `title`: The display name of the language
 - `active`: Whether this language is active by default
 
+## 🎨 Themes
+
+AdexViewer comes with multiple built-in themes to customize the appearance of the viewer.
+
+![AdexViewer Screenshot](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEimInOB9qw5fBpeABbWySFNKAv0U7-T8dKmZ2F9O7ghA2f-rdvuYgN8wqIfG3rkSuF3F8K420xJdvKcpskS-lfthh6kkS_XjOEjJryjEWP-y1Ig_Q0ILVjSGvZaL9xxwV4sS9NDFDqt2_QLNvZvzQrxO_m1WP92jYgxet-cmO2n50VqAO2W8B5sD0Q-ffld/s1600/adex-react-pdf-viewer.webp)
+
+### Using Themes
+
+To use a theme, you need to:
+
+1. Import the theme CSS file:
+
+```javascript
+import "adex-react-pdf-viewer/themes/blue-theme.css";
+```
+
+2. Provide the theme name to the component:
+
+```javascriptreact
+<AdexViewer
+  data={{ url: "https://pdfobject.com/pdf/pdf_open_parameters_acro8.pdf" }}
+  theme="blue-theme"
+/>
+```
+
+### Available Theme Options
+
+The following themes are available:
+
+| Theme Name              | Description                                                                                   |
+| ----------------------- | --------------------------------------------------------------------------------------------- |
+| `"default-theme"`       | The standard theme with a clean, neutral design suitable for most applications                |
+| `"blue-theme"`          | A modern theme with blue accents and a professional appearance                                |
+| `"dark-theme"`          | Dark background with light text, ideal for low-light environments and reducing eye strain     |
+| `"minimal-theme"`       | A simplified interface with reduced visual elements for a distraction-free reading experience |
+| `"corporate-theme"`     | Formal design with subtle colors suitable for business and enterprise applications            |
+| `"professional-theme"`  | Polished interface with refined controls and balanced color scheme                            |
+| `"high-contrast-theme"` | Enhanced contrast between elements for improved accessibility and readability                 |
+| `"night-mode-theme"`    | Dark background with optimized colors for nighttime reading                                   |
+| `"sepia-theme"`         | Warm, yellowish-brown tones that reduce eye strain for extended reading sessions              |
+| `"retro-theme"`         | Nostalgic design inspired by classic windown 95 style document viewers                        |
+| `"adobe-theme"`         | Inspired by Adobe's PDF viewer interface for users familiar with that environment             |
+| `"microsoft-theme"`     | Design elements reminiscent of Microsoft's document viewing applications                      |
+| `"acrobat-theme"`       | Styled after Adobe Acrobat's interface for a familiar experience                              |
+
 ## 🌍 Internationalization
 
 AdexViewer supports multiple languages through its localization system. The component will:
@@ -150,44 +197,20 @@ AdexViewer supports multiple languages through its localization system. The comp
 
 The viewer comes with support for 35+ languages including:
 
-| Language Code | Language Name                  |
-| ------------- | ------------------------------ |
-| en            | English                        |
-| ar            | العربية (Arabic)               |
-| bg            | Български (Bulgarian)          |
-| bn            | বাংলা (Bengali)                |
-| ca            | Català (Catalan)               |
-| cs            | Čeština (Czech)                |
-| de            | Deutsch (German)               |
-| el            | Ελληνικά (Greek)               |
-| es            | Español (Spanish)              |
-| fi            | Suomi (Finnish)                |
-| fr            | Français (French)              |
-| he            | עברית (Hebrew)                 |
-| hi            | हिन्दी (Hindi)                 |
-| id            | Bahasa Indonesia               |
-| it            | Italiano (Italian)             |
-| ja            | 日本語 (Japanese)              |
-| ko            | 한국어 (Korean)                |
-| mr            | मराठी (Marathi)                |
-| ms            | Bahasa Melayu                  |
-| nl            | Nederlands (Dutch)             |
-| no            | Norsk (Norwegian)              |
-| pa            | ਪੰਜਾਬੀ (Punjabi)               |
-| pl            | Polski (Polish)                |
-| pt            | Português                      |
-| ro            | Română (Romanian)              |
-| ru            | Русский (Russian)              |
-| sv            | Svenska (Swedish)              |
-| sw            | Kiswahili (Swahili)            |
-| ta            | தமிழ் (Tamil)                  |
-| te            | తెలుగు (Telugu)                |
-| th            | ไทย (Thai)                     |
-| tr            | Türkçe (Turkish)               |
-| uk            | Українська (Ukrainian)         |
-| vi            | Tiếng Việt (Vietnamese)        |
-| zh-CN         | 简体中文 (Simplified Chinese)  |
-| zh_TW         | 繁體中文 (Traditional Chinese) |
+| Language Code | Language Name           | Language Code | Language Name                 | Language Code | Language Name                  |
+| ------------- | ----------------------- | ------------- | ----------------------------- | ------------- | ------------------------------ |
+| en            | English                 | ar            | العربية (Arabic)              | bg            | Български (Bulgarian)          |
+| bn            | বাংলা (Bengali)         | ca            | Català (Catalan)              | cs            | Čeština (Czech)                |
+| de            | Deutsch (German)        | el            | Ελληνικά (Greek)              | es            | Español (Spanish)              |
+| fi            | Suomi (Finnish)         | fr            | Français (French)             | he            | עברית (Hebrew)                 |
+| hi            | हिन्दी (Hindi)          | id            | Bahasa Indonesia              | it            | Italiano (Italian)             |
+| ja            | 日本語 (Japanese)       | ko            | 한국어 (Korean)               | mr            | मराठी (Marathi)                |
+| ms            | Bahasa Melayu           | nl            | Nederlands (Dutch)            | no            | Norsk (Norwegian)              |
+| pa            | ਪੰਜਾਬੀ (Punjabi)        | pl            | Polski (Polish)               | pt            | Português                      |
+| ro            | Română (Romanian)       | ru            | Русский (Russian)             | sv            | Svenska (Swedish)              |
+| sw            | Kiswahili (Swahili)     | ta            | தமிழ் (Tamil)                 | te            | తెలుగు (Telugu)                |
+| th            | ไทย (Thai)              | tr            | Türkçe (Turkish)              | uk            | Українська (Ukrainian)         |
+| vi            | Tiếng Việt (Vietnamese) | zh-CN         | 简体中文 (Simplified Chinese) | zh_TW         | 繁體中文 (Traditional Chinese) |
 
 ## 🎨 Annotations
 

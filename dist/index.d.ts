@@ -40,6 +40,7 @@ interface PDFViewerProps {
         printBackground?: boolean;
         pageRangeEnabled?: boolean;
     };
+    theme?: string | null;
 }
 interface LocalizationOptions {
     locale: string;

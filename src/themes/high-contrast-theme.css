@@ -1,0 +1,223 @@
+/* High Contrast Theme for PDF Viewer */
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap");
+
+.adex-viewer.high-contrast-theme {
+  border: 2px solid #000;
+  background-color: #fff;
+  font-family: "Roboto", sans-serif;
+}
+
+.adex-viewer.high-contrast-theme * {
+  font-family: "Roboto", sans-serif;
+}
+
+.adex-viewer.high-contrast-theme .adex-topbar {
+  border-bottom: 2px solid #000;
+  background-color: #000;
+  color: #fff;
+}
+
+.adex-viewer.high-contrast-theme .adex-topbar .adex-control-page input {
+  background-color: #fff;
+  color: #000;
+  border: 2px solid #000;
+  border-radius: 0;
+  font-weight: bold;
+}
+
+.adex-viewer.high-contrast-theme .adex-topbar .adex-control-page p {
+  color: #fff;
+  font-weight: bold;
+}
+
+.adex-viewer.high-contrast-theme .adex-topbar button,
+.adex-viewer.high-contrast-theme .adex-topbar .open-link-btn {
+  color: #fff;
+  border-radius: 0;
+}
+
+.adex-viewer.high-contrast-theme .adex-topbar button:hover,
+.adex-viewer.high-contrast-theme .adex-topbar .open-link-btn:hover,
+.adex-viewer.high-contrast-theme .adex-topbar button.active {
+  background-color: #fff;
+  color: #000;
+}
+
+.adex-viewer.high-contrast-theme .adex-left-col {
+  border-right: 2px solid #000;
+  background-color: #fff;
+}
+
+.adex-viewer.high-contrast-theme .adex-left-col button {
+  color: #000;
+  border-radius: 0;
+}
+
+.adex-viewer.high-contrast-theme .adex-left-col button:hover {
+  background-color: #000;
+  color: #fff;
+}
+
+.adex-viewer.high-contrast-theme .adex-left-col button.active {
+  background-color: #000;
+  color: #fff;
+}
+
+.adex-viewer.high-contrast-theme .adex-preview-panel .adex-preview-thumbs,
+.adex-viewer.high-contrast-theme .adex-preview-panel .adex-preview-search,
+.adex-viewer.high-contrast-theme .adex-preview-panel .adex-preview-bookmarks,
+.adex-viewer.high-contrast-theme .adex-preview-panel .adex-preview-annotations {
+  background-color: #fff;
+  border-right: 2px solid #000;
+}
+
+.adex-viewer.high-contrast-theme .adex-preview-panel .adex-preview {
+  background-color: #f0f0f0;
+}
+
+.adex-viewer.high-contrast-theme .adex-preview-panel .adex-preview .adex-page {
+  box-shadow: 5px 5px 0 #000;
+  border: 2px solid #000;
+  border-radius: 0;
+}
+
+.adex-viewer.high-contrast-theme .adex-preview-panel .adex-preview-thumbs .adex-page-thumb {
+  box-shadow: 3px 3px 0 #000;
+  border: 2px solid #000;
+  border-radius: 0;
+}
+
+.adex-viewer.high-contrast-theme .adex-preview-panel .adex-preview-thumbs .adex-page-thumb.active:before {
+  border: 3px solid #000;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.adex-viewer.high-contrast-theme .adex-search-bar {
+  background-color: #fff;
+  border-bottom: 2px solid #000;
+}
+
+.adex-viewer.high-contrast-theme .adex-search-input {
+  background-color: #fff;
+  color: #000;
+  border: 2px solid #000 !important;
+  border-radius: 0 !important;
+  font-weight: bold;
+}
+
+.adex-viewer.high-contrast-theme .adex-search-button {
+  background-color: #000;
+  color: #fff;
+  border-radius: 0 !important;
+  font-weight: bold;
+}
+
+.adex-viewer.high-contrast-theme .adex-search-button:hover {
+  background-color: #333;
+}
+
+.adex-viewer.high-contrast-theme .adex-power-row {
+  border-top: 2px solid #000;
+  background-color: #000;
+  color: #fff;
+}
+
+.adex-viewer.high-contrast-theme .adex-search-highlight {
+  background-color: #ffff00;
+  border: 2px solid #000;
+}
+
+.adex-viewer.high-contrast-theme .adex-search-highlight.current {
+  background-color: #ff9900;
+  border: 2px solid #000;
+}
+
+/*custom*/
+.adex-viewer.high-contrast-theme.fullScreenView .adex-preview-panel .adex-preview-thumbs,
+.adex-viewer.high-contrast-theme.fullScreenView .adex-preview-panel .adex-preview-search,
+.adex-viewer.high-contrast-theme.fullScreenView .adex-preview-panel .adex-preview {
+  max-height: calc(100vh - 90px) !important;
+  min-height: calc(100vh - 90px) !important;
+}
+
+.adex-viewer.high-contrast-theme .adex-pdf-meta-info.adex-locales-panel .adex-meta-panel {
+  box-shadow: 5px 5px 0 #000;
+  border: 2px solid #000;
+  border-radius: 0;
+}
+
+.adex-viewer.high-contrast-theme .adex-pdf-meta-info-header {
+  background: #000;
+  color: #fff;
+}
+
+.adex-viewer.high-contrast-theme .adex-pdf-meta-info-header button,
+.adex-viewer.high-contrast-theme .adex-power-row button,
+.adex-viewer.high-contrast-theme .adex-pdf-meta-info-header button:hover,
+.adex-viewer.high-contrast-theme .adex-power-row button:hover {
+  color: #fff;
+}
+
+.adex-viewer.high-contrast-theme ul.adex-language-list li {
+  border: 0;
+  border-radius: 0px !important;
+}
+
+.adex-viewer.high-contrast-theme ul.adex-language-list li.adex-language-option.active-lang {
+  border: 2px solid #000;
+  border-radius: 0;
+  color: #fff;
+  background: #000;
+}
+
+.adex-viewer.high-contrast-theme .adex-topbar .adex-control-zoom select {
+  color: #fff;
+  background: #000 !important;
+}
+
+.adex-viewer.high-contrast-theme .adex-preview-panel .adex-preview-thumbs .adex-page-thumb.active:before {
+  border-radius: 0px;
+}
+
+.adex-viewer.high-contrast-theme .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-tab.active {
+  background: #000;
+  color: #fff;
+  border-radius: 0px;
+}
+
+.adex-viewer.high-contrast-theme .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-tab:hover {
+  border-radius: 0px;
+  background-color: #000;
+  color: #fff;
+}
+
+.adex-viewer.high-contrast-theme .adex-preview-panel .adex-preview-bookmarks .adex-outline-link:not(:disabled):hover {
+  background: #000;
+  color: #fff;
+  border-radius: 0px;
+}
+
+.adex-viewer.high-contrast-theme .adex-preview-panel .adex-preview-bookmarks .adex-bookmark-link:hover {
+  color: #fff !important;
+  background: #000;
+  border-radius: 0px;
+}
+
+.adex-viewer.high-contrast-theme .adex-preview-panel .adex-preview-bookmarks .adex-bookmark-link:hover .adex-bookmark-title {
+  color: #fff;
+}
+
+.adex-viewer.high-contrast-theme .adex-annotation-color-picker {
+  background: #000;
+  border-radius: 0px;
+}
+
+.adex-viewer.high-contrast-theme button.adex-cancel-annotation {
+  border-radius: 0px;
+}
+
+.adex-viewer.high-contrast-theme .adex-annotation-delete,
+.adex-viewer.high-contrast-theme .adex-annotation-close {
+  background: #fff;
+  border-radius: 0px;
+}

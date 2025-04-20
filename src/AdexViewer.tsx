@@ -26,6 +26,8 @@ interface Annotation {
   createdAt: number
 }
 
+
+
 interface PDFViewerProps {
   data: { url: string }
   credits?: boolean | null
@@ -64,6 +66,7 @@ interface PDFViewerProps {
     printBackground?: boolean
     pageRangeEnabled?: boolean
   }
+  theme?:string | null
 }
 
 interface LocalizationOptions {
@@ -136,6 +139,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
     enableSelection: true,
     enableCopy: true,
   },
+  theme= "",
   localization = [
     { locale: "en", title: "English", active: false },
     { locale: "ar", title: "العربية", active: false },
@@ -1747,7 +1751,7 @@ const AdexViewer: React.FC<PDFViewerProps> = ({
       ref={viewerRef}
       className={`PDFViewer adex-viewer ${
         fullScreenView ? "fullScreenView" : ""
-      } ${sidebar ? "thumbs-slide-in" : "thumbs-slide-out"} dev-abhishekbagul ${isMobile ? "adex-mobile" : ""} ${!textOptions.enableSelection ? "disable-text-selection" : ""} ${isPrinting ? "adex-printing" : ""}`}
+      } ${sidebar ? "thumbs-slide-in" : "thumbs-slide-out"} dev-abhishekbagul ${isMobile ? "adex-mobile" : ""} ${!textOptions.enableSelection ? "disable-text-selection" : ""} ${isPrinting ? "adex-printing" : ""} ${(theme) ? theme : ""}`}
     >
       {showToolbar && (
         <div className="adex-topbar">

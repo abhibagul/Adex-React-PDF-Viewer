@@ -27,7 +27,8 @@
       "require": "./dist/index.js"
     },
     "./index.css": "./dist/index.css",
-    "./locales/*.json": "./locales/*.json"
+    "./locales/*.json": "./locales/*.json",
+    "./themes/*.css": "./src/themes/*.css"
   },
   "devDependencies": {
     "@types/react": "^18.3.19",
