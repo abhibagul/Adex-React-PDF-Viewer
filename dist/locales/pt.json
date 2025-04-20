@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "Página anterior",
+    "nextPage": "Próxima página",
+    "pageOf": "de"
+  },
+  "leftPanel": {
+    "previews": "Pré-visualizações de página",
+    "search": "Pesquisar documento",
+    "bookmarks": "Marcadores e estrutura",
+    "annotations": "Anotações"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "Rodar no sentido anti-horário",
+    "rotateClockwise": "Rodar no sentido horário",
+    "zoomLevel": "Nível de zoom",
+    "print": "Imprimir documento",
+    "fullscreen": "Entrar em tela cheia",
+    "exitFullscreen": "Sair da tela cheia",
+    "download": "Baixar PDF"
+  },
+  "search": {
+    "title": "Pesquisar",
+    "placeholder": "Pesquisar no documento...",
+    "matches": "correspondências",
+    "noResults": "Nenhum resultado encontrado",
+    "searching": "Pesquisando...",
+    "previousResult": "Resultado anterior",
+    "nextResult": "Próximo resultado",
+    "page": "Página",
+    "incompleteDocumentError": "Ocorreu um erro durante a pesquisa. Por favor, tente novamente após o documento ser totalmente carregado.",
+    "waitLoading": "Aguarde o documento carregar completamente antes de pesquisar."
+  },
+  "bookmarks": {
+    "outline": "Estrutura",
+    "bookmarks": "Marcadores",
+    "noOutline": "Nenhuma estrutura disponível neste documento",
+    "addBookmark": "Adicionar marcador",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "noBookmarks": "Nenhum marcador adicionado ainda",
+    "bookmarkTitle": "Título do marcador",
+    "deleteBookmark": "Excluir marcador:"
+  },
+  "annotations": {
+    "title": "Anotações",
+    "addNote": "Adicionar nota",
+    "addHighlight": "Adicionar destaque",
+    "addDrawing": "Adicionar desenho",
+    "note": "Nota",
+    "highlight": "Destaque",
+    "drawing": "Desenho",
+    "noAnnotations": "Nenhuma anotação adicionada ainda. Use as ferramentas acima para adicionar anotações ao seu documento.",
+    "addNoteHint": "Adicionar uma nota...",
+    "page": "Página",
+    "cancel": "Cancelar",
+    "colorSetTo": "Definir cor para",
+    "noContent": "Sem conteúdo",
+    "delete": "Excluir anotação"
+  },
+  "info": {
+    "title": "Informações",
+    "close": "Fechar painel de informações"
+  },
+  "locale": {
+    "selectLanguage": "Selecionar idioma",
+    "changeTo": "Mudar idioma para"
+  },
+  "credits": {
+    "createdWith": "Criado com",
+    "by": "por"
+  }
+}

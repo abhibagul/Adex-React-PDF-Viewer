@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "หน้าก่อนหน้า",
+    "nextPage": "หน้าถัดไป",
+    "pageOf": "จาก"
+  },
+  "leftPanel": {
+    "previews": "ตัวอย่างหน้า",
+    "search": "ค้นหาเอกสาร",
+    "bookmarks": "บุ๊กมาร์กและเค้าโครง",
+    "annotations": "คำอธิบายประกอบ"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "หมุนทวนเข็มนาฬิกา",
+    "rotateClockwise": "หมุนตามเข็มนาฬิกา",
+    "zoomLevel": "ระดับการซูม",
+    "print": "พิมพ์เอกสาร",
+    "fullscreen": "เต็มหน้าจอ",
+    "exitFullscreen": "ออกจากโหมดเต็มหน้าจอ",
+    "download": "ดาวน์โหลด PDF"
+  },
+  "search": {
+    "title": "ค้นหา",
+    "placeholder": "ค้นหาในเอกสาร...",
+    "matches": "ผลลัพธ์",
+    "noResults": "ไม่พบผลลัพธ์",
+    "searching": "กำลังค้นหา...",
+    "previousResult": "ผลลัพธ์ก่อนหน้า",
+    "nextResult": "ผลลัพธ์ถัดไป",
+    "page": "หน้า",
+    "incompleteDocumentError": "เกิดข้อผิดพลาดขณะค้นหา โปรดลองอีกครั้งหลังจากเอกสารโหลดเสร็จสมบูรณ์",
+    "waitLoading": "โปรดรอให้เอกสารโหลดเสร็จสมบูรณ์ก่อนค้นหา"
+  },
+  "bookmarks": {
+    "outline": "เค้าโครง",
+    "bookmarks": "บุ๊กมาร์ก",
+    "noOutline": "ไม่มีเค้าโครงในเอกสารนี้",
+    "addBookmark": "เพิ่มบุ๊กมาร์ก",
+    "save": "บันทึก",
+    "cancel": "ยกเลิก",
+    "noBookmarks": "ยังไม่มีบุ๊กมาร์กที่เพิ่ม",
+    "bookmarkTitle": "ชื่อบุ๊กมาร์ก",
+    "deleteBookmark": "ลบบุ๊กมาร์ก:"
+  },
+  "annotations": {
+    "title": "คำอธิบายประกอบ",
+    "addNote": "เพิ่มบันทึก",
+    "addHighlight": "เพิ่มไฮไลต์",
+    "addDrawing": "เพิ่มการวาด",
+    "note": "บันทึก",
+    "highlight": "ไฮไลต์",
+    "drawing": "การวาด",
+    "noAnnotations": "ยังไม่มีคำอธิบายประกอบที่เพิ่ม ใช้เครื่องมือด้านบนเพื่อเพิ่มคำอธิบายประกอบในเอกสารของคุณ",
+    "addNoteHint": "เพิ่มบันทึก...",
+    "page": "หน้า",
+    "cancel": "ยกเลิก",
+    "colorSetTo": "ตั้งค่าสีเป็น",
+    "noContent": "ไม่มีเนื้อหา",
+    "delete": "ลบคำอธิบายประกอบ"
+  },
+  "info": {
+    "title": "ข้อมูล",
+    "close": "ปิดแผงข้อมูล"
+  },
+  "locale": {
+    "selectLanguage": "เลือกภาษา",
+    "changeTo": "เปลี่ยนภาษาเป็น"
+  },
+  "credits": {
+    "createdWith": "สร้างด้วย",
+    "by": "โดย"
+  }
+}

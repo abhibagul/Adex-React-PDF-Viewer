@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "Vorige pagina",
+    "nextPage": "Volgende pagina",
+    "pageOf": "van"
+  },
+  "leftPanel": {
+    "previews": "Paginavoorbeelden",
+    "search": "Document doorzoeken",
+    "bookmarks": "Bladwijzers en overzicht",
+    "annotations": "Aantekeningen"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "Linksom draaien",
+    "rotateClockwise": "Rechtsom draaien",
+    "zoomLevel": "Zoomniveau",
+    "print": "Document afdrukken",
+    "fullscreen": "Volledig scherm",
+    "exitFullscreen": "Volledig scherm verlaten",
+    "download": "PDF downloaden"
+  },
+  "search": {
+    "title": "Zoeken",
+    "placeholder": "Zoeken in document...",
+    "matches": "overeenkomsten",
+    "noResults": "Geen resultaten gevonden",
+    "searching": "Zoeken...",
+    "previousResult": "Vorig resultaat",
+    "nextResult": "Volgend resultaat",
+    "page": "Pagina",
+    "incompleteDocumentError": "Er is een fout opgetreden tijdens het zoeken. Probeer het opnieuw nadat het document volledig is geladen.",
+    "waitLoading": "Wacht tot het document volledig is geladen voordat u zoekt."
+  },
+  "bookmarks": {
+    "outline": "Overzicht",
+    "bookmarks": "Bladwijzers",
+    "noOutline": "Geen overzicht beschikbaar in dit document",
+    "addBookmark": "Bladwijzer toevoegen",
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "noBookmarks": "Nog geen bladwijzers toegevoegd",
+    "bookmarkTitle": "Bladwijzertitel",
+    "deleteBookmark": "Bladwijzer verwijderen:"
+  },
+  "annotations": {
+    "title": "Aantekeningen",
+    "addNote": "Notitie toevoegen",
+    "addHighlight": "Markering toevoegen",
+    "addDrawing": "Tekening toevoegen",
+    "note": "Notitie",
+    "highlight": "Markering",
+    "drawing": "Tekening",
+    "noAnnotations": "Nog geen aantekeningen toegevoegd. Gebruik de bovenstaande tools om aantekeningen aan uw document toe te voegen.",
+    "addNoteHint": "Voeg een notitie toe...",
+    "page": "Pagina",
+    "cancel": "Annuleren",
+    "colorSetTo": "Kleur instellen op",
+    "noContent": "Geen inhoud",
+    "delete": "Aantekening verwijderen"
+  },
+  "info": {
+    "title": "Info",
+    "close": "Infopaneel sluiten"
+  },
+  "locale": {
+    "selectLanguage": "Taal selecteren",
+    "changeTo": "Taal wijzigen naar"
+  },
+  "credits": {
+    "createdWith": "Gemaakt met",
+    "by": "door"
+  }
+}

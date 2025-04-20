@@ -1,0 +1,349 @@
+/* Adobe Acrobat-Inspired Theme for PDF Viewer */
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;500;600&display=swap");
+
+.adex-viewer.acrobat-theme {
+  --acrobat-bg: #f5f5f5;
+  --acrobat-toolbar: #f0f0f0;
+  --acrobat-border: #d8d8d8;
+  --acrobat-text: #333333;
+  --acrobat-icon: #5a5a5a;
+  --acrobat-icon-hover: #333333;
+  --acrobat-icon-active: #e11b22;
+  --acrobat-button-hover: #e6e6e6;
+  --acrobat-page-bg: #ffffff;
+  --acrobat-page-border: #cccccc;
+  --acrobat-page-shadow: rgba(0, 0, 0, 0.15);
+  --acrobat-thumb-active: #e11b22;
+  --acrobat-thumb-hover: #f0f0f0;
+  --acrobat-input-bg: #ffffff;
+  --acrobat-input-border: #cccccc;
+  --acrobat-highlight: rgba(225, 27, 34, 0.2);
+  --acrobat-highlight-current: rgba(225, 27, 34, 0.4);
+
+  border: 1px solid var(--acrobat-border);
+  background-color: var(--acrobat-bg);
+  font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--acrobat-text);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.adex-viewer.acrobat-theme * {
+  font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Top toolbar */
+.adex-viewer.acrobat-theme .adex-topbar {
+  border-bottom: 1px solid var(--acrobat-border);
+  background-color: var(--acrobat-toolbar);
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+}
+
+.adex-viewer.acrobat-theme .adex-topbar .adex-control-page {
+  display: flex;
+  align-items: center;
+  margin: 0 10px;
+}
+
+.adex-viewer.acrobat-theme .adex-topbar .adex-control-page input {
+  background-color: var(--acrobat-input-bg);
+  color: var(--acrobat-text);
+  border: 1px solid var(--acrobat-input-border);
+  border-radius: 2px;
+  padding: 4px 8px;
+  width: 40px;
+  text-align: center;
+  font-size: 14px;
+  margin: 0 4px;
+}
+
+.adex-viewer.acrobat-theme .adex-topbar .adex-control-page p {
+  color: var(--acrobat-text);
+  font-size: 14px;
+  margin: 0 4px;
+}
+
+.adex-viewer.acrobat-theme .adex-topbar button,
+.adex-viewer.acrobat-theme .adex-topbar .open-link-btn {
+  color: var(--acrobat-icon);
+  background: transparent;
+  border: none;
+  border-radius: 2px;
+  padding: 6px;
+  margin: 0 2px;
+  transition: all 0.1s ease;
+}
+
+.adex-viewer.acrobat-theme .adex-topbar button:hover,
+.adex-viewer.acrobat-theme .adex-topbar .open-link-btn:hover {
+  background-color: var(--acrobat-button-hover);
+  color: var(--acrobat-icon-hover);
+}
+
+.adex-viewer.acrobat-theme .adex-topbar button.active {
+  background-color: var(--acrobat-button-hover);
+  color: var(--acrobat-icon-active);
+}
+
+/* Left sidebar */
+.adex-viewer.acrobat-theme .adex-left-col {
+  border-right: 1px solid var(--acrobat-border);
+  background-color: var(--acrobat-toolbar);
+}
+
+.adex-viewer.acrobat-theme .adex-left-col button {
+  color: var(--acrobat-icon);
+  background: transparent;
+  border: none;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.1s ease;
+}
+
+.adex-viewer.acrobat-theme .adex-left-col button:hover {
+  background-color: var(--acrobat-button-hover);
+  color: var(--acrobat-icon-hover);
+}
+
+.adex-viewer.acrobat-theme .adex-left-col button.active {
+  background-color: var(--acrobat-button-hover);
+  color: var(--acrobat-icon-active);
+}
+
+/* Preview panel */
+.adex-viewer.acrobat-theme .adex-preview-panel .adex-preview-thumbs,
+.adex-viewer.acrobat-theme .adex-preview-panel .adex-preview-search,
+.adex-viewer.acrobat-theme .adex-preview-panel .adex-preview-bookmarks,
+.adex-viewer.acrobat-theme .adex-preview-panel .adex-preview-annotations {
+  background-color: var(--acrobat-bg);
+  border-right: 1px solid var(--acrobat-border);
+  /* padding: 10px; */
+}
+
+.adex-viewer.acrobat-theme .adex-preview-panel .adex-preview {
+  background-color: var(--acrobat-bg);
+  padding: 20px;
+}
+
+/* Page display */
+.adex-viewer.acrobat-theme .adex-preview-panel .adex-preview .adex-page {
+  background-color: var(--acrobat-page-bg);
+  box-shadow: 0 2px 8px var(--acrobat-page-shadow);
+  border: 1px solid var(--acrobat-page-border);
+  margin-bottom: 20px;
+}
+
+/* Thumbnails */
+.adex-viewer.acrobat-theme .adex-preview-panel .adex-preview-thumbs .adex-page-thumb {
+  background-color: var(--acrobat-page-bg);
+  box-shadow: 0 1px 4px var(--acrobat-page-shadow);
+  border: 1px solid var(--acrobat-page-border);
+  margin: 8px auto;
+  transition: all 0.1s ease;
+  position: relative;
+}
+
+.adex-viewer.acrobat-theme .adex-preview-panel .adex-preview-thumbs .adex-page-thumb:hover {
+  background-color: var(--acrobat-thumb-hover);
+}
+
+.adex-viewer.acrobat-theme .adex-preview-panel .adex-preview-thumbs .adex-page-thumb.active {
+  /* border: 1px solid var(--acrobat-thumb-active); */
+}
+
+.adex-viewer.acrobat-theme .adex-preview-panel .adex-preview-thumbs .adex-page-thumb.active:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 2px solid #222;
+  pointer-events: none;
+  border-radius: 0px !important;
+}
+
+/* Page number under thumbnails */
+.adex-viewer.acrobat-theme .adex-preview-panel .adex-preview-thumbs .adex-page-thumb:after {
+  content: attr(data-page-number);
+  position: absolute;
+  bottom: -18px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 12px;
+  color: var(--acrobat-text);
+}
+
+/* Search bar */
+.adex-viewer.acrobat-theme .adex-search-bar {
+  background-color: var(--acrobat-toolbar);
+  border-bottom: 1px solid var(--acrobat-border);
+  padding: 8px 12px;
+}
+
+.adex-viewer.acrobat-theme .adex-search-input {
+  background-color: var(--acrobat-input-bg);
+  color: var(--acrobat-text);
+  border: 1px solid var(--acrobat-input-border) !important;
+  border-radius: 2px 0 0 2px !important;
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+.adex-viewer.acrobat-theme .adex-search-button {
+  background-color: var(--acrobat-button-hover);
+  color: var(--acrobat-text);
+  border: 1px solid var(--acrobat-input-border);
+  border-left: none;
+  border-radius: 0 2px 2px 0 !important;
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+.adex-viewer.acrobat-theme .adex-search-button:hover {
+  background-color: #d8d8d8;
+}
+
+/* Search results */
+.adex-viewer.acrobat-theme .adex-preview-panel .adex-preview-search .adex-search-result-item {
+  border-bottom: 1px solid var(--acrobat-border);
+  padding: 8px 0;
+}
+
+.adex-viewer.acrobat-theme .adex-preview-panel .adex-preview-search .adex-search-result-item:hover {
+  background-color: var(--acrobat-thumb-hover);
+}
+
+.adex-viewer.acrobat-theme .adex-preview-panel .adex-preview-search .adex-search-result-item.active {
+  background-color: var(--acrobat-highlight);
+  border-left: 3px solid var(--acrobat-thumb-active);
+}
+
+/* Search highlights */
+.adex-viewer.acrobat-theme .adex-search-highlight {
+  background-color: var(--acrobat-highlight);
+  border-radius: 2px;
+}
+
+.adex-viewer.acrobat-theme .adex-search-highlight.current {
+  background-color: var(--acrobat-highlight-current);
+  border-radius: 2px;
+}
+
+/* Bottom status bar */
+.adex-viewer.acrobat-theme .adex-power-row {
+  border-top: 1px solid var(--acrobat-border);
+  background-color: var(--acrobat-toolbar);
+  color: var(--acrobat-text);
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+/* Annotations */
+.adex-viewer.acrobat-theme .adex-annotations-header {
+  background: var(--acrobat-toolbar);
+  border-bottom: 1px solid var(--acrobat-border);
+  padding: 10px 12px;
+  font-weight: 500;
+}
+
+.adex-viewer.acrobat-theme .adex-annotation-item .adex-annotation-list-item {
+  background: var(--acrobat-page-bg);
+  border-bottom: 1px solid var(--acrobat-border);
+  padding: 8px;
+}
+
+.adex-viewer.acrobat-theme .adex-annotation-item:hover .adex-annotation-list-item {
+  background-color: var(--acrobat-thumb-hover);
+}
+
+.adex-viewer.acrobat-theme .adex-annotation-item.active .adex-annotation-list-item {
+  background-color: var(--acrobat-highlight);
+  border-left: 3px solid var(--acrobat-thumb-active);
+}
+
+.adex-viewer.acrobat-theme .adex-annotation-goto {
+  background: var(--acrobat-button-hover);
+  color: var(--acrobat-text);
+  border: 1px solid var(--acrobat-input-border);
+  border-radius: 2px;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.adex-viewer.acrobat-theme .adex-annotation-goto:hover {
+  background-color: #d8d8d8;
+}
+
+/* Zoom controls */
+.adex-viewer.acrobat-theme .adex-zoom-controls {
+  display: flex;
+  align-items: center;
+  margin: 0 10px;
+}
+
+.adex-viewer.acrobat-theme .adex-zoom-value {
+  background-color: var(--acrobat-input-bg);
+  color: var(--acrobat-text);
+  border: 1px solid var(--acrobat-input-border);
+  border-radius: 2px;
+  padding: 4px 8px;
+  font-size: 14px;
+  width: 60px;
+  text-align: center;
+}
+
+/* Custom scrollbar */
+.adex-viewer.acrobat-theme ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.adex-viewer.acrobat-theme ::-webkit-scrollbar-track {
+  background: var(--acrobat-bg);
+}
+
+.adex-viewer.acrobat-theme ::-webkit-scrollbar-thumb {
+  background-color: #b3b3b3;
+  border-radius: 4px;
+  border: 2px solid var(--acrobat-bg);
+}
+
+.adex-viewer.acrobat-theme ::-webkit-scrollbar-thumb:hover {
+  background-color: #999999;
+}
+
+/* Additional layout adjustments */
+.adex-viewer.acrobat-theme .adex-main-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.adex-viewer.acrobat-theme .adex-content-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.adex-viewer.acrobat-theme .adex-preview-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.adex-viewer.acrobat-theme.fullScreenView .adex-preview-panel .adex-preview-annotations,
+.adex-viewer.acrobat-theme.fullScreenView .adex-preview-panel .adex-preview-bookmarks,
+.adex-viewer.acrobat-theme.fullScreenView .adex-preview-panel .adex-preview-thumbs,
+.adex-viewer.acrobat-theme.fullScreenView .adex-preview-panel .adex-preview-search,
+.adex-viewer.acrobat-theme.fullScreenView .adex-preview-panel .adex-preview {
+  max-height: calc(100vh - 90px);
+  min-height: calc(100vh - 90px);
+}

@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "Edellinen sivu",
+    "nextPage": "Seuraava sivu",
+    "pageOf": "/"
+  },
+  "leftPanel": {
+    "previews": "Sivujen esikatselut",
+    "search": "Etsi asiakirjasta",
+    "bookmarks": "Kirjanmerkit ja jäsennys",
+    "annotations": "Huomautukset"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "Kierrä vastapäivään",
+    "rotateClockwise": "Kierrä myötäpäivään",
+    "zoomLevel": "Zoomaustaso",
+    "print": "Tulosta asiakirja",
+    "fullscreen": "Koko näyttö",
+    "exitFullscreen": "Poistu koko näytöstä",
+    "download": "Lataa PDF"
+  },
+  "search": {
+    "title": "Etsi",
+    "placeholder": "Etsi asiakirjasta...",
+    "matches": "osumaa",
+    "noResults": "Ei tuloksia",
+    "searching": "Etsitään...",
+    "previousResult": "Edellinen tulos",
+    "nextResult": "Seuraava tulos",
+    "page": "Sivu",
+    "incompleteDocumentError": "Hakemisen aikana tapahtui virhe. Yritä uudelleen, kun asiakirja on latautunut kokonaan.",
+    "waitLoading": "Odota, että asiakirja on latautunut kokonaan ennen hakemista."
+  },
+  "bookmarks": {
+    "outline": "Jäsennys",
+    "bookmarks": "Kirjanmerkit",
+    "noOutline": "Tässä asiakirjassa ei ole jäsennystä",
+    "addBookmark": "Lisää kirjanmerkki",
+    "save": "Tallenna",
+    "cancel": "Peruuta",
+    "noBookmarks": "Ei vielä kirjanmerkkejä",
+    "bookmarkTitle": "Kirjanmerkin otsikko",
+    "deleteBookmark": "Poista kirjanmerkki:"
+  },
+  "annotations": {
+    "title": "Huomautukset",
+    "addNote": "Lisää muistiinpano",
+    "addHighlight": "Lisää korostus",
+    "addDrawing": "Lisää piirros",
+    "note": "Muistiinpano",
+    "highlight": "Korostus",
+    "drawing": "Piirros",
+    "noAnnotations": "Ei vielä huomautuksia. Käytä yllä olevia työkaluja lisätäksesi huomautuksia asiakirjaasi.",
+    "addNoteHint": "Lisää muistiinpano...",
+    "page": "Sivu",
+    "cancel": "Peruuta",
+    "colorSetTo": "Aseta väriksi",
+    "noContent": "Ei sisältöä",
+    "delete": "Poista huomautus"
+  },
+  "info": {
+    "title": "Tiedot",
+    "close": "Sulje tietopaneeli"
+  },
+  "locale": {
+    "selectLanguage": "Valitse kieli",
+    "changeTo": "Vaihda kieleksi"
+  },
+  "credits": {
+    "createdWith": "Luotu käyttäen",
+    "by": "tekijä"
+  }
+}

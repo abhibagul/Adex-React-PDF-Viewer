@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "이전 페이지",
+    "nextPage": "다음 페이지",
+    "pageOf": "/"
+  },
+  "leftPanel": {
+    "previews": "페이지 미리보기",
+    "search": "문서 검색",
+    "bookmarks": "북마크 및 개요",
+    "annotations": "주석"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "시계 반대 방향으로 회전",
+    "rotateClockwise": "시계 방향으로 회전",
+    "zoomLevel": "확대/축소 수준",
+    "print": "문서 인쇄",
+    "fullscreen": "전체 화면",
+    "exitFullscreen": "전체 화면 종료",
+    "download": "PDF 다운로드"
+  },
+  "search": {
+    "title": "검색",
+    "placeholder": "문서에서 검색...",
+    "matches": "일치",
+    "noResults": "결과를 찾을 수 없음",
+    "searching": "검색 중...",
+    "previousResult": "이전 결과",
+    "nextResult": "다음 결과",
+    "page": "페이지",
+    "incompleteDocumentError": "검색 중 오류가 발생했습니다. 문서가 완전히 로드된 후 다시 시도하세요.",
+    "waitLoading": "검색하기 전에 문서가 완전히 로드될 때까지 기다려주세요."
+  },
+  "bookmarks": {
+    "outline": "개요",
+    "bookmarks": "북마크",
+    "noOutline": "이 문서에서 사용 가능한 개요가 없습니다",
+    "addBookmark": "북마크 추가",
+    "save": "저장",
+    "cancel": "취소",
+    "noBookmarks": "아직 추가된 북마크가 없습니다",
+    "bookmarkTitle": "북마크 제목",
+    "deleteBookmark": "북마크 삭제:"
+  },
+  "annotations": {
+    "title": "주석",
+    "addNote": "메모 추가",
+    "addHighlight": "강조 표시 추가",
+    "addDrawing": "그림 추가",
+    "note": "메모",
+    "highlight": "강조 표시",
+    "drawing": "그림",
+    "noAnnotations": "아직 추가된 주석이 없습니다. 위의 도구를 사용하여 문서에 주석을 추가하세요.",
+    "addNoteHint": "메모 추가...",
+    "page": "페이지",
+    "cancel": "취소",
+    "colorSetTo": "색상 설정",
+    "noContent": "내용 없음",
+    "delete": "주석 삭제"
+  },
+  "info": {
+    "title": "정보",
+    "close": "정보 패널 닫기"
+  },
+  "locale": {
+    "selectLanguage": "언어 선택",
+    "changeTo": "언어 변경"
+  },
+  "credits": {
+    "createdWith": "제작",
+    "by": "제공"
+  }
+}

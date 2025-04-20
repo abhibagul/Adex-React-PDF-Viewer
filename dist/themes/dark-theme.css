@@ -1,0 +1,250 @@
+/* Dark Theme for PDF Viewer */
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;1,400&display=swap");
+
+.adex-viewer.dark-theme {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+  font-family: "Open Sans", sans-serif;
+}
+
+.adex-viewer.dark-theme * {
+  font-family: "Open Sans", sans-serif;
+}
+
+.adex-viewer.dark-theme .adex-topbar {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: #2a2a2a;
+}
+
+.adex-viewer.dark-theme .adex-topbar .adex-control-page input {
+  background-color: #333;
+  color: #e0e0e0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.adex-viewer.dark-theme .adex-topbar button,
+.adex-viewer.dark-theme .adex-topbar .open-link-btn {
+  color: #b0b0b0;
+}
+
+.adex-viewer.dark-theme .adex-topbar button:hover,
+.adex-viewer.dark-theme .adex-topbar .open-link-btn:hover,
+.adex-viewer.dark-theme .adex-topbar button.active {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.adex-viewer.dark-theme .adex-left-col {
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: #2a2a2a;
+}
+
+.adex-viewer.dark-theme .adex-left-col button {
+  color: #b0b0b0;
+}
+
+.adex-viewer.dark-theme .adex-left-col button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.adex-viewer.dark-theme .adex-left-col button.active {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.adex-viewer.dark-theme .adex-preview-panel .adex-preview-thumbs,
+.adex-viewer.dark-theme .adex-preview-panel .adex-preview-search,
+.adex-viewer.dark-theme .adex-preview-panel .adex-preview-bookmarks,
+.adex-viewer.dark-theme .adex-preview-panel .adex-preview-annotations {
+  background-color: #2a2a2a;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.adex-viewer.dark-theme .adex-preview-panel .adex-preview {
+  background-color: #333;
+}
+
+.adex-viewer.dark-theme .adex-preview-panel .adex-preview .adex-page {
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3), -5px -5px 10px rgba(0, 0, 0, 0.3);
+}
+
+.adex-viewer.dark-theme .adex-preview-panel .adex-preview-thumbs .adex-page-thumb {
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3), -5px -5px 10px rgba(0, 0, 0, 0.3);
+}
+
+.adex-viewer.dark-theme .adex-preview-panel .adex-preview-search .adex-search-result-item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.adex-viewer.dark-theme .adex-preview-panel .adex-preview-search .adex-search-result-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.adex-viewer.dark-theme .adex-preview-panel .adex-preview-search .adex-search-result-item.active {
+  background-color: rgba(30, 144, 255, 0.2);
+  border-left: 3px solid #1e90ff;
+}
+
+.adex-viewer.dark-theme .adex-preview-panel .adex-preview-search .adex-search-result-page {
+  color: #999;
+}
+
+.adex-viewer.dark-theme .adex-preview-panel .adex-preview-search .adex-search-result-context {
+  color: #ccc;
+}
+
+.adex-viewer.dark-theme .adex-search-bar {
+  background-color: #2a2a2a;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.adex-viewer.dark-theme .adex-search-input {
+  background-color: #333;
+  color: #e0e0e0;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.adex-viewer.dark-theme .adex-search-button {
+  background-color: #444;
+  color: #e0e0e0;
+}
+
+.adex-viewer.dark-theme .adex-search-button:hover {
+  background-color: #555;
+}
+
+.adex-viewer.dark-theme .adex-power-row {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: #2a2a2a;
+}
+
+/* Annotations in dark theme */
+.adex-viewer.dark-theme .adex-annotations-header {
+  background: #2a2a2a;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.adex-viewer.dark-theme .adex-annotation-item .adex-annotation-list-item {
+  background: #333;
+}
+
+.adex-viewer.dark-theme .adex-annotation-item:hover .adex-annotation-list-item {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.adex-viewer.dark-theme .adex-annotation-item.active .adex-annotation-list-item {
+  background-color: rgba(30, 144, 255, 0.2);
+  border-left: 3px solid #1e90ff;
+}
+
+.adex-viewer.dark-theme .adex-annotation-detail {
+  background-color: #2a2a2a;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.adex-viewer.dark-theme .adex-annotation-content-editor textarea {
+  background: #333;
+  color: #e0e0e0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/*custom*/
+.adex-viewer.dark-theme button.adex-outline-link {
+  color: #bebebe !important;
+}
+
+.adex-viewer.dark-theme .adex-bookmarks-header {
+  background: #222 !important;
+}
+
+.adex-viewer.dark-theme .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-tab.active {
+  background-color: rgba(255, 255, 255, .1);
+  color: #fff !important;
+}
+
+.adex-viewer.dark-theme .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-tab:hover {
+  background: rgba(255, 255, 255, .05);
+  color: #fff;
+}
+
+.adex-viewer.dark-theme .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-tab {
+  color: rgba(255, 255, 255, .6);
+}
+
+
+.adex-viewer.dark-theme .adex-preview-panel .adex-preview-bookmarks .adex-outline-link:not(:disabled):hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.adex-viewer.dark-theme .adex-preview-panel .adex-preview-bookmarks .adex-add-bookmark-btn {
+  background-color: rgba(255, 255, 255, .1);
+  color: #fff;
+}
+
+.adex-viewer.dark-theme .adex-preview-panel .adex-preview-bookmarks .adex-bookmark-title {
+  color: #fff;
+}
+
+.adex-viewer.dark-theme .adex-preview-panel .adex-preview-bookmarks .adex-bookmark-delete {
+  color: #fff;
+}
+
+.adex-viewer.dark-theme .adex-preview-panel .adex-preview-bookmarks .adex-add-bookmark-btn:hover {
+  background: rgba(255, 255, 255, .2);
+}
+
+.adex-viewer.dark-theme .adex-control-zoom select {
+  color: #fff;
+  background: #222 !important;
+}
+
+.adex-viewer.dark-theme button.adex-annotation-tool {
+  color: #fff;
+}
+
+.adex-viewer.dark-theme button.adex-annotation-tool:hover {
+  background: rgba(255, 255, 255, .1);
+}
+
+.adex-viewer.dark-theme .adex-annotation-color-picker {
+  background: #222;
+}
+
+.adex-viewer.dark-theme .adex-cancel-annotation {
+  background: #444;
+  color: #fff;
+}
+
+.adex-viewer.dark-theme .adex-annotation-delete,
+.adex-viewer.dark-theme .adex-annotation-close {
+  color: #fff;
+}
+
+.adex-viewer.dark-theme .adex-pdf-meta-info-header {
+  background: #222;
+}
+
+.adex-viewer.dark-theme .adex-pdf-meta-info-content {
+  background: #333;
+}
+
+.adex-viewer.dark-theme ul.adex-language-list li {
+  background: #222;
+}
+
+.adex-viewer.dark-theme .adex-pdf-meta-info-header button,
+.adex-viewer.dark-theme .adex-power-row button {
+  color: #fff;
+}
+
+.adex-viewer.dark-theme .adex-pdf-meta-info-header button:hover,
+.adex-viewer.dark-theme .adex-power-row button:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, .1);
+}
+
+.adex-viewer.dark-theme .adex-power-row p a {
+  color: #fff;
+}

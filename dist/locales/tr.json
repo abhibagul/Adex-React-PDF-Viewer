@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "Önceki sayfa",
+    "nextPage": "Sonraki sayfa",
+    "pageOf": "/"
+  },
+  "leftPanel": {
+    "previews": "Sayfa Önizlemeleri",
+    "search": "Belge ara",
+    "bookmarks": "Yer imleri ve anahat",
+    "annotations": "Açıklamalar"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "Saat yönünün tersine döndür",
+    "rotateClockwise": "Saat yönünde döndür",
+    "zoomLevel": "Yakınlaştırma seviyesi",
+    "print": "Belgeyi yazdır",
+    "fullscreen": "Tam ekran",
+    "exitFullscreen": "Tam ekrandan çık",
+    "download": "PDF'i indir"
+  },
+  "search": {
+    "title": "Ara",
+    "placeholder": "Belgede ara...",
+    "matches": "eşleşme",
+    "noResults": "Sonuç bulunamadı",
+    "searching": "Aranıyor...",
+    "previousResult": "Önceki sonuç",
+    "nextResult": "Sonraki sonuç",
+    "page": "Sayfa",
+    "incompleteDocumentError": "Arama sırasında bir hata oluştu. Lütfen belge tamamen yüklendikten sonra tekrar deneyin.",
+    "waitLoading": "Aramadan önce lütfen belgenin tamamen yüklenmesini bekleyin."
+  },
+  "bookmarks": {
+    "outline": "Anahat",
+    "bookmarks": "Yer imleri",
+    "noOutline": "Bu belgede kullanılabilir anahat yok",
+    "addBookmark": "Yer imi ekle",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "noBookmarks": "Henüz yer imi eklenmedi",
+    "bookmarkTitle": "Yer imi başlığı",
+    "deleteBookmark": "Yer imini sil:"
+  },
+  "annotations": {
+    "title": "Açıklamalar",
+    "addNote": "Not ekle",
+    "addHighlight": "Vurgu ekle",
+    "addDrawing": "Çizim ekle",
+    "note": "Not",
+    "highlight": "Vurgu",
+    "drawing": "Çizim",
+    "noAnnotations": "Henüz açıklama eklenmedi. Belgenize açıklama eklemek için yukarıdaki araçları kullanın.",
+    "addNoteHint": "Not ekle...",
+    "page": "Sayfa",
+    "cancel": "İptal",
+    "colorSetTo": "Rengi ayarla",
+    "noContent": "İçerik yok",
+    "delete": "Açıklamayı sil"
+  },
+  "info": {
+    "title": "Bilgi",
+    "close": "Bilgi panelini kapat"
+  },
+  "locale": {
+    "selectLanguage": "Dil seç",
+    "changeTo": "Dili değiştir"
+  },
+  "credits": {
+    "createdWith": "İle oluşturuldu",
+    "by": "tarafından"
+  }
+}

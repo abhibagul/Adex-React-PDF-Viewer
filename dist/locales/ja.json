@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "前のページ",
+    "nextPage": "次のページ",
+    "pageOf": "/"
+  },
+  "leftPanel": {
+    "previews": "ページプレビュー",
+    "search": "文書を検索",
+    "bookmarks": "ブックマークとアウトライン",
+    "annotations": "注釈"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "反時計回りに回転",
+    "rotateClockwise": "時計回りに回転",
+    "zoomLevel": "ズームレベル",
+    "print": "文書を印刷",
+    "fullscreen": "全画面表示",
+    "exitFullscreen": "全画面表示を終了",
+    "download": "PDFをダウンロード"
+  },
+  "search": {
+    "title": "検索",
+    "placeholder": "文書内を検索...",
+    "matches": "一致",
+    "noResults": "結果が見つかりません",
+    "searching": "検索中...",
+    "previousResult": "前の結果",
+    "nextResult": "次の結果",
+    "page": "ページ",
+    "incompleteDocumentError": "検索中にエラーが発生しました。文書が完全に読み込まれた後に再試行してください。",
+    "waitLoading": "検索する前に文書が完全に読み込まれるまでお待ちください。"
+  },
+  "bookmarks": {
+    "outline": "アウトライン",
+    "bookmarks": "ブックマーク",
+    "noOutline": "この文書にはアウトラインがありません",
+    "addBookmark": "ブックマークを追加",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "noBookmarks": "まだブックマークが追加されていません",
+    "bookmarkTitle": "ブックマークのタイトル",
+    "deleteBookmark": "ブックマークを削除:"
+  },
+  "annotations": {
+    "title": "注釈",
+    "addNote": "メモを追加",
+    "addHighlight": "ハイライトを追加",
+    "addDrawing": "描画を追加",
+    "note": "メモ",
+    "highlight": "ハイライト",
+    "drawing": "描画",
+    "noAnnotations": "まだ注釈が追加されていません。上記のツールを使用して文書に注釈を追加してください。",
+    "addNoteHint": "メモを追加...",
+    "page": "ページ",
+    "cancel": "キャンセル",
+    "colorSetTo": "色を設定",
+    "noContent": "内容なし",
+    "delete": "注釈を削除"
+  },
+  "info": {
+    "title": "情報",
+    "close": "情報パネルを閉じる"
+  },
+  "locale": {
+    "selectLanguage": "言語を選択",
+    "changeTo": "言語を変更"
+  },
+  "credits": {
+    "createdWith": "作成",
+    "by": "提供"
+  }
+}

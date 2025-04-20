@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "Forrige side",
+    "nextPage": "Neste side",
+    "pageOf": "av"
+  },
+  "leftPanel": {
+    "previews": "Sideforhåndsvisninger",
+    "search": "Søk i dokument",
+    "bookmarks": "Bokmerker og disposisjon",
+    "annotations": "Merknader"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "Roter mot klokken",
+    "rotateClockwise": "Roter med klokken",
+    "zoomLevel": "Zoom-nivå",
+    "print": "Skriv ut dokument",
+    "fullscreen": "Fullskjerm",
+    "exitFullscreen": "Avslutt fullskjerm",
+    "download": "Last ned PDF"
+  },
+  "search": {
+    "title": "Søk",
+    "placeholder": "Søk i dokumentet...",
+    "matches": "treff",
+    "noResults": "Ingen resultater funnet",
+    "searching": "Søker...",
+    "previousResult": "Forrige resultat",
+    "nextResult": "Neste resultat",
+    "page": "Side",
+    "incompleteDocumentError": "Det oppstod en feil under søket. Prøv igjen etter at dokumentet er fullstendig lastet.",
+    "waitLoading": "Vennligst vent til dokumentet er fullstendig lastet før du søker."
+  },
+  "bookmarks": {
+    "outline": "Disposisjon",
+    "bookmarks": "Bokmerker",
+    "noOutline": "Ingen disposisjon tilgjengelig i dette dokumentet",
+    "addBookmark": "Legg til bokmerke",
+    "save": "Lagre",
+    "cancel": "Avbryt",
+    "noBookmarks": "Ingen bokmerker lagt til ennå",
+    "bookmarkTitle": "Bokmerketittel",
+    "deleteBookmark": "Slett bokmerke:"
+  },
+  "annotations": {
+    "title": "Merknader",
+    "addNote": "Legg til notat",
+    "addHighlight": "Legg til utheving",
+    "addDrawing": "Legg til tegning",
+    "note": "Notat",
+    "highlight": "Utheving",
+    "drawing": "Tegning",
+    "noAnnotations": "Ingen merknader lagt til ennå. Bruk verktøyene ovenfor for å legge til merknader i dokumentet ditt.",
+    "addNoteHint": "Legg til et notat...",
+    "page": "Side",
+    "cancel": "Avbryt",
+    "colorSetTo": "Sett farge til",
+    "noContent": "Ingen innhold",
+    "delete": "Slett merknad"
+  },
+  "info": {
+    "title": "Informasjon",
+    "close": "Lukk informasjonspanel"
+  },
+  "locale": {
+    "selectLanguage": "Velg språk",
+    "changeTo": "Endre språk til"
+  },
+  "credits": {
+    "createdWith": "Laget med",
+    "by": "av"
+  }
+}

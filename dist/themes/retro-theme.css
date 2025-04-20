@@ -1,0 +1,241 @@
+/* Retro Theme for PDF Viewer - Vintage computing aesthetic */
+@import url("https://fonts.googleapis.com/css2?family=VT323&display=swap");
+
+.adex-viewer.retro-theme {
+  border: 4px solid #333;
+  background-color: #c0c0c0;
+  font-family: "VT323", monospace;
+  box-shadow: 8px 8px 0 #000;
+}
+
+.adex-viewer.retro-theme * {
+  font-family: "VT323", monospace;
+}
+
+.adex-viewer.retro-theme .adex-topbar {
+  border-bottom: 2px solid #333;
+  background-color: #000080;
+  color: #fff;
+  padding: 8px 15px;
+}
+
+.adex-viewer.retro-theme .adex-topbar .adex-control-page input {
+  background-color: #000;
+  color: #00ff00;
+  border: 2px solid #666;
+  border-radius: 0;
+  font-size: 16px;
+}
+
+.adex-viewer.retro-theme .adex-topbar .adex-control-page p {
+  color: #fff;
+  font-size: 18px;
+}
+
+.adex-viewer.retro-theme .adex-topbar button,
+.adex-viewer.retro-theme .adex-topbar .open-link-btn {
+  color: #fff;
+  border-radius: 0;
+  border: 2px solid #666;
+  background-color: #444;
+}
+
+.adex-viewer.retro-theme .adex-topbar button:hover,
+.adex-viewer.retro-theme .adex-topbar .open-link-btn:hover,
+.adex-viewer.retro-theme .adex-topbar button.active {
+  background-color: #666;
+  color: #fff;
+  border: 2px solid #888;
+}
+
+.adex-viewer.retro-theme .adex-left-col {
+  border-right: 2px solid #333;
+  background-color: #a0a0a0;
+}
+
+.adex-viewer.retro-theme .adex-left-col button {
+  color: #000;
+  border-radius: 0;
+  border: 2px solid #666;
+  background-color: #c0c0c0;
+}
+
+.adex-viewer.retro-theme .adex-left-col button:hover {
+  background-color: #d0d0d0;
+  border: 2px solid #888;
+}
+
+.adex-viewer.retro-theme .adex-left-col button.active {
+  background-color: #000080;
+  color: #fff;
+  border: 2px solid #888;
+}
+
+.adex-viewer.retro-theme .adex-preview-panel .adex-preview-thumbs,
+.adex-viewer.retro-theme .adex-preview-panel .adex-preview-search,
+.adex-viewer.retro-theme .adex-preview-panel .adex-preview-bookmarks,
+.adex-viewer.retro-theme .adex-preview-panel .adex-preview-annotations {
+  background-color: #a0a0a0;
+  border-right: 2px solid #333;
+}
+
+.adex-viewer.retro-theme .adex-preview-panel .adex-preview {
+  background-color: #c0c0c0;
+}
+
+.adex-viewer.retro-theme .adex-preview-panel .adex-preview .adex-page {
+  box-shadow: 4px 4px 0 #000;
+  border: 2px solid #333;
+  border-radius: 0;
+}
+
+.adex-viewer.retro-theme .adex-preview-panel .adex-preview-thumbs .adex-page-thumb {
+  box-shadow: 2px 2px 0 #000;
+  border: 2px solid #333;
+  border-radius: 0;
+}
+
+.adex-viewer.retro-theme .adex-preview-panel .adex-preview-thumbs .adex-page-thumb.active:before {
+  border: 2px solid #000080;
+  background-color: rgba(0, 0, 128, 0.2);
+}
+
+.adex-viewer.retro-theme .adex-search-bar {
+  background-color: #a0a0a0;
+  border-bottom: 2px solid #333;
+}
+
+.adex-viewer.retro-theme .adex-search-input {
+  background-color: #000;
+  color: #00ff00;
+  border: 2px solid #666 !important;
+  border-radius: 0 !important;
+  font-size: 16px;
+}
+
+.adex-viewer.retro-theme .adex-search-button {
+  background-color: #000080;
+  color: #fff;
+  border-radius: 0 !important;
+  border: 2px solid #666;
+  font-size: 16px;
+}
+
+.adex-viewer.retro-theme .adex-search-button:hover {
+  background-color: #0000a0;
+  border: 2px solid #888;
+}
+
+.adex-viewer.retro-theme .adex-power-row {
+  border-top: 2px solid #333;
+  background-color: #000080;
+  color: #fff;
+}
+
+/* Annotations in retro theme */
+.adex-viewer.retro-theme .adex-annotations-header {
+  background: #a0a0a0;
+  border-bottom: 2px solid #333;
+}
+
+.adex-viewer.retro-theme .adex-annotation-item .adex-annotation-list-item {
+  background: #c0c0c0;
+  border: 1px solid #333;
+  margin: 4px;
+}
+
+.adex-viewer.retro-theme .adex-annotation-item:hover .adex-annotation-list-item {
+  background-color: #d0d0d0;
+}
+
+.adex-viewer.retro-theme .adex-annotation-item.active .adex-annotation-list-item {
+  background-color: #a0a0a0;
+  border-left: 3px solid #000080;
+}
+
+.adex-viewer.retro-theme .adex-annotation-goto {
+  background: #000080;
+  color: #fff;
+  border: 2px solid #666;
+  border-radius: 0;
+}
+
+.adex-viewer.retro-theme .adex-annotation-goto:hover {
+  background-color: #0000a0;
+}
+
+/*theme*/
+.adex-viewer.retro-theme .adex-meta-panel {
+  border: 4px solid #333;
+  background-color: #c0c0c0;
+  font-family: "VT323", monospace;
+  box-shadow: 8px 8px 0 #000;
+  border-radius: 0px;
+}
+
+.adex-viewer.retro-theme .adex-pdf-meta-info-header {
+  border-bottom: 2px solid #333;
+  background-color: #000080;
+  color: #fff;
+}
+
+.adex-viewer.retro-theme .adex-pdf-meta-info-content {
+  background: #a0a0a0;
+}
+
+.adex-viewer.retro-theme ul.adex-language-list li {
+  color: #000;
+  border-radius: 0;
+  border: 2px solid #666;
+  background-color: #c0c0c0;
+  padding: 10px;
+}
+
+.adex-viewer.retro-theme ul.adex-language-list li.adex-language-option.active-lang {
+  background-color: #000080;
+  color: #fff;
+  border: 2px solid #888;
+}
+
+.adex-viewer.retro-theme .adex-pdf-meta-info-header button,
+.adex-viewer.retro-theme .adex-power-row button,
+.adex-viewer.retro-theme .adex-pdf-meta-info-header button:hover,
+.adex-viewer.retro-theme .adex-power-row button:hover {
+  color: #fff;
+  border-radius: 0;
+  border: 2px solid #666;
+  background-color: #444;
+}
+
+.adex-viewer.retro-theme .adex-power-row p a {
+  color: #fff;
+}
+
+.adex-viewer.retro-theme .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-tab {
+  color: #000;
+  border-radius: 0;
+  border: 2px solid #666;
+  background-color: #c0c0c0;
+}
+
+.adex-viewer.retro-theme .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-tab.active {
+  background-color: #000080;
+  color: #fff;
+  border: 2px solid #888;
+}
+
+.adex-viewer.retro-theme .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-header {
+  background: transparent;
+}
+
+.adex-viewer.retro-theme.fullScreenView .adex-preview-panel .adex-preview-thumbs,
+.adex-viewer.retro-theme.fullScreenView .adex-preview-panel .adex-preview-search,
+.adex-viewer.retro-theme.fullScreenView .adex-preview-panel .adex-preview {
+  max-height: calc(100vh - 100px) !important;
+  min-height: calc(100vh - 100px) !important;
+}
+
+.adex-viewer.retro-theme .adex-topbar .adex-control-zoom select {
+  color: #fff;
+  background-color: #000080;
+}

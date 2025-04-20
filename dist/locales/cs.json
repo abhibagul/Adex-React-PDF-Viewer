@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "Předchozí stránka",
+    "nextPage": "Další stránka",
+    "pageOf": "z"
+  },
+  "leftPanel": {
+    "previews": "Náhledy stránek",
+    "search": "Prohledat dokument",
+    "bookmarks": "Záložky a osnova",
+    "annotations": "Poznámky"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "Otočit proti směru hodinových ručiček",
+    "rotateClockwise": "Otočit ve směru hodinových ručiček",
+    "zoomLevel": "Úroveň přiblížení",
+    "print": "Tisknout dokument",
+    "fullscreen": "Celá obrazovka",
+    "exitFullscreen": "Ukončit režim celé obrazovky",
+    "download": "Stáhnout PDF"
+  },
+  "search": {
+    "title": "Hledat",
+    "placeholder": "Hledat v dokumentu...",
+    "matches": "shod",
+    "noResults": "Žádné výsledky nenalezeny",
+    "searching": "Vyhledávání...",
+    "previousResult": "Předchozí výsledek",
+    "nextResult": "Další výsledek",
+    "page": "Stránka",
+    "incompleteDocumentError": "Při vyhledávání došlo k chybě. Zkuste to znovu po úplném načtení dokumentu.",
+    "waitLoading": "Před vyhledáváním počkejte na úplné načtení dokumentu."
+  },
+  "bookmarks": {
+    "outline": "Osnova",
+    "bookmarks": "Záložky",
+    "noOutline": "V tomto dokumentu není k dispozici žádná osnova",
+    "addBookmark": "Přidat záložku",
+    "save": "Uložit",
+    "cancel": "Zrušit",
+    "noBookmarks": "Zatím nebyly přidány žádné záložky",
+    "bookmarkTitle": "Název záložky",
+    "deleteBookmark": "Odstranit záložku:"
+  },
+  "annotations": {
+    "title": "Poznámky",
+    "addNote": "Přidat poznámku",
+    "addHighlight": "Přidat zvýraznění",
+    "addDrawing": "Přidat kresbu",
+    "note": "Poznámka",
+    "highlight": "Zvýraznění",
+    "drawing": "Kresba",
+    "noAnnotations": "Zatím nebyly přidány žádné poznámky. Použijte výše uvedené nástroje k přidání poznámek do dokumentu.",
+    "addNoteHint": "Přidat poznámku...",
+    "page": "Stránka",
+    "cancel": "Zrušit",
+    "colorSetTo": "Nastavit barvu na",
+    "noContent": "Žádný obsah",
+    "delete": "Odstranit poznámku"
+  },
+  "info": {
+    "title": "Informace",
+    "close": "Zavřít informační panel"
+  },
+  "locale": {
+    "selectLanguage": "Vybrat jazyk",
+    "changeTo": "Změnit jazyk na"
+  },
+  "credits": {
+    "createdWith": "Vytvořeno pomocí",
+    "by": "od"
+  }
+}

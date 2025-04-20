@@ -1,0 +1,191 @@
+/* Sepia Theme for PDF Viewer - Comfortable reading experience */
+@import url("https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap");
+
+.adex-viewer.sepia-theme {
+  border: 1px solid #d0c8b0;
+  background-color: #f8f4e5;
+  font-family: "Merriweather", serif;
+  box-shadow: 0 4px 15px rgba(160, 140, 100, 0.2);
+}
+
+.adex-viewer.sepia-theme * {
+  font-family: "Merriweather", serif;
+}
+
+.adex-viewer.sepia-theme .adex-topbar {
+  border-bottom: 1px solid #d0c8b0;
+  background-color: #efe8d8;
+  color: #5f4b32;
+  padding: 8px 15px;
+}
+
+.adex-viewer.sepia-theme .adex-topbar .adex-control-page input {
+  background-color: #f8f4e5;
+  color: #5f4b32;
+  border: 1px solid #d0c8b0;
+  border-radius: 4px;
+}
+
+.adex-viewer.sepia-theme .adex-topbar .adex-control-page p {
+  color: #5f4b32;
+}
+
+.adex-viewer.sepia-theme .adex-topbar button,
+.adex-viewer.sepia-theme .adex-topbar .open-link-btn {
+  color: #5f4b32;
+}
+
+.adex-viewer.sepia-theme .adex-topbar button:hover,
+.adex-viewer.sepia-theme .adex-topbar .open-link-btn:hover,
+.adex-viewer.sepia-theme .adex-topbar button.active {
+  background-color: rgba(95, 75, 50, 0.1);
+  color: #5f4b32;
+}
+
+.adex-viewer.sepia-theme .adex-left-col {
+  border-right: 1px solid #d0c8b0;
+  background-color: #efe8d8;
+}
+
+.adex-viewer.sepia-theme .adex-left-col button {
+  color: #5f4b32;
+}
+
+.adex-viewer.sepia-theme .adex-left-col button:hover {
+  background-color: rgba(95, 75, 50, 0.1);
+}
+
+.adex-viewer.sepia-theme .adex-left-col button.active {
+  background-color: rgba(95, 75, 50, 0.2);
+  color: #5f4b32;
+}
+
+.adex-viewer.sepia-theme .adex-preview-panel .adex-preview-thumbs,
+.adex-viewer.sepia-theme .adex-preview-panel .adex-preview-search,
+.adex-viewer.sepia-theme .adex-preview-panel .adex-preview-bookmarks,
+.adex-viewer.sepia-theme .adex-preview-panel .adex-preview-annotations {
+  background-color: #efe8d8;
+  border-right: 1px solid #d0c8b0;
+}
+
+.adex-viewer.sepia-theme .adex-preview-panel .adex-preview {
+  background-color: #f8f4e5;
+}
+
+.adex-viewer.sepia-theme .adex-preview-panel .adex-preview .adex-page {
+  box-shadow: 0 4px 8px rgba(160, 140, 100, 0.15);
+  border: 1px solid #d0c8b0;
+  border-radius: 2px;
+}
+
+.adex-viewer.sepia-theme .adex-preview-panel .adex-preview-thumbs .adex-page-thumb {
+  box-shadow: 0 2px 4px rgba(160, 140, 100, 0.15);
+  border: 1px solid #d0c8b0;
+  border-radius: 2px;
+}
+
+.adex-viewer.sepia-theme .adex-preview-panel .adex-preview-thumbs .adex-page-thumb.active:before {
+  border: 2px solid #8b7355;
+  background-color: rgba(139, 115, 85, 0.1);
+}
+
+.adex-viewer.sepia-theme .adex-search-bar {
+  background-color: #efe8d8;
+  border-bottom: 1px solid #d0c8b0;
+}
+
+.adex-viewer.sepia-theme .adex-search-input {
+  background-color: #f8f4e5;
+  border: 1px solid #d0c8b0 !important;
+  border-radius: 4px 0 0 4px !important;
+}
+
+.adex-viewer.sepia-theme .adex-search-button {
+  background-color: #8b7355;
+  color: #f8f4e5;
+  border-radius: 0 4px 4px 0 !important;
+}
+
+.adex-viewer.sepia-theme .adex-search-button:hover {
+  background-color: #6d5a43;
+}
+
+.adex-viewer.sepia-theme .adex-power-row {
+  border-top: 1px solid #d0c8b0;
+  background-color: #efe8d8;
+  color: #5f4b32;
+}
+
+/* Annotations in sepia theme */
+.adex-viewer.sepia-theme .adex-annotations-header {
+  background: #efe8d8;
+  border-bottom: 1px solid #d0c8b0;
+}
+
+.adex-viewer.sepia-theme .adex-annotation-item .adex-annotation-list-item {
+  background: #f8f4e5;
+}
+
+.adex-viewer.sepia-theme .adex-annotation-item:hover .adex-annotation-list-item {
+  background-color: rgba(139, 115, 85, 0.05);
+}
+
+.adex-viewer.sepia-theme .adex-annotation-item.active .adex-annotation-list-item {
+  background-color: rgba(139, 115, 85, 0.1);
+  border-left: 3px solid #8b7355;
+}
+
+.adex-viewer.sepia-theme .adex-annotation-goto {
+  background: #8b7355;
+  color: #f8f4e5;
+}
+
+.adex-viewer.sepia-theme .adex-annotation-goto:hover {
+  background-color: #6d5a43;
+}
+
+
+/*custom*/
+.adex-viewer.sepia-theme .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-header {
+  border-bottom: 1px solid #d0c8b0;
+  background-color: #efe8d8;
+}
+
+.adex-viewer.sepia-theme .adex-preview-panel .adex-preview-bookmarks .adex-add-bookmark-btn {
+  background: #5f4b32;
+  color: #fff;
+}
+
+.adex-viewer.sepia-theme button.adex-bookmark-link svg {
+  color: #5f4b32 !important;
+}
+
+.adex-viewer.sepia-theme .adex-annotation-color-picker {
+  background: #efe8d8;
+}
+
+.adex-viewer.sepia-theme .adex-pdf-meta-info-header {
+  border-bottom: 1px solid #d0c8b0;
+  background-color: #efe8d8;
+  color: #5f4b32;
+}
+
+.adex-viewer.sepia-theme ul.adex-language-list {
+  border-bottom: 1px solid #d0c8b0;
+  background-color: #efe8d8;
+  color: #5f4b32;
+}
+
+
+.adex-viewer.sepia-theme li.adex-language-option {
+  border-bottom: 1px solid #d0c8b0;
+  background-color: #efe8d8;
+  color: #5f4b32;
+}
+
+.adex-viewer.sepia-theme.fullScreenView .adex-preview-panel .adex-preview-thumbs,
+.adex-viewer.sepia-theme.fullScreenView .adex-preview-panel .adex-preview-search,
+.adex-viewer.sepia-theme.fullScreenView .adex-preview-panel .adex-preview {
+  max-height: calc(100vh - 91px);
+  min-height: calc(100vh - 91px);
+}

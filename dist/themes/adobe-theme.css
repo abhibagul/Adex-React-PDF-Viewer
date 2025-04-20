@@ -1,0 +1,253 @@
+/* Adobe-Inspired Theme for PDF Viewer */
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600&display=swap");
+
+.adex-viewer.adobe-theme {
+  border: none;
+  background-color: #f7f7f7;
+  font-family: "Source Sans Pro", sans-serif;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.adex-viewer.adobe-theme * {
+  font-family: "Source Sans Pro", sans-serif;
+}
+
+.adex-viewer.adobe-theme .adex-topbar {
+  border-bottom: none;
+  background-color: #2d2d2d;
+  /* Adobe dark gray */
+  color: white;
+  padding: 12px 16px;
+}
+
+.adex-viewer.adobe-theme .adex-topbar .adex-control-page input {
+  background-color: #444444;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+.adex-viewer.adobe-theme .adex-topbar .adex-control-page p {
+  color: white;
+  font-weight: 400;
+}
+
+.adex-viewer.adobe-theme .adex-topbar button,
+.adex-viewer.adobe-theme .adex-topbar .open-link-btn {
+  color: white;
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+.adex-viewer.adobe-theme .adex-topbar button:hover,
+.adex-viewer.adobe-theme .adex-topbar .open-link-btn:hover,
+.adex-viewer.adobe-theme .adex-topbar button.active {
+  background-color: #444444;
+  color: white;
+}
+
+.adex-viewer.adobe-theme .adex-left-col {
+  border-right: none;
+  background-color: #333333;
+}
+
+.adex-viewer.adobe-theme .adex-left-col button {
+  color: #cccccc;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+  margin: 4px 0;
+}
+
+.adex-viewer.adobe-theme .adex-left-col button:hover {
+  background-color: #444444;
+  color: white;
+}
+
+.adex-viewer.adobe-theme .adex-left-col button.active {
+  background-color: #eb1000;
+  /* Adobe red */
+  color: white;
+}
+
+.adex-viewer.adobe-theme .adex-preview-panel .adex-preview-thumbs,
+.adex-viewer.adobe-theme .adex-preview-panel .adex-preview-search,
+.adex-viewer.adobe-theme .adex-preview-panel .adex-preview-bookmarks,
+.adex-viewer.adobe-theme .adex-preview-panel .adex-preview-annotations {
+  background-color: #f0f0f0;
+  border-right: none;
+}
+
+.adex-viewer.adobe-theme .adex-preview-panel .adex-preview {
+  background-color: #e1e1e1;
+  padding: 20px;
+}
+
+.adex-viewer.adobe-theme .adex-preview-panel .adex-preview .adex-page {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: none;
+  border-radius: 2px;
+}
+
+.adex-viewer.adobe-theme .adex-preview-panel .adex-preview-thumbs .adex-page-thumb {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 2px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.adex-viewer.adobe-theme .adex-preview-panel .adex-preview-thumbs .adex-page-thumb:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.adex-viewer.adobe-theme .adex-preview-panel .adex-preview-thumbs .adex-page-thumb.active:before {
+  border: 2px solid #eb1000;
+  background-color: rgba(235, 16, 0, 0.1);
+}
+
+.adex-viewer.adobe-theme .adex-search-bar {
+  background-color: #f0f0f0;
+  border-bottom: none;
+  padding: 12px;
+}
+
+.adex-viewer.adobe-theme .adex-search-input {
+  background-color: white;
+  border: none !important;
+  border-radius: 3px 0 0 3px !important;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #333;
+}
+
+.adex-viewer.adobe-theme .adex-search-button {
+  background-color: #eb1000;
+  color: white;
+  border-radius: 0 3px 3px 0 !important;
+  padding: 8px 12px;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.adex-viewer.adobe-theme .adex-search-button:hover {
+  background-color: #d10000;
+}
+
+.adex-viewer.adobe-theme .adex-power-row {
+  border-top: none;
+  background-color: #2d2d2d;
+  color: #cccccc;
+  padding: 8px 16px;
+  font-size: 12px;
+}
+
+/* Annotations in Adobe theme */
+.adex-viewer.adobe-theme .adex-annotations-header {
+  background: #f0f0f0;
+  border-bottom: 1px solid #e1e1e1;
+  padding: 12px;
+  font-weight: 600;
+  color: #333;
+}
+
+.adex-viewer.adobe-theme .adex-annotation-item .adex-annotation-list-item {
+  background: white;
+  border-radius: 2px;
+  margin: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.adex-viewer.adobe-theme .adex-annotation-item:hover .adex-annotation-list-item {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.adex-viewer.adobe-theme .adex-annotation-item.active .adex-annotation-list-item {
+  background-color: rgba(235, 16, 0, 0.05);
+  border-left: 3px solid #eb1000;
+}
+
+.adex-viewer.adobe-theme .adex-annotation-goto {
+  background: #eb1000;
+  color: white;
+  border-radius: 3px;
+}
+
+.adex-viewer.adobe-theme .adex-annotation-goto:hover {
+  background-color: #d10000;
+}
+
+/* Search highlights */
+.adex-viewer.adobe-theme .adex-search-highlight {
+  background-color: rgba(235, 16, 0, 0.2);
+  border-radius: 2px;
+}
+
+.adex-viewer.adobe-theme .adex-search-highlight.current {
+  background-color: rgba(235, 16, 0, 0.4);
+  border-radius: 2px;
+}
+
+/*custom*/
+.adex-viewer.adobe-theme .adex-pdf-meta-info-header {
+  background-color: #2d2d2d;
+  color: #fff;
+  padding: 10px 16px;
+}
+
+.adex-viewer.adobe-theme .adex-pdf-meta-info-header button,
+.adex-viewer.adobe-theme .adex-pdf-meta-info-header button:hover {
+  color: #fff;
+}
+
+.adex-viewer.adobe-theme.fullScreenView .adex-preview-panel .adex-preview-annotations,
+.adex-viewer.adobe-theme.fullScreenView .adex-preview-panel .adex-preview-bookmarks,
+.adex-viewer.adobe-theme.fullScreenView .adex-preview-panel .adex-preview-thumbs,
+.adex-viewer.adobe-theme.fullScreenView .adex-preview-panel .adex-preview-search,
+.adex-viewer.adobe-theme.fullScreenView .adex-preview-panel .adex-preview {
+  max-height: calc(100vh - 95px);
+  min-height: calc(100vh - 95px);
+}
+
+.adex-viewer.adobe-theme .adex-topbar .adex-control-zoom select {
+  background: #2d2d2d !important;
+  color: #fff;
+}
+
+.adex-viewer.adobe-theme .adex-pdf-meta-info-header button,
+.adex-viewer.adobe-theme .adex-power-row button,
+.adex-viewer.adobe-theme .adex-pdf-meta-info-header button:hover,
+.adex-viewer.adobe-theme .adex-power-row button:hover {
+  color: #fff;
+}
+
+.adex-viewer.adobe-theme .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-tab.active {
+  background-color: #eb1000;
+  color: white;
+}
+
+.adex-viewer.adobe-theme .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-header {
+  background: transparent;
+}
+
+.adex-viewer.adobe-theme ul.adex-language-list li.adex-language-option.active-lang {
+  background: white;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-top: none;
+  background-color: #eb1000;
+  color: white;
+}
+
+.adex-viewer.adobe-theme ul.adex-language-list li {
+  background: white;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-top: none;
+}
+
+.adex-viewer.adobe-theme .adex-power-row p a {
+  color: #fff;
+}

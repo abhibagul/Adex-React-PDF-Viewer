@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "Poprzednia strona",
+    "nextPage": "Następna strona",
+    "pageOf": "z"
+  },
+  "leftPanel": {
+    "previews": "Podgląd stron",
+    "search": "Przeszukaj dokument",
+    "bookmarks": "Zakładki i konspekt",
+    "annotations": "Adnotacje"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "Obróć w lewo",
+    "rotateClockwise": "Obróć w prawo",
+    "zoomLevel": "Poziom powiększenia",
+    "print": "Drukuj dokument",
+    "fullscreen": "Pełny ekran",
+    "exitFullscreen": "Wyjdź z pełnego ekranu",
+    "download": "Pobierz PDF"
+  },
+  "search": {
+    "title": "Szukaj",
+    "placeholder": "Szukaj w dokumencie...",
+    "matches": "dopasowań",
+    "noResults": "Nie znaleziono wyników",
+    "searching": "Wyszukiwanie...",
+    "previousResult": "Poprzedni wynik",
+    "nextResult": "Następny wynik",
+    "page": "Strona",
+    "incompleteDocumentError": "Wystąpił błąd podczas wyszukiwania. Spróbuj ponownie po całkowitym załadowaniu dokumentu.",
+    "waitLoading": "Poczekaj na całkowite załadowanie dokumentu przed rozpoczęciem wyszukiwania."
+  },
+  "bookmarks": {
+    "outline": "Konspekt",
+    "bookmarks": "Zakładki",
+    "noOutline": "Brak dostępnego konspektu w tym dokumencie",
+    "addBookmark": "Dodaj zakładkę",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "noBookmarks": "Nie dodano jeszcze zakładek",
+    "bookmarkTitle": "Tytuł zakładki",
+    "deleteBookmark": "Usuń zakładkę:"
+  },
+  "annotations": {
+    "title": "Adnotacje",
+    "addNote": "Dodaj notatkę",
+    "addHighlight": "Dodaj wyróżnienie",
+    "addDrawing": "Dodaj rysunek",
+    "note": "Notatka",
+    "highlight": "Wyróżnienie",
+    "drawing": "Rysunek",
+    "noAnnotations": "Nie dodano jeszcze adnotacji. Użyj powyższych narzędzi, aby dodać adnotacje do dokumentu.",
+    "addNoteHint": "Dodaj notatkę...",
+    "page": "Strona",
+    "cancel": "Anuluj",
+    "colorSetTo": "Ustaw kolor na",
+    "noContent": "Brak treści",
+    "delete": "Usuń adnotację"
+  },
+  "info": {
+    "title": "Informacje",
+    "close": "Zamknij panel informacyjny"
+  },
+  "locale": {
+    "selectLanguage": "Wybierz język",
+    "changeTo": "Zmień język na"
+  },
+  "credits": {
+    "createdWith": "Utworzono przy użyciu",
+    "by": "przez"
+  }
+}

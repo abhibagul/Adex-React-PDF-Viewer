@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "الصفحة السابقة",
+    "nextPage": "الصفحة التالية",
+    "pageOf": "من"
+  },
+  "leftPanel": {
+    "previews": "معاينة الصفحات",
+    "search": "البحث في المستند",
+    "bookmarks": "الإشارات المرجعية والمخطط",
+    "annotations": "التعليقات"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "تدوير عكس اتجاه عقارب الساعة",
+    "rotateClockwise": "تدوير باتجاه عقارب الساعة",
+    "zoomLevel": "مستوى التكبير",
+    "print": "طباعة المستند",
+    "fullscreen": "عرض بملء الشاشة",
+    "exitFullscreen": "الخروج من وضع ملء الشاشة",
+    "download": "تنزيل PDF"
+  },
+  "search": {
+    "title": "بحث",
+    "placeholder": "البحث في المستند...",
+    "matches": "نتائج",
+    "noResults": "لم يتم العثور على نتائج",
+    "searching": "جاري البحث...",
+    "previousResult": "النتيجة السابقة",
+    "nextResult": "النتيجة التالية",
+    "page": "صفحة",
+    "incompleteDocumentError": "حدث خطأ أثناء البحث. يرجى المحاولة مرة أخرى بعد تحميل المستند بالكامل.",
+    "waitLoading": "يرجى الانتظار حتى يتم تحميل المستند بالكامل قبل البحث."
+  },
+  "bookmarks": {
+    "outline": "المخطط",
+    "bookmarks": "الإشارات المرجعية",
+    "noOutline": "لا يوجد مخطط متاح في هذا المستند",
+    "addBookmark": "إضافة إشارة مرجعية",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "noBookmarks": "لم تتم إضافة إشارات مرجعية بعد",
+    "bookmarkTitle": "عنوان الإشارة المرجعية",
+    "deleteBookmark": "حذف الإشارة المرجعية:"
+  },
+  "annotations": {
+    "title": "التعليقات",
+    "addNote": "إضافة ملاحظة",
+    "addHighlight": "إضافة تظليل",
+    "addDrawing": "إضافة رسم",
+    "note": "ملاحظة",
+    "highlight": "تظليل",
+    "drawing": "رسم",
+    "noAnnotations": "لم تتم إضافة تعليقات بعد. استخدم الأدوات أعلاه لإضافة تعليقات إلى المستند.",
+    "addNoteHint": "إضافة ملاحظة...",
+    "page": "صفحة",
+    "cancel": "إلغاء",
+    "colorSetTo": "تعيين اللون إلى",
+    "noContent": "لا يوجد محتوى",
+    "delete": "حذف التعليق"
+  },
+  "info": {
+    "title": "معلومات",
+    "close": "إغلاق لوحة المعلومات"
+  },
+  "locale": {
+    "selectLanguage": "اختيار اللغة",
+    "changeTo": "تغيير اللغة إلى"
+  },
+  "credits": {
+    "createdWith": "تم الإنشاء بواسطة",
+    "by": "بواسطة"
+  }
+}

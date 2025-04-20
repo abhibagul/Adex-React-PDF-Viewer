@@ -1,0 +1,131 @@
+/* Minimal Theme for PDF Viewer */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap");
+
+.adex-viewer.minimal-theme {
+  border: none;
+  background-color: #fff;
+  font-family: "Inter", sans-serif;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.adex-viewer.minimal-theme * {
+  font-family: "Inter", sans-serif;
+}
+
+.adex-viewer.minimal-theme .adex-topbar {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background-color: #fff;
+  padding: 12px 16px;
+}
+
+.adex-viewer.minimal-theme .adex-topbar .adex-control-page input {
+  background-color: #f5f5f5;
+  border: none;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.adex-viewer.minimal-theme .adex-topbar button,
+.adex-viewer.minimal-theme .adex-topbar .open-link-btn {
+  color: #555;
+  border-radius: 6px;
+}
+
+.adex-viewer.minimal-theme .adex-topbar button:hover,
+.adex-viewer.minimal-theme .adex-topbar .open-link-btn:hover,
+.adex-viewer.minimal-theme .adex-topbar button.active {
+  background-color: #f5f5f5;
+  color: #000;
+}
+
+.adex-viewer.minimal-theme .adex-left-col {
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+  background-color: #fff;
+  padding: 12px 8px;
+}
+
+.adex-viewer.minimal-theme .adex-left-col button {
+  color: #555;
+  border-radius: 6px;
+}
+
+.adex-viewer.minimal-theme .adex-left-col button:hover {
+  background-color: #f5f5f5;
+}
+
+.adex-viewer.minimal-theme .adex-left-col button.active {
+  background-color: #f5f5f5;
+  color: #000;
+}
+
+.adex-viewer.minimal-theme .adex-preview-panel .adex-preview-thumbs,
+.adex-viewer.minimal-theme .adex-preview-panel .adex-preview-search,
+.adex-viewer.minimal-theme .adex-preview-panel .adex-preview-bookmarks,
+.adex-viewer.minimal-theme .adex-preview-panel .adex-preview-annotations {
+  background-color: #fff;
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.adex-viewer.minimal-theme .adex-preview-panel .adex-preview {
+  background-color: #fafafa;
+}
+
+.adex-viewer.minimal-theme .adex-preview-panel .adex-preview .adex-page {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+}
+
+.adex-viewer.minimal-theme .adex-preview-panel .adex-preview-thumbs .adex-page-thumb {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+  transition: transform 0.2s ease;
+}
+
+.adex-viewer.minimal-theme .adex-preview-panel .adex-preview-thumbs .adex-page-thumb:hover {
+  transform: translateY(-2px);
+}
+
+.adex-viewer.minimal-theme .adex-preview-panel .adex-preview-thumbs .adex-page-thumb.active:before {
+  border: 2px solid #000;
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.adex-viewer.minimal-theme .adex-search-bar {
+  background-color: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 12px;
+}
+
+.adex-viewer.minimal-theme .adex-search-input {
+  background-color: #f5f5f5;
+  border: none !important;
+  border-radius: 6px 0 0 6px !important;
+  padding: 8px 12px;
+}
+
+.adex-viewer.minimal-theme .adex-search-button {
+  background-color: #f5f5f5;
+  color: #555;
+  border-radius: 0 6px 6px 0 !important;
+}
+
+.adex-viewer.minimal-theme .adex-search-button:hover {
+  background-color: #e5e5e5;
+  color: #000;
+}
+
+.adex-viewer.minimal-theme .adex-power-row {
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  background-color: #fff;
+  padding: 12px 16px;
+}
+
+/*custom*/
+.adex-viewer.minimal-theme.fullScreenView .adex-preview-panel .adex-preview-thumbs,
+.adex-viewer.minimal-theme.fullScreenView .adex-preview-panel .adex-preview-search,
+.adex-viewer.minimal-theme.fullScreenView .adex-preview-panel .adex-preview {
+  max-height: calc(100vh - 113px);
+  min-height: calc(100vh - 113px);
+}

@@ -1,0 +1,278 @@
+/* Night Mode Theme for PDF Viewer - Optimized for night reading */
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500&display=swap");
+
+.adex-viewer.night-mode-theme {
+  border: 1px solid #2c2c2c;
+  background-color: #121212;
+  font-family: "Rubik", sans-serif;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  color: #e0e0e0;
+}
+
+.adex-viewer.night-mode-theme * {
+  font-family: "Rubik", sans-serif;
+}
+
+.adex-viewer.night-mode-theme .adex-topbar {
+  border-bottom: 1px solid #2c2c2c;
+  background-color: #121212;
+  color: #e0e0e0;
+  padding: 10px 16px;
+}
+
+.adex-viewer.night-mode-theme .adex-topbar .adex-control-page input {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+  border: 1px solid #2c2c2c;
+  border-radius: 4px;
+}
+
+.adex-viewer.night-mode-theme .adex-topbar .adex-control-page p {
+  color: #e0e0e0;
+}
+
+.adex-viewer.night-mode-theme .adex-topbar button,
+.adex-viewer.night-mode-theme .adex-topbar .open-link-btn {
+  color: #e0e0e0;
+  border-radius: 4px;
+}
+
+.adex-viewer.night-mode-theme .adex-topbar button:hover,
+.adex-viewer.night-mode-theme .adex-topbar .open-link-btn:hover,
+.adex-viewer.night-mode-theme .adex-topbar button.active {
+  background-color: #2c2c2c;
+  color: #fff;
+}
+
+.adex-viewer.night-mode-theme .adex-left-col {
+  border-right: 1px solid #2c2c2c;
+  background-color: #121212;
+}
+
+.adex-viewer.night-mode-theme .adex-left-col button {
+  color: #e0e0e0;
+  border-radius: 4px;
+}
+
+.adex-viewer.night-mode-theme .adex-left-col button:hover {
+  background-color: #2c2c2c;
+}
+
+.adex-viewer.night-mode-theme .adex-left-col button.active {
+  background-color: #2c2c2c;
+  color: #fff;
+}
+
+.adex-viewer.night-mode-theme .adex-preview-panel .adex-preview-thumbs,
+.adex-viewer.night-mode-theme .adex-preview-panel .adex-preview-search,
+.adex-viewer.night-mode-theme .adex-preview-panel .adex-preview-bookmarks,
+.adex-viewer.night-mode-theme .adex-preview-panel .adex-preview-annotations {
+  background-color: #121212;
+  border-right: 1px solid #2c2c2c;
+}
+
+.adex-viewer.night-mode-theme .adex-preview-panel .adex-preview {
+  background-color: #1a1a1a;
+}
+
+/* Special styling for PDF pages in night mode */
+.adex-viewer.night-mode-theme .adex-preview-panel .adex-preview .adex-page {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  /* Apply a subtle amber filter to reduce blue light */
+  filter: sepia(20%) brightness(90%) contrast(95%);
+}
+
+.adex-viewer.night-mode-theme .adex-preview-panel .adex-preview-thumbs .adex-page-thumb {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  /* Apply the same filter to thumbnails */
+  filter: sepia(20%) brightness(90%) contrast(95%);
+}
+
+.adex-viewer.night-mode-theme .adex-preview-panel .adex-preview-thumbs .adex-page-thumb.active:before {
+  border: 2px solid #bb86fc;
+  background-color: rgba(187, 134, 252, 0.1);
+}
+
+.adex-viewer.night-mode-theme .adex-search-bar {
+  background-color: #121212;
+  border-bottom: 1px solid #2c2c2c;
+}
+
+.adex-viewer.night-mode-theme .adex-search-input {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+  border: 1px solid #2c2c2c !important;
+  border-radius: 4px 0 0 4px !important;
+}
+
+.adex-viewer.night-mode-theme .adex-search-button {
+  background-color: #bb86fc;
+  color: #121212;
+  border-radius: 0 4px 4px 0 !important;
+}
+
+.adex-viewer.night-mode-theme .adex-search-button:hover {
+  background-color: #a370f7;
+}
+
+.adex-viewer.night-mode-theme .adex-power-row {
+  border-top: 1px solid #2c2c2c;
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+/* Annotations in night mode theme */
+.adex-viewer.night-mode-theme .adex-annotations-header {
+  background: #121212;
+  border-bottom: 1px solid #2c2c2c;
+}
+
+.adex-viewer.night-mode-theme .adex-annotation-item .adex-annotation-list-item {
+  background: #1e1e1e;
+}
+
+.adex-viewer.night-mode-theme .adex-annotation-item:hover .adex-annotation-list-item {
+  background-color: #2c2c2c;
+}
+
+.adex-viewer.night-mode-theme .adex-annotation-item.active .adex-annotation-list-item {
+  background-color: #2c2c2c;
+  border-left: 3px solid #bb86fc;
+}
+
+.adex-viewer.night-mode-theme .adex-annotation-goto {
+  background: #bb86fc;
+  color: #121212;
+}
+
+.adex-viewer.night-mode-theme .adex-annotation-goto:hover {
+  background-color: #a370f7;
+}
+
+/* Special night mode search highlight */
+.adex-viewer.night-mode-theme .adex-search-highlight {
+  background-color: rgba(187, 134, 252, 0.3);
+}
+
+.adex-viewer.night-mode-theme .adex-search-highlight.current {
+  background-color: rgba(187, 134, 252, 0.6);
+}
+
+
+/*custom*/
+.adex-viewer.night-mode-theme button.adex-outline-link {
+  color: #bebebe !important;
+}
+
+.adex-viewer.night-mode-theme .adex-bookmarks-header {
+  background: #121212 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, .1) !important;
+}
+
+.adex-viewer.night-mode-theme .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-tab.active {
+  background-color: rgba(255, 255, 255, .1);
+  color: #fff !important;
+}
+
+.adex-viewer.night-mode-theme .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-tab:hover {
+  background: rgba(255, 255, 255, .05);
+  color: #fff;
+}
+
+.adex-viewer.night-mode-theme .adex-preview-panel .adex-preview-bookmarks .adex-bookmarks-tab {
+  color: rgba(255, 255, 255, .6);
+}
+
+
+.adex-viewer.night-mode-theme .adex-preview-panel .adex-preview-bookmarks .adex-outline-link:not(:disabled):hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.adex-viewer.night-mode-theme .adex-preview-panel .adex-preview-bookmarks .adex-add-bookmark-btn {
+  background-color: rgba(255, 255, 255, .1);
+  color: #fff;
+}
+
+.adex-viewer.night-mode-theme .adex-preview-panel .adex-preview-bookmarks .adex-bookmark-title {
+  color: #fff;
+}
+
+.adex-viewer.night-mode-theme .adex-preview-panel .adex-preview-bookmarks .adex-bookmark-delete {
+  color: #fff;
+}
+
+.adex-viewer.night-mode-theme .adex-preview-panel .adex-preview-bookmarks .adex-add-bookmark-btn:hover {
+  background: rgba(255, 255, 255, .2);
+}
+
+.adex-viewer.night-mode-theme .adex-control-zoom select {
+  color: #fff;
+  background: #222 !important;
+}
+
+.adex-viewer.night-mode-theme button.adex-annotation-tool {
+  color: #fff;
+}
+
+.adex-viewer.night-mode-theme button.adex-annotation-tool:hover {
+  background: rgba(255, 255, 255, .1);
+}
+
+.adex-viewer.night-mode-theme .adex-annotation-color-picker {
+  background: #222;
+}
+
+.adex-viewer.night-mode-theme .adex-cancel-annotation {
+  background: #444;
+  color: #fff;
+}
+
+.adex-viewer.night-mode-theme .adex-annotation-delete,
+.adex-viewer.night-mode-theme .adex-annotation-close {
+  color: #fff;
+}
+
+.adex-viewer.night-mode-theme .adex-pdf-meta-info-header {
+  background: #121212;
+  border-bottom: 1px solid rgba(255, 255, 255, .1);
+}
+
+.adex-viewer.night-mode-theme .adex-pdf-meta-info-content {
+  background: #121212;
+}
+
+.adex-viewer.night-mode-theme ul.adex-language-list li {
+  background: #121212;
+  border: 1px solid rgba(255, 255, 255, .1);
+}
+
+.adex-viewer.night-mode-theme .adex-pdf-meta-info-header button,
+.adex-viewer.night-mode-theme .adex-power-row button {
+  color: #fff;
+}
+
+.adex-viewer.night-mode-theme .adex-pdf-meta-info-header button:hover,
+.adex-viewer.night-mode-theme .adex-power-row button:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, .1);
+}
+
+.adex-viewer.night-mode-theme .adex-power-row p a {
+  color: #fff;
+}
+
+.adex-viewer.night-mode-theme.fullScreenView .adex-preview-panel .adex-preview-annotations,
+.adex-viewer.night-mode-theme.fullScreenView .adex-preview-panel .adex-preview-bookmarks,
+.adex-viewer.night-mode-theme.fullScreenView .adex-preview-panel .adex-preview-thumbs,
+.adex-viewer.night-mode-theme.fullScreenView .adex-preview-panel .adex-preview-search,
+.adex-viewer.night-mode-theme.fullScreenView .adex-preview-panel .adex-preview {
+  max-height: calc(100vh - 95px);
+  min-height: calc(100vh - 95px);
+}
+
+
+.adex-viewer.night-mode-theme ul.adex-language-list li.adex-language-option.active-lang {
+  background: rgba(255, 255, 255, .1);
+}

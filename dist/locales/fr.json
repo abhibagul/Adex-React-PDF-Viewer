@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "Page précédente",
+    "nextPage": "Page suivante",
+    "pageOf": "sur"
+  },
+  "leftPanel": {
+    "previews": "Aperçus de pages",
+    "search": "Rechercher dans le document",
+    "bookmarks": "Signets et plan",
+    "annotations": "Annotations"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "Rotation antihoraire",
+    "rotateClockwise": "Rotation horaire",
+    "zoomLevel": "Niveau de zoom",
+    "print": "Imprimer le document",
+    "fullscreen": "Plein écran",
+    "exitFullscreen": "Quitter le plein écran",
+    "download": "Télécharger le PDF"
+  },
+  "search": {
+    "title": "Rechercher",
+    "placeholder": "Rechercher dans le document...",
+    "matches": "correspondances",
+    "noResults": "Aucun résultat trouvé",
+    "searching": "Recherche en cours...",
+    "previousResult": "Résultat précédent",
+    "nextResult": "Résultat suivant",
+    "page": "Page",
+    "incompleteDocumentError": "Une erreur s'est produite lors de la recherche. Veuillez réessayer après le chargement complet du document.",
+    "waitLoading": "Veuillez attendre que le document soit entièrement chargé avant de rechercher."
+  },
+  "bookmarks": {
+    "outline": "Plan",
+    "bookmarks": "Signets",
+    "noOutline": "Aucun plan disponible dans ce document",
+    "addBookmark": "Ajouter un signet",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "noBookmarks": "Aucun signet ajouté pour l'instant",
+    "bookmarkTitle": "Titre du signet",
+    "deleteBookmark": "Supprimer le signet :"
+  },
+  "annotations": {
+    "title": "Annotations",
+    "addNote": "Ajouter une note",
+    "addHighlight": "Ajouter un surlignage",
+    "addDrawing": "Ajouter un dessin",
+    "note": "Note",
+    "highlight": "Surlignage",
+    "drawing": "Dessin",
+    "noAnnotations": "Aucune annotation ajoutée pour l'instant. Utilisez les outils ci-dessus pour ajouter des annotations à votre document.",
+    "addNoteHint": "Ajouter une note...",
+    "page": "Page",
+    "cancel": "Annuler",
+    "colorSetTo": "Définir la couleur à",
+    "noContent": "Pas de contenu",
+    "delete": "Supprimer l'annotation"
+  },
+  "info": {
+    "title": "Informations",
+    "close": "Fermer le panneau d'informations"
+  },
+  "locale": {
+    "selectLanguage": "Sélectionner la langue",
+    "changeTo": "Changer la langue en"
+  },
+  "credits": {
+    "createdWith": "Créé avec",
+    "by": "par"
+  }
+}

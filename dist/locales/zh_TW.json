@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "上一頁",
+    "nextPage": "下一頁",
+    "pageOf": "/"
+  },
+  "leftPanel": {
+    "previews": "頁面預覽",
+    "search": "搜尋文件",
+    "bookmarks": "書籤和大綱",
+    "annotations": "註解"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "逆時針旋轉",
+    "rotateClockwise": "順時針旋轉",
+    "zoomLevel": "縮放級別",
+    "print": "列印文件",
+    "fullscreen": "進入全螢幕",
+    "exitFullscreen": "退出全螢幕",
+    "download": "下載PDF"
+  },
+  "search": {
+    "title": "搜尋",
+    "placeholder": "在文件中搜尋...",
+    "matches": "匹配項",
+    "noResults": "未找到結果",
+    "searching": "搜尋中...",
+    "previousResult": "上一個結果",
+    "nextResult": "下一個結果",
+    "page": "頁面",
+    "incompleteDocumentError": "搜尋時出錯。請在文件完全載入後重試。",
+    "waitLoading": "請等待文件完全載入後再搜尋。"
+  },
+  "bookmarks": {
+    "outline": "大綱",
+    "bookmarks": "書籤",
+    "noOutline": "此文件中沒有可用的大綱",
+    "addBookmark": "添加書籤",
+    "save": "儲存",
+    "cancel": "取消",
+    "noBookmarks": "尚未添加書籤",
+    "bookmarkTitle": "書籤標題",
+    "deleteBookmark": "刪除書籤:"
+  },
+  "annotations": {
+    "title": "註解",
+    "addNote": "添加筆記",
+    "addHighlight": "添加高亮",
+    "addDrawing": "添加繪圖",
+    "note": "筆記",
+    "highlight": "高亮",
+    "drawing": "繪圖",
+    "noAnnotations": "尚未添加註解。使用上面的工具向文件添加註解。",
+    "addNoteHint": "添加筆記...",
+    "page": "頁面",
+    "cancel": "取消",
+    "colorSetTo": "設置顏色為",
+    "noContent": "無內容",
+    "delete": "刪除註解"
+  },
+  "info": {
+    "title": "資訊",
+    "close": "關閉資訊面板"
+  },
+  "locale": {
+    "selectLanguage": "選擇語言",
+    "changeTo": "更改語言為"
+  },
+  "credits": {
+    "createdWith": "創建工具",
+    "by": "作者"
+  }
+}

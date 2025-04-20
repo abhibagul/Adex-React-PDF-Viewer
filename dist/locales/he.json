@@ -1,0 +1,73 @@
+{
+  "navigation": {
+    "previousPage": "דף קודם",
+    "nextPage": "דף הבא",
+    "pageOf": "מתוך"
+  },
+  "leftPanel": {
+    "previews": "תצוגה מקדימה של דפים",
+    "search": "חיפוש במסמך",
+    "bookmarks": "סימניות ומתווה",
+    "annotations": "הערות"
+  },
+  "toolbar": {
+    "rotateCounterclockwise": "סובב נגד כיוון השעון",
+    "rotateClockwise": "סובב עם כיוון השעון",
+    "zoomLevel": "רמת הגדלה",
+    "print": "הדפס מסמך",
+    "fullscreen": "מסך מלא",
+    "exitFullscreen": "צא ממסך מלא",
+    "download": "הורד PDF"
+  },
+  "search": {
+    "title": "חיפוש",
+    "placeholder": "חיפוש במסמך...",
+    "matches": "התאמות",
+    "noResults": "לא נמצאו תוצאות",
+    "searching": "מחפש...",
+    "previousResult": "תוצאה קודמת",
+    "nextResult": "תוצאה הבאה",
+    "page": "דף",
+    "incompleteDocumentError": "אירעה שגיאה בעת החיפוש. נסה שוב לאחר טעינת המסמך במלואו.",
+    "waitLoading": "אנא המתן לטעינת המסמך במלואו לפני החיפוש."
+  },
+  "bookmarks": {
+    "outline": "מתווה",
+    "bookmarks": "סימניות",
+    "noOutline": "אין מתווה זמין במסמך זה",
+    "addBookmark": "הוסף סימנייה",
+    "save": "שמור",
+    "cancel": "בטל",
+    "noBookmarks": "טרם נוספו סימניות",
+    "bookmarkTitle": "כותרת הסימנייה",
+    "deleteBookmark": "מחק סימנייה:"
+  },
+  "annotations": {
+    "title": "הערות",
+    "addNote": "הוסף הערה",
+    "addHighlight": "הוסף הדגשה",
+    "addDrawing": "הוסף ציור",
+    "note": "הערה",
+    "highlight": "הדגשה",
+    "drawing": "ציור",
+    "noAnnotations": "טרם נוספו הערות. השתמש בכלים לעיל כדי להוסיף הערות למסמך שלך.",
+    "addNoteHint": "הוסף הערה...",
+    "page": "דף",
+    "cancel": "בטל",
+    "colorSetTo": "הגדר צבע ל",
+    "noContent": "אין תוכן",
+    "delete": "מחק הערה"
+  },
+  "info": {
+    "title": "מידע",
+    "close": "סגור חלונית מידע"
+  },
+  "locale": {
+    "selectLanguage": "בחר שפה",
+    "changeTo": "שנה שפה ל"
+  },
+  "credits": {
+    "createdWith": "נוצר באמצעות",
+    "by": "על ידי"
+  }
+}
